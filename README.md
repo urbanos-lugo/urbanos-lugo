@@ -553,9 +553,8 @@ Non hai datos escritos a man. `stops.json` e `lines.json` xéranse a partir de:
    cadro horario non fixa. Segue sendo o trazado de reserva onde OSM non chega.
 
 4. **OpenStreetMap** — cartografía base do mapa e, vía Overpass, os equipamentos
-   levantados en cada poste (marquesiña, banco). O operador non publica eses datos e o
-   conxunto anterior inventábaos; agora 399 das 417 paradas están emparelladas cun poste de
-   OSM —398 a menos de 45 m e unha polo nome— e o que ninguén levantou queda como `null`,
+   levantados en cada poste (marquesiña, banco). O operador non publica eses datos; 399
+   das 417 paradas están emparelladas cun poste de OSM —398 a menos de 45 m e unha polo nome— e o que ninguén levantou queda como `null`,
    non como "non".
 
 <picture>
@@ -586,7 +585,7 @@ implica o trazado si — e acurta o itinerario drasticamente — repárase a ord
 log. Hoxe: **45 sentidos co itinerario topografiado, 3 con OSRM**, e o 99% do que se
 debuxa cae sobre o itinerario de OSM.
 
-Efecto medido: os tramos cun desvío viario superior a 4x pasaron de 14 a **2 de 1136**.
+Efecto medido: os tramos cun desvío viario superior a 4x son **2 de 1136**.
 
 **O que isto non resolve.** Unha relación de OSM di por onde vai o bus; as etiquetas de
 acceso das rúas son outro levantamento distinto, e nese remate do casco histórico
@@ -631,7 +630,7 @@ Comprobouse, e **non existe un GTFS público da rede urbana de Lugo**:
 
 - O ficheiro do [Punto de Acceso Nacional](https://nap.transportes.gob.es/Files/Detail/1386)
   (esa páxina dá 404 desde polo menos o 31 de outubro de 2026)
-  que se citaba antes neste README **non é o bus urbano**. É o feed *interurbano* da
+  **non é o bus urbano**. É o feed *interurbano* da
   Xunta de Galicia: 127.784 viaxes, 6.594 rutas e 22.386 paradas repartidas por Lugo,
   A Coruña, Pontevedra, Ourense, Asturias, León e Zamora. O servizo urbano de Lugo é
   unha concesión do Concello (AULUSA), non da Xunta, e non está aí dentro.
@@ -906,10 +905,7 @@ JSON e volver correr ese comando, nunca a imaxe.
 `data/stop-amenities.json` non se importan en ningures da aplicación: só os len as
 ferramentas. Non son restos.
 
-Viven en `data/` e non en `src/data/` precisamente por iso. Mentres estaban mesturados,
-quen abría `src/data/` non podía saber cales dos dez ficheiros viaxan ao navegador, e un
-`import` distraído metía medio megabyte no paquete sen que nada avisase. Agora `src/data/`
-é o que se envía, `data/` é o que alimenta a build, e unha comprobación falla se un dos
+Viven en `data/` e non en `src/data/` precisamente por iso: `src/data/` é o que se envía, `data/` é o que alimenta a build, e unha comprobación falla se un dos
 segundos volve aparecer no primeiro ou se algo de `src/` o nomea.
 
 Son **instantáneas do que dixeron fontes de terceiros**, e están commiteadas por tres
@@ -958,7 +954,7 @@ Consecuencias en toda a aplicación:
 
 A etiqueta decídese **por expedición e parada**, non por liña. Unha parada só leva
 `HORARIO OFICIAL` se a hora que calculamos para ese bus concreto está literalmente
-impresa no cadro. Dúas cousas facían que se sobre-anunciase:
+impresa no cadro. Dúas cousas farían que se sobre-anunciase:
 
 - As expedicións que se xeran a partir da cadencia non están impresas en ningures. A
   liña 2 publica `07:15`, `21:15` e «cada 30 min.»: as `07:45` son unha inferencia
@@ -988,31 +984,23 @@ que a app trata como oficial.
 `pnpm test` inclúe comprobacións que fallan se algunha hora volve presentarse sen dicir de
 onde vén, e se algunha parada reclama unha hora oficial que o cadro non imprime.
 
-A regra ten que chegar a todas as pantallas, e a revisión do 28 de setembro de 2026 atopou
-catro onde non chegaba:
+A regra chega a todas as pantallas, non só ao taboleiro:
 
-- **O planificador e «Vou nesta»** preguntaban aínda á dirección enteira se imprimía a
-  parada, o erro que o taboleiro xa corrixira: 485 das 16.468 saídas dun laborable levaban
-  `HORARIO OFICIAL` sen que a súa expedición a imprimise.
-- **A ficha de liña** pintaba como impresas 1.077 das 1.585 «saídas desde cabeceira» dun
-  tipo de día —as das dez liñas que publican primeira, última e cadencia, e as das
-  direccións cuxa primeira parada non é punto horario—, e as horas xa pasadas perdían o
-  `~`. Hoxe a táboa marca `~08:00` e di por que. O punto de «bus aquí» deixou de latexar:
-  é unha posición tirada do cadro.
-- **O paso a paso** levaba un só chip por tramo, ao pé, baixo a hora de baixada: en 966
-  de 6.469 tramos avalaba como oficial unha chegada que o cadro non imprime. Vai baixo a
-  hora de subida, que é a que certifica, e a de baixada leva `~` cando é calculada.
-- **O aviso «Sen servizo»** lía a primeira e a última saída de cabeceira de cada liña:
-  dicía «sen servizo» os 25 minutos de cada noite en que os últimos buses aínda circulan
-  (34 nun laborable, co 1.3 da mañá) e «primeiro bus ás 07:00» as fins de semana, que
-  empezan ás 07:10. Agora sae das mesmas expedicións que len os taboleiros, e o primeiro
+- **O planificador e «Vou nesta»** preguntan á expedición, non á dirección enteira, se
+  imprime a parada.
+- **A ficha de liña** marca `~08:00` nas «saídas desde cabeceira» que o cadro non imprime
+  —as das dez liñas que publican primeira, última e cadencia, e as das direccións cuxa
+  primeira parada non é punto horario— e di por que. O punto de «bus aquí» non latexa: é
+  unha posición tirada do cadro.
+- **O paso a paso** leva a etiqueta baixo a hora de subida, que é a que certifica, e a de
+  baixada leva `~` cando é calculada.
+- **O aviso «Sen servizo»** sae das mesmas expedicións que len os taboleiros, e o primeiro
   bus é o do día en que circula, con `~` se a súa primeira parada non é punto horario.
 
-Cando non hai saídas no horizonte —ás 03:00, ou un domingo cedo— o taboleiro xa non queda
+Cando non hai saídas no horizonte —ás 03:00, ou un domingo cedo— o taboleiro non queda
 só cun «non hai saídas programadas»: di cal é a seguinte, a que hora, con que destino e que
 día —«a liña 6 mañá ás 07:35»—, coa súa `~` se é calculada. Quen está na parada precisa
-saber se agardar ou marchar. Nunca propón un bus que remata o percorrido nesa mesma parada:
-ás 03:00 cinco postes, HULA entre eles, ofrecían o 5ES «con destino HULA».
+saber se agardar ou marchar. Nunca propón un bus que remata o percorrido nesa mesma parada.
 
 ---
 
@@ -1036,20 +1024,15 @@ queda acoutado polo tramo en vez de acumularse ao longo de todo o percorrido. M�
 Encadear dous puntos non é gratuíto: unha liña cíclica imprime cada punto unha soa vez
 para toda a volta, e a mesma rúa adoita ter un poste por sentido, así que dúas filas
 poden nomear paradas que ningunha expedición visita nesa orde. Emparellalas columna a
-columna producía saídas ás 03:00, e por iso antes se usaba un só punto. Agora o par
-compróbase: o oco impreso ten que ser positivo, plausible como un tramo, e da mesma orde
+columna produciría saídas ás 03:00, así que o par compróbase: o oco impreso ten que ser positivo, plausible como un tramo, e da mesma orde
 que o tempo medido por estrada. Un desaxuste de ida/volta falla iso por decenas de
 minutos — a liña 5.1 imprime 40 min nun tramo que a estrada di que son 18 — e cae fóra.
 
 Efecto medible: a 5.1 saíndo de Avda. Américas ás 17:00 chega a Ramón Ferreiro ás
-**17:10**, como di o cadro. Antes calculábase 17:06, e con eses catro minutos de vantaxe
-ficticia o planificador ofrecía un transbordo á 1.1 das 17:09 que na realidade xa marchara.
+**17:10**, como di o cadro.
 
 O importador tamén entende as liñas con **dous buses**, que imprimen unha columna por
-vehículo baixo unha soa etiqueta (`Bus 1 7:15 | Bus 2 7:45`). Indexar por posición de
-etiqueta emparellaba a primeira saída de laborable coa de fin de semana: a liña 2 saía
-como 7:15, 7:45, 8:15 e remataba o día, cando en realidade circula cada 30 min ata as
-21:45.
+vehículo baixo unha soa etiqueta (`Bus 1 7:15 | Bus 2 7:45`).
 
 O calendario distingue laborables, sábados e domingos/festivos, e admite ventás de
 servizo que cruzan a medianoite.
@@ -1064,10 +1047,7 @@ servizo que cruzan a medianoite.
 2. **Candidatas de embarque** — ata 10 paradas servidas a menos de 2 km de cada extremo,
    e nunca unha que obrigue a camiñar máis para coller o bus que para chegar andando.
    **Escóllense pola cobertura de liñas, non pola distancia**: pasadas as catro máis
-   próximas, unha parada só entra se serve unha liña que ningunha máis preto ofrece. Coas
-   dez máis próximas a secas, desde Fonte dos Ranchos as dez estaban no mesmo corredor e
-   sumaban oito liñas, mentres que a décimo segunda —Rda. Muralla (Obras Públicas), a
-   535 m— serve nove máis. O plan dun só bus nin sequera existía.
+   próximas, unha parada só entra se serve unha liña que ningunha máis preto ofrece.
 3. **Opcións** — a liña directa, os transbordos por calquera parada alcanzable desde a
    orixe e desde a que se poida chegar ao destino (as 40 mellor conectadas), **os
    transbordos entre dous postes distintos a menos de 300 m** co paseo escrito no
@@ -1083,19 +1063,14 @@ servizo que cruzan a medianoite.
    **Mídense todas as opcións que se amosan**,
    non só a aberta, ou compararíaslas por estimacións e logo veríaas cambiar ao abrilas.
    **E mídense antes de amosar a resposta**, cun segundo de marxe para a primeira carga da
-   rede peonil (se tarda máis, sae coa estimación e corríxese ao chegar): pintada coa liña
-   recta, a resposta cambiaba un instante despois de bus de cabeza, e «Vou nesta» baixaba
-   de diante dos tempos a debaixo deles, onde o dedo ía tocar.
-   E, medidas, ordénanse outra vez coa mesma regra: a orde saía da estimación, e o 12 de 52
-   minutos ás ~10:54 encabezaba diante do 1.2 de 22 ás ~10:51, porque o paseo do final
-   medía 27 minutos onde a estimación dicía 22. Igual na 1.1.0, do 15 de setembro, e na
-   1.2.8.
+   rede peonil (se tarda máis, sae coa estimación e corríxese ao chegar). E, medidas,
+   ordénanse outra vez coa mesma regra.
 
 Regras que evitan suxestións absurdas ou perigosas:
 
 - **Nunca a mesma liña dúas veces.** Baixar dun 5.1 para agardar por outro 5.1 non ten
   sentido: no mesmo sentido é literalmente o bus no que xa ías, e o traxecto directo
-  existe sempre nese caso. Aparecía como `5.1 → 5.1` no listado de opcións.
+  existe sempre nese caso.
 - **Unha tarxeta por combinación visible.** Dúas opcións coas mesmas insignias son a
   mesma viaxe para quen a le, aínda que difiran en poste, sentido do bucle ou rama rural
   (as catro liñas numeradas `11`). Gárdase a que chega antes.
@@ -1104,14 +1079,11 @@ Regras que evitan suxestións absurdas ou perigosas:
   interpolada. Pasarse de largo só empurra a suxestión ao seguinte bus, quedarse curto
   deixa a alguén na beirarrúa.
 - **Cando saír da casa.** Cada opción amosa `HH:MM → ~HH:MM`, e a primeira é a hora de
-  saír da orixe: a espera antes do primeiro bus pásase na casa, non na parada. Contala como
-  tempo de viaxe facía parecer peor unha ruta que só saía máis tarde. Preguntando ás
-  09:00 por HULA, a resposta era «50 min, sae ás 09:00» con 21 deles de pé no poste;
-  agora é «33 min, sae ás 09:17», e chégase á mesma hora. Na parada quedan os mesmos
+  saír da orixe: a espera antes do primeiro bus pásase na casa, non na parada. Na parada quedan os mesmos
   dous ou catro minutos de marxe que se lle dan a un transbordo, e pola mesma razón.
 - **Ordénanse por cando chegas, non por canto duran.** Coa saída libre de moverse as dúas
   cousas deixan de ser a mesma: o traxecto máis curto de Fonte dos Ranchos a HULA é un
-  5ES de 22 minutos que sae ás 14:08, e preguntando ás 09:00 encabezaba a lista. O que se
+  5ES de 22 minutos que sae ás 14:08, e preguntando ás 09:00 encabezaría a lista. O que se
   compara é a hora á que estás alí; entre dúas que chegan á vez gaña a que che come menos
   o día.
 - **Nunca unha soa parada en bus.** Medido sobre 2.254 tramos ao mediodía, un tramo
@@ -1123,8 +1095,7 @@ Regras que evitan suxestións absurdas ou perigosas:
   bus, e nunca encabeza por riba de 75 minutos: un paseo de tres horas non é unha
   suxestión, é unha broma. Por debaixo diso ofrécese igual, ordenado como calquera outra.
 
-Se ningunha combinación funciona, dise. Antes inventábase unha "liña de enlace"
-inexistente.
+Se ningunha combinación funciona, dise.
 
 ---
 
@@ -1146,8 +1117,8 @@ Normaliza tildes (NFD) e expande abreviaturas (`rda`→`ronda`, `avda`→`avenid
 expresión regular.
 
 O cadro de arriba atopa paradas, liñas e sitios, e tamén as pantallas da propia app polo seu
-nome: «tarifas» ou «avisos» abren a súa. Os avisos e as tarifas só se alcanzaban dende a
-navegación, e a WCAG (2.4.5) pide máis dun camiño a cada páxina dun conxunto.
+nome: «tarifas» ou «avisos» abren a súa, porque a WCAG (2.4.5) pide máis dun camiño a cada
+páxina dun conxunto.
 
 ---
 
@@ -1167,9 +1138,7 @@ navegación, e a WCAG (2.4.5) pide máis dun camiño a cada páxina dun conxunto
 | `GET` | `/api/paradas/:code/agora` | Os minutos que dá a páxina do operador detrás do QR dese poste |
 | `GET` | `/api/fares` | Tarifas |
 
-Os alias `/api/stop/:code/arrivals`, `/api/realtime/:stopId` e `/api/buses/live`, e o
-`POST /api/alerts/sync`, quitáronse o 19 de outubro de 2026: repetían rutas de arriba e a app
-non usaba ningún. Os QR dos postes apuntan á páxina do operador, non a este servidor.
+Os QR dos postes apuntan á páxina do operador, non a este servidor.
 
 ---
 
