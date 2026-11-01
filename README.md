@@ -1212,13 +1212,11 @@ carga de ~159 KB.
 E cando un despregue cambia os nomes deses ficheiros debaixo dunha páxina aberta, a
 páxina que pide o mapa despois de publicado recarga unha soa vez en lugar de amosar «a
 vista non se puido debuxar»; o service worker actualízase só e xa non ten os nomes
-vellos. Pasaba varias veces ao día, pola instantánea de avisos: ía importada no anaco de
-entrada coa hora da lectura dentro, e Rollup nomea cada anaco polo seu contido e polo
-dos que importa, así que cada refresco renomeaba seis ficheiros —medio megabyte
-comprimido— sen que cambiase unha liña de código. Dende o 19 de setembro de 2026 a
-instantánea é un ficheiro á parte (`public/alerts.json`, uns centos de bytes ou poucos KB
-segundo os avisos que leve, na precaché do service worker): un refresco de avisos non renomea nada, medido construíndo dúas veces coa hora
-cambiada. Só un despregue de código cambia nomes agora.
+vellos. Só un despregue de código cambia nomes: Rollup nomea cada anaco polo seu contido e
+polo dos que importa, así que a instantánea de avisos, que leva dentro a hora da lectura,
+é un ficheiro á parte (`public/alerts.json`, uns centos de bytes ou poucos KB segundo os
+avisos que leve, na precaché do service worker). Un refresco de avisos non renomea nada,
+medido construíndo dúas veces coa hora cambiada.
 
 ### Rigor de tipos
 
