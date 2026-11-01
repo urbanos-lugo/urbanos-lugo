@@ -4488,9 +4488,68 @@ no código, antes de corrixir nada; as cifras, coa build de hoxe nun servidor no
   deslizamento do punto: con movemento reducido, que non o fai, 4,4–5,2 s e 86–94 cadros
   pedidos por minuto, fronte a 3.382–3.539. Cun fix por segundo o punto pasa o 40 % do tempo
   deslizándose. Apagalo durante a viaxe, ou facelo máis barato, é cambiar o que se fixo na
-  rolda 49, e é do dono.
+  rolda 49, e é do dono. *Corrixido na rolda 53: «o resto é o deslizamento» non se sostén
+  alternando; o movemento reducido apaga máis cousas ca o punto.*
 - **O orzamento de 1 s de «saíndo agora» cae dentro do ruído**: a mesma build dá 548 e
   1.182 ms. Unha volta soa por riba non di nada; a mediana de varias, alternando, si.
 - Que a alarma de chegada deixe de mirar o GPS ao soar: é unha decisión, non un arranxo.
 - A inxección dos dous bloques de datos estruturados non a mira ningún check da CI, porque a
   build da CI non leva `SITE_URL`.
+
+## Rolda 53: o que a 52 deixara ao dono — 1 de novembro de 2026
+
+Pedido: as catro cousas que a rolda 52 deixara como decisións, xa aceptadas: que a alarma
+solte o GPS ao soar, que o punto do lector non se deslice nunha viaxe, a liña de DECIDIDO
+sobre o alcance das liñas e unha regra en CLAUDE.md para que unha promesa non sobreviva ao
+seu check.
+
+### Feito
+
+- **A alarma de chegada solta a posición ao soar.** Soaba unha vez e seguía mirando o GPS ata
+  que se apagaba ou se deixaba o taboleiro, cando o taboleiro xa só dicía «chegaches» e
+  ninguén lía os fixes. `watchForStop` desfai a súa subscrición ao soar; un mapa ou unha
+  viaxe que escoiten á vez quedan coa vixilancia e cos seus fixes. PRIVACY.md di que dura ata
+  que soa. Un check con xeolocalización simulada: co código de antes falla na parada (a
+  vixilancia non se pecha).
+- **O punto do lector só se desliza despois dunha pausa.** Na rolda 49 deslizábase 400 ms ata
+  cada fix, e un GPS en movemento dá un cada segundo, uns píxeles máis alá: nunha viaxe o punto
+  pasaba deslizándose o 40 % do tempo. Agora deslízase só cando o fix chega dous segundos ou
+  máis despois do anterior (`DRAW.me.slideAfter`), como nun mapa ao que se volve; nunha viaxe
+  salta. `measure:browser` pon orzamento aos cadros que a viaxe pide, 1.000 por minuto, e
+  perfila quince fixes máis despois do minuto medido.
+- **DECIDIDO**, baixo «Un dedo ten 12 px de alcance»: unha liña datada que di que as liñas
+  responden a 20 px de calquera punteiro desde agosto, e que os 12 px son das paradas.
+- **CLAUDE.md**: un check que se vai leva fóra dos documentos, no mesmo commit, o que el
+  gardaba. `check:policy` ve un documento que nomea un ficheiro que non existe; non ve «un
+  check impide X» cando o check xa non está.
+
+### Medido
+
+- **A viaxe, alternando as dúas regras** (cada unha na súa build, no 3012, dúas tandas de dúas
+  voltas): co punto que salta, 12,0, 10,3, 11,0 e 11,1 s de fío por minuto e 208–238 cadros do
+  mapa; co punto que se desliza a cada fix, 20,4, 15,3, 10,9 e 10,4 s e 242–296 cadros. A nova
+  nunca vai peor e varía moito menos; a anterior vai de igual a dúas veces máis. Os cadros que
+  pide a páxina, de 3.382–3.539 por minuto a 192. Co orzamento novo, a regra anterior dá
+  3.506 e 3.554 e falla (16,8 e 17,8 s de fío nesa volta).
+- **O perfil da viaxe** (quince fixes, co mostreador): 3,9 s de script e 2,2 de estilo e
+  disposición por minuto; o grosso do resto é «(program)», o mapa debuxándose no SwiftShader do
+  navegador da medida, uns cinco cadros por segundo; o que os pide non se separou (o círculo
+  cambia en cada fix e os buses cada tres segundos). Nun teléfono iso faino a GPU, así que
+  os 5 s do orzamento miden o navegador da medida tanto coma a app.
+- **As cinco portas**: lint, 162 comprobacións antes e despois da build, 26 políticas,
+  `check:deep` en 12 s, `data:build` sen cambios e a build. `audit:browser` enteiro con
+  `AUDIT_RUNNER=1`: 0 achados WCAG en 242 medidas de 162 estados, en 671 s; a barra da casa,
+  0, 25 e 3, coma antes.
+
+### Corrixido da rolda 52
+
+- **«O resto é o deslizamento do punto»** non se sostén: alternando, a regra anterior deu unha
+  tanda igual ca a nova. O movemento reducido baixaba a 4,4–5,2 s porque apaga máis cousas ca
+  o punto. O README dío así.
+
+### Queda
+
+- **A viaxe segue por riba dos 5 s neste navegador**, 10–14 s. Baixar de verdade os cadros do
+  mapa por fix (o círculo da precisión fóra do lenzo, como elemento da páxina, por exemplo)
+  sería o seguinte paso; canto aforra nun teléfono de verdade non se mediu.
+- `main` sen publicar: é do dono.
