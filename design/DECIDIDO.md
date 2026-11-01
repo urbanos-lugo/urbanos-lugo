@@ -480,6 +480,9 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   iso, e nun teléfono a etiqueta collía o toque da parada que nomeaba. Preguntábase antes a
   `(hover: hover)`, que un navegador sen rato atopado responde «none» aínda que un rato
   pase polo mapa (o executor de CI, o 26 de outubro).
+  *Corrixido o 1 de novembro de 2026: as liñas responden a 20 px de calquera punteiro, dedo
+  ou rato, desde agosto (`HIT_PX`, tamén con Leaflet, onde o clic no mapa xa buscaba liñas a
+  esa distancia); os 12 px dun dedo e o cero dun rato son os das paradas.*
 
 ## O que se decidiu de gusto na rolda 42 — 27 de outubro de 2026
 
