@@ -1787,7 +1787,7 @@ paradas sen andar para atrás, soe unha vez por tramo e pregunte —non adiviñe
 perdeu o bus.
 
 Cada unha naceu dun fallo real, e o comentario de arriba di cal. Que dous postes non
-compartan punto (nove liñas publicábanse como dezaoito paradas); que a rede siga tendo
+compartan punto; que a rede siga tendo
 417 paradas, 24 liñas e 271 postes cun código impreso; que un nome que o operador
 aínda imprime siga sendo buscable despois de fusionar; que un trazado feito coa ruta
 dun coche o diga; e que ningún traxecto propoña coller o bus para unha soa parada.
@@ -1841,12 +1841,10 @@ páxina lista ao principio cando a ruta pasa por elas ao final. Lida ao pé da l
 km fronte aos 8,2 reais, e ningún cadro horario que imprima 20 minutos para iso pode ser
 certo.
 
-**As cabeceiras non se tocan nunca.** Unha reordenación anterior movía a primeira parada da
-volta de `HULA (Ent. Principal)` a `(Ent. Personal)` porque o trazado levantado pasa antes
-por esta: a relación de OSM debuxa o bucle do hospital unha soa vez, á entrada, e o bus
-volve pasar por Personal ao saír. Pero a ida remata en Principal, así que a volta empeza
-alí — calquera outra cousa fai que o bus retroceda 651 m antes de arrancar. `pnpm test`
-comproba agora que cada sentido remata onde empeza o outro, en toda a rede.
+**As cabeceiras non se tocan nunca**, aínda que o trazado levantado pase antes por outra
+parada: a relación de OSM debuxa o bucle do hospital unha soa vez, á entrada, pero a ida
+remata en `HULA (Ent. Principal)`, así que a volta empeza alí. `pnpm test` comproba que
+cada sentido remata onde empeza o outro, en toda a rede.
 
 ```bash
 pnpm reconcile:selftest
@@ -1855,13 +1853,8 @@ pnpm reconcile:selftest
 Estraga os datos a mala fe —move unha parada 200 m, quita unha doutro itinerario, ponlle
 unha liña que non pasa, cámbialle unha hora, renoméaa— e esixe que **a comprobación feita
 para cada fallo sexa a que o detecte**. Se outra sección salta no seu lugar, é que as dúas
-miden o mesmo. Restaura os ficheiros pase o que pase.
-
-Existe porque o `reconcile` xa estivo mal tres veces: comparaba as catro ramas da liña 11
-contra a mesma liña publicada (inventaba ~180 erros), comparaba os nomes por identificador
-cando o operador imprime varios por poste (inventaba 8), e o propio auto-test usaba un
-prefixo de sección ambiguo. **Un verificador que sempre di que todo está ben é
-indistinguible dun que non comproba nada.**
+miden o mesmo. Restaura os ficheiros pase o que pase. **Un verificador que sempre di que
+todo está ben é indistinguible dun que non comproba nada.**
 
 ```bash
 pnpm data:osm
@@ -1925,8 +1918,7 @@ de verdade. Conta toques, teclas, desprazamentos, escollas, pantallas e o que ta
 responder a cada paso; mide onde cae o dedo (o cuarto de arriba da pantalla é difícil cunha
 man), o tamaño do que toca, se algo o tapa ou se move xusto antes do toque, e se se pintou
 noutro sitio antes de quedar quieto (cadro a cadro, pola súa posición na páxina); se unha
-pantalla dixo que estaba baleira e se encheu sen que ninguén tocase nada (o taboleiro abría
-cada parada co «non vén ningún bus» un cadro, e nun ordenador lento pintábao); e cun teclado
+pantalla dixo que estaba baleira e se encheu sen que ninguén tocase nada; e cun teclado
 sobre o 41 % de abaixo da pantalla, se o campo e o que vén despois quedan á vista. Despois
 volve: o atrás do sistema ten que desfacer a viaxe pantalla a pantalla, pechando primeiro o
 que está enriba e co desprazamento e os campos como estaban, e só a última pulsación sae da
@@ -1953,62 +1945,37 @@ máquina son doce minutos (715 s, aquí, o mesmo día).
 O que `pnpm test` non pode ver: un Chromium real, dirixido por `tools/cdp.ts`, acelerado
 6× e con rede «Slow 4G», contra o sitio construído. `measure:browser` mide o que custa
 arrincar en frío; abrir en frío a ligazón do QR dun poste ata a primeira saída na pantalla,
-co reloxo da páxina nun mércores ás 13:30 (medido o 29 de outubro: o primeiro pintado en
-2,6 s xa leva a primeira saída; ata entón o taboleiro lía as saídas despois de pintarse
-baleiro, e eran 2,7 e 2,9 s, e 2,9 e 3,0 antes de que a comprobación do fuso horario deixase
-de cargar a base de datos de fusos nun teléfono que xa está no de Lugo); e —o que é cada visita dunha app instalada— en quente, co *service
-worker* xa instalado (medido: 1.360 ms ata o primeiro pintado a 6× na rolda completa, 824 só, 8 de 8 respostas do
-*worker*, 0 KB pola rede fóra dos avisos); abrir o mapa, catro pasos de zoom e catro
-arrastres (medido o 28 de outubro con MapLibre só, alternando coa build de Leaflet na mesma
-máquina, dúas voltas cada unha: o primeiro mapa debuxado en 1,74–1,81 s fronte a
-1,72–1,78; o fío ocupado ao abrilo 1,22–1,40 s fronte a 1,42–1,62, e a súa tarefa máis
-longa 348–388 ms fronte a 445–458; arrastrando, 0–18 ms fronte a 0–43, porque o traballo é
-do renderizador, dentro de cada cadro; os catro pasos de zoom varían demasiado nas dúas,
-62–601 ms fronte a 229–719, para dicir máis ca que caben no orzamento de 900), teclear no
-buscador e doce voltas entre pestanas; planificar, dende o toque en «Calcular ruta» ata
-«Calculando» e ata a resposta pintada, co reloxo da páxina fixado nun mércores ás 13:30
-(medido co par máis caro: o toque responde en 56–104 ms, por debaixo dos 0,2 s que son un
-INP «bo», porque o botón pinta «Calculando» antes de que empece o plan. Desde o 26 de
-outubro de 2026 o plan faise nun *worker*, fóra do fío da páxina: chegando antes das 17:00,
-o fío principal queda ocupado 350–383 ms en total, a tarefa máis longa 183–210 ms, onde a
-build anterior, a mesma tarde e alternándoas, ocupábao 7,1–8,5 s nunha soa tarefa de
-7,0–8,3 s, sen responder a nada mentres; a resposta chega en 2,2–2,3 s fronte a 7,3–8,8 s,
-pero esa diferenza pode ser en parte da medida, que fai 6× máis lento o fío da páxina e
-quizais non o do *worker*: nun teléfono lento de verdade o *worker* tamén é lento. Saíndo
-agora, 0,85–0,88 s fronte a 0,6–1,2 s. O 30 de setembro esta mesma máquina daba 5,0–6,4 s
-chegando antes, e 12,4 antes de que o planificador lembrase o que non cambia); e un minuto de «Vou nesta» cun fix de GPS por
-segundo, contado polo propio navegador (medido o 30 de setembro, antes do mapa con MapLibre: 1,8 s
-de fío principal por minuto a 6×; eran 45 s mentres o latexo da seguinte parada foi unha
-sombra, que se repinta en cada cadro, e non un disco que medra e se esvae, que o compositor
-move só; hoxe, máis abaixo). Cada cifra compárase co orzamento que ten escrito
-ao lado, co porqué, e dende o 19 de setembro de 2026 tamén os bytes (260 KB en total,
-250 antes do primeiro pintado: unha dependencia que engorde o anaco de entrada xa non é
-un número máis nun rexistro que ninguén le) e o desprazamento de deseño acumulado (CLS,
-0,1; medido 0,000 nas dúas visitas).
+co reloxo da páxina nun mércores ás 13:30; en quente, co *service worker* xa instalado, que
+é cada visita dunha app instalada; abrir o mapa, catro pasos de zoom e catro arrastres;
+teclear no buscador e doce voltas entre pestanas; planificar, dende o toque en «Calcular
+ruta» ata «Calculando» e ata a resposta pintada, co reloxo da páxina fixado nun mércores ás
+13:30 —o botón pinta «Calculando» antes de que empece o plan, e o plan faise nun *worker*,
+fóra do fío da páxina—; e un minuto de «Vou nesta» cun fix de GPS por segundo, contado polo
+propio navegador. Cada cifra compárase co orzamento que ten escrito ao lado, co porqué,
+tamén os bytes (260 KB en total, 250 antes do primeiro pintado) e o desprazamento de deseño
+acumulado (CLS, 0,1).
 
-**Medido outra vez o 31 de outubro de 2026** (rolda 52 do rexistro), coa build de hoxe, tres
-voltas por medida e sen nada máis correndo na máquina. En frío, 227 KB en total e 202 antes
-do primeiro pintado, CLS 0,000; o QR dun poste pinta aos 2,7 s coa primeira saída xa dentro;
-en quente, o primeiro pintado en 476–612 ms, 8 de 9 respostas do *service worker* e 0 KB
-pola rede. O mapa: o primeiro debuxado en 2,4–3,8 s, o fío ocupado ao abrilo 1,5–2,1 s e a
-tarefa máis longa 448–746 ms, catro pasos de zoom 212–771 ms e catro arrastres 0–58 ms;
-dentro do orzamento (sen alternar con outra build, así que non se compara co 28 de outubro).
-Planificar: o toque responde en 56–96 ms; chegando antes das 17:00, a resposta en 1,9–3,6 s
-co fío ocupado 473–933 ms; e saíndo agora, 1,06–1,29 s en tres voltas seguidas, por riba do
+**Medido o 31 de outubro de 2026** (rolda 52 do rexistro), tres voltas por medida e sen
+nada máis correndo na máquina. En frío, 227 KB en total e 202 antes do primeiro pintado,
+CLS 0,000; o QR dun poste pinta aos 2,7 s coa primeira saída xa dentro; en quente, o
+primeiro pintado en 476–612 ms, 8 de 9 respostas do *service worker* e 0 KB pola rede. O
+mapa: o primeiro debuxado en 2,4–3,8 s, o fío ocupado ao abrilo 1,5–2,1 s e a tarefa máis
+longa 448–746 ms, catro pasos de zoom 212–771 ms e catro arrastres 0–58 ms, dentro do
+orzamento. Planificar: o toque responde en 56–96 ms, por debaixo dos 0,2 s que son un INP
+«bo»; chegando antes das 17:00, a resposta en 1,9–3,6 s co fío ocupado 473–933 ms (a medida
+fai 6× máis lento o fío da páxina e quizais non o do *worker*: nun teléfono lento de verdade
+o *worker* tamén é lento); e saíndo agora, 1,06–1,29 s en tres voltas seguidas, por riba do
 orzamento de 1 s. Non era o código: alternando na mesma máquina e no mesmo cuarto de hora a
 build de `62bc5b7`, a do 26 de outubro, e a de `45be8fd`, a de hoxe, saíron 548–1.182 ms e
 542–802 ms. É unha medida que varía o dobre dunha volta a outra, e só vale alternando.
-E «Vou nesta» ocupaba o fío **30,5–37,0 s por minuto**: desde o 29 de outubro o punto do
-lector deslízase ata cada fix, e cada cadro do deslizamento volvía poñer o círculo da
-precisión, que é unha capa do mapa, así que o mapa se debuxaba de novo en cada cadro
-(1.902–1.992 cadros por minuto). Co círculo posto unha vez por fix baixa a 19,8–22,5 s e
-244–286 cadros. Desde o 1 de novembro o punto xa non se desliza cando os fixes chegan seguidos,
-coma nun bus (un por segundo, uns píxeles cada un), só despois dunha pausa de dous segundos: a
-páxina pide 192 cadros por minuto en vez de 3.400, e alternando coa regra anterior o fío queda
-en 10,3–13,7 s fronte a 10,4–20,4. Segue por riba dos 5 s, e o perfil di de que: o mapa
-debuxándose no SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun
-teléfono fai a GPU. Con movemento reducido baixa a 4,4–5,2 s, pero alí cambian máis cousas
-ca o punto.
+
+E «Vou nesta», medido o 1 de novembro de 2026 (rolda 53): o punto do lector salta a cada fix
+cando os fixes chegan seguidos, coma nun bus, e só se desliza despois dunha pausa de dous
+segundos, así que a páxina pide 192 cadros por minuto e o fío queda ocupado 10,3–13,7 s por
+minuto. Segue por riba dos 5 s do orzamento, e o perfil di de que: o mapa debuxándose no
+SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun teléfono fai a GPU.
+Con movemento reducido (medido o 31 de outubro) baixa a 4,4–5,2 s, pero alí cambian máis
+cousas ca o punto.
 `audit:browser` mide a app contra as WCAG 2.2 nos niveis A e AA, estado por estado. Son
 corenta e un estados —a portada baleira e a dunha persoa con paradas gardadas, a busca con
 e sen resultados, o taboleiro (por hora, por liña, a outra hora e aberto desde o QR), «preto
@@ -2030,12 +1997,8 @@ pseudoelemento); o nome accesible de cada control, e que conteña as palabras qu
 son o listón desta casa, que se imprimen sen bloquear; o `lang`, un só `<h1>`, o título, a
 mesma navegación na mesma orde (3.2.3), o que un estado ten que anunciar (4.1.3) e a consola
 en cada carga fresca; o desbordamento lateral e vertical, do documento e de `<main>`, que é
-onde as pantallas fan scroll (o formulario da ruta chegou a medir 553 px máis có teléfono
-sen que o `scrollWidth` da páxina dixese nada, e a lista de liñas alargou a páxina 1.392
-px); que ningunha caixa absoluta dun panel con scroll propio se coloque contra `<main>`,
-que así fai scroll unha segunda vez (Liñas, no escritorio, cunha liña aberta, baixaba 156 px
-a 1280 × 800 ata unha páxina baleira, cun terceiro scroll ao carón dos dous paneis; sen esa
-regra a auditoría dá 36 achados en Liñas e Paradas, e con ela 0); e o texto que non se ve
+onde as pantallas fan scroll; que ningunha caixa absoluta dun panel con scroll propio se
+coloque contra `<main>`, que así fai scroll unha segunda vez; e o texto que non se ve
 —cortado cunha elipse ou cun `line-clamp`, saíndo da súa caixa
 ou pasado do bordo— a 320 px de ancho (1.4.10), co texto ao 200 %, que é o que fai o axuste
 «texto máis grande» dun móbil, e no escritorio co zoom do navegador ao 200 % (1.4.4), e cos
@@ -2044,34 +2007,30 @@ verse (2.4.7), o contorno con 3:1 (1.4.11), sen quedar enteiro detrás doutra co
 da pantalla (2.4.11), na orde na que se debuxa (1.3.2, 2.4.3), e chegar a todo o que se pode
 enfocar sen quedar atrapado (2.1.1, 2.1.2); nos diálogos, Tab non sae deles, o foco non se
 move só mentres ninguén preme nada, e Escape pecha e devolve o foco ao que os abriu. Un estado
-de diálogo sen o diálogo aberto é un achado: a folla de filtros do mapa pasou así sen
-medirse. E o que un estado non amosa: os rótulos que o mapa amosa ao pasar o
-rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), e o dunha capa (un
-percorrido, unha parada) non abre co punteiro enriba dun bus ou dunha ventá: abría sobre o bus e
-levaba o seu clic, e o seu globo non se abría. O mapa ten que moverse
+de diálogo sen o diálogo aberto é un achado. E o que un estado non amosa: os rótulos que o
+mapa amosa ao pasar o rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), e
+o dunha capa (un percorrido, unha parada) non abre co punteiro enriba dun bus ou dunha
+ventá. O mapa ten que moverse
 sen arrastrar (2.5.7), un botón premido ten que verse premido coas cores forzadas do sistema,
 con `prefers-reduced-motion` nada segue animándose, e a app ten que debuxarse co axuste «non
-permitir que os sitios garden datos», que fai que ler `localStorage` lance un erro (a páxina
-quedaba en branco, porque unha lectura se facía fóra do seu `try`). Sae con erro ante
+permitir que os sitios garden datos», que fai que ler `localStorage` lance un erro. Sae con erro ante
 calquera achado WCAG, calquera estado que non alcanzou e calquera comprobación que non
 demostrou nada. `stress:network` xoga
 o outro lado de `stress:http`: non o servidor con carga, senón a pantalla cando a rede é
 o problema, que nunha parada é o normal. Catro formas, coa pila de rede do propio
 navegador: a API non contesta nunca, contesta 500, contesta seis segundos tarde, e non hai
-rede ningunha nunha segunda visita. O listón: o taboleiro nunca espera pola API (medido:
-170–250 ms en todos os casos), a pantalla de avisos nunca queda nunha lista baleira —que se
-le como «non hai incidencias»— máis dos dous segundos que o *hook* concede antes de amosar
-a copia gardada coa súa data (medido: 2.100 ms coa API colgada, 130 con erro; antes
-agardaba os 30 s do prazo), unha resposta tardía substitúe esa copia (a 4.100 ms), e sen
-rede sae a copia que gardou o *service worker* coa build (55 ms) e o taboleiro sae da
-caché (130–145 ms). Medido outra vez o 31 de outubro de 2026: 2.094, 128, 4.013 e 55 ms, e o
-taboleiro en 2–171 ms. `measure:browser` e `stress:network` non son portas de CI: os orzamentos
+rede ningunha nunha segunda visita. O listón: o taboleiro nunca espera pola API, a
+pantalla de avisos nunca queda nunha lista baleira —que se le como «non hai incidencias»—
+máis dos dous segundos que o *hook* concede antes de amosar a copia gardada coa súa data,
+unha resposta tardía substitúe esa copia, e sen rede sae a copia que gardou o *service
+worker* coa build e o taboleiro sae da caché. Medido o 31 de outubro de 2026: a copia aos
+2.094 ms coa API colgada e aos 128 con erro, a resposta tardía aos 4.013, a copia sen rede
+aos 55, e o taboleiro en 2–171 ms. `measure:browser` e `stress:network` non son portas de CI: os orzamentos
 son relativos á máquina. `audit:browser` si o é desde a rolda 31: o que mide non depende da
 máquina, e corre sobre a build en cada push menos a `main` e en cada proposta, sen rede ningunha (as outras orixes
 rexeitadas, a API con fixtures, o reloxo fixado). `.github/workflows/measure.yml` execútaos
-os tres os luns e garda a saída como artefacto,
-para que unha regresión coma a do mapa —catro veces o orzamento durante días— non dependa
-de que alguén se lembre.
+os tres os luns e garda a saída como artefacto, para que unha regresión non dependa de que
+alguén se lembre.
 
 ---
 
