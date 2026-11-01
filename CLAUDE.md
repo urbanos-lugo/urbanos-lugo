@@ -121,6 +121,12 @@ The whole suite is one file: `tools/test.ts`, plain `assert`, no framework, run 
 Leave a check behind for logic you add or fix, in that style. Never delete, relax or
 comment out an existing check to get to green — if one fails, the code is what's wrong.
 
+A check that goes on purpose (moved, merged, replaced by something that covers it) takes
+what it guarded out of the documents in the same commit: grep them for the thing it held. In
+October 2026 three checks left the suite and three documents went on promising them for
+eleven days (REXISTRO, round 52). `check:policy` catches a document naming a missing file;
+it cannot catch "a check keeps X out" once the check is gone.
+
 **Only two kinds of check.** End-to-end (the server spawned and asked over HTTP, the worker
 bundle run with no Node, the built app driven by `audit:browser`) and business logic:
 formatters, the planner's logic ladder, parsers, proofs over the dataset. Write a check
