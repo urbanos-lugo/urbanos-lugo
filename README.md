@@ -412,17 +412,19 @@ Antes desas alturas os tres pares daban o mesmo nas dúas direccións.
 
 **E o que se cobra é a subida da rúa, non a resta dos seus extremos.** Empezou sendo o
 segundo, que le como chá unha rúa que sobe e volve baixar entre dous cruces. Medido contra
-o modelo de 5 m nas 29.489 arestas: en total case non cambia nada —41.834 m de ascenso
-polos extremos fronte a 42.086 m polo perfil completo—, pero **3.169 arestas agochan algo
-de callada e 287 agochan dez metros ou máis, que é un minuto enteiro**. Non é un nesgo, é
-unha cola, e son as arestas longas: a peor son 1.941 m de estrada rural cos dous extremos
-ao mesmo nivel e 77 m de desnivel polo medio.
+o modelo de 5 m nas 29.489 arestas, co perfil que garda a app: 41.834 m de ascenso polos
+extremos fronte a 49.735 m polo perfil, un 19 % máis, e **3.099 arestas agochan algo de
+subida e 292 agochan dez metros ou máis, que é un minuto enteiro**. É unha cola, e son as
+arestas longas: a peor son 1.941 m de estrada rural cos dous extremos ao mesmo nivel e 78 m
+de desnivel polo medio.
 
 Así que o build percorre o perfil de cada rúa a 5 m e garda o que sobe en cada sentido.
 Ignóranse os ascensos de menos de 2 m: as alturas están en metros enteiros, e sumar cada
-osciliación ao longo de medio millón de mostras converte o ruído en 68.160 m de ascenso —
-27 m por quilómetro, que non é esta cidade. Con 3 m volve caer sobre a resta dos extremos;
-con 5 m queda por debaixo.
+osciliación ao longo de medio millón de mostras converte o ruído en 68.076 m de ascenso —
+27 m por quilómetro, que non é esta cidade. Con 3 m baixa a 42.112, case a resta dos
+extremos; con 5 m, a 33.159, por debaixo dela. Medido o 1 de novembro de 2026 sobre as
+mesmas teselas; ata entón este parágrafo poñía o perfil en 42.086 m, que é o de 3 m e non o
+que se garda.
 
 Un efecto secundario que é o correcto: **o camiño máis barato para subir xa non é sempre o
 mesmo que para baixar.** O enrutador colle unha rúa máis longa e máis suave para subir,
@@ -1972,6 +1974,13 @@ As 4 restantes son postes rurais que ninguén cartografou en OSM; a peor, `A Bre
 **0 m** da coordenada que publica o propio operador. E hai 8 postes que o operador nomea
 de dous xeitos entre os seus propios ids (`A Tolda (UNED)` / `(Gasolinera)`): amósase o
 maioritario.
+
+Na comprobación semanal do 26 de outubro de 2026 (`check-source.yml`, contra a web do
+operador ese día) as cinco filas que alí se miran seguían igual: itinerarios sen
+diferenzas, 47/48 na mesma orde (o mesmo sentido, a volta da 5.1, coas súas tres paradas),
+24/24 cadros, 417/417 liñas e 417/417 nomes; os postes con dous nomes eran 9. As posicións,
+as fusións e a comparación con OSM non se miden alí: piden as 1.187 páxinas de parada, vinte
+minutos no servidor do operador, e só se len cando se sospeita que un poste se moveu.
 
 O único sentido que non se publica na orde impresa é a **5.1 de volta**, con tres paradas
 movidas: `Fonte dos Ranchos 42-43`, `Rúa Doutor Gasalla 3` e `Ramón Ferreiro 26`, que a

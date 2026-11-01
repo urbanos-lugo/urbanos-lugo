@@ -169,7 +169,7 @@ first will not answer. Nothing in the browser ever calls either.
 - **Consequence:** the heights live in `src/data/walk-network.json` alongside the graph,
   delta-coded, together with what each edge climbs in each direction — the build walks
   every street's own profile at 5 m rather than subtracting the heights of its two ends,
-  because 287 edges hide ten metres or more of climb between level ends. 21.093 heights
+  because 292 edges hide ten metres or more of climb between their ends. 21.093 heights
   and 29.489 pairs of ascents for 36 KB gzipped. That file is therefore covered by
   **both** ODbL (the geometry, from OSM) and CC BY 4.0 (the heights, from the IGN), and
   both are credited.
