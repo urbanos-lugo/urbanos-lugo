@@ -2059,8 +2059,7 @@ alguén se lembre.
   `tools/lib.ts` (`POLE_SEEN_AT_OSM`) di que se viu e cando. Un check garda que sexan esas dúas.
 - **Os festivos son domingos, e caducan cada ano.** Un festivo entre semana —o 12 de
   outubro, o San Froilán— corre co cadro de domingos e festivos, que é o que o operador
-  imprime; ata o 21 de setembro de 2026 a app tratábao como laborable e ningunha varredura
-  pasaba por un. Os días están en `src/data/festivos.json`, por ano e coa súa fonte: o
+  imprime. Os días están en `src/data/festivos.json`, por ano e coa súa fonte: o
   decreto do calendario laboral galego e a resolución dos festivos locais, os dous no DOG
   (para 2026, os doce autonómicos —co 19 de marzo e o 24 de xuño no lugar do 1 de novembro
   e do 6 de decembro, que caen en domingo— e os dous de Lugo, Martes de Entroido e San
@@ -2220,15 +2219,12 @@ substituír o scraper por un lector de GTFS afectaría só a `tools/importOffici
 
 ### Que os buscadores atopen o sitio
 
-A 14 de setembro de 2026 ningún buscador devolvía o sitio. Desde o 15 está feito o que
-dependía de nós: título, descrición e canónica por pestana, pestanas como ligazóns,
-`og:image`, e o sitio verificado en Search Console e Bing co sitemap enviado. Iso era
-para o enderezo de entón. Co traslado ao `urbanos-lugo.github.io` deuse de alta o novo o
-14 de outubro: unha propiedade de prefixo de URL en Search Console, que se verificou coa
-mesma etiqueta HTML de `index.html` (o seu valor é o da conta, non o do enderezo), o
+Está feito o que depende de nós: título, descrición e canónica por pestana, pestanas como
+ligazóns, `og:image`, `robots.txt` na raíz do sitio, e o enderezo dado de alta o 14 de
+outubro de 2026 en Search Console —unha propiedade de prefixo de URL, verificada coa
+etiqueta HTML de `index.html` (o seu valor é o da conta, non o do enderezo)— e en Bing, co
 sitemap `https://urbanos-lugo.github.io/sitemap.xml`, que a proba en tempo real de Google
-le, e a importación en Bing. Na raíz do sitio, `robots.txt` xa se serve —no subcartafol vello ningún buscador o lía— e
-o nome e a icona do sitio poden ser os propios. O que segue é esperar a que o indexen.
+le. O que segue é esperar a que o indexen.
 Unha páxina por liña e por parada —que hoxe non teñen URL
 propia— queda descrita na auditoría e non se fai por agora: non hai présa por competir
 con ninguén. A auditoría, coas medidas e o plan, está en
