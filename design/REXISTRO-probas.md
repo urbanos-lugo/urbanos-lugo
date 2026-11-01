@@ -4606,3 +4606,147 @@ Pedido: rematar o que as dúas roldas anteriores deixaran aberto.
   bus móvese co reloxo, e o executor chega a ese estado noutro segundo. Sen reproducilo non
   se lle pon causa: a auditoría da CI pásao en cada push, e é a que o collerá se se repite.
 - Recortar do README a historia que xa garda este rexistro: proposto como tarefa á parte.
+
+## Rolda 55: o README, sen a súa historia — 1 de novembro de 2026
+
+Pedido: o que a rolda 54 deixaba como tarefa á parte. Que o README conte o que a app fai
+hoxe e as cifras medidas de hoxe, e que a historia quede aquí, que xa garda cada rolda.
+Cada «antes…», «ata o … de 2026…» e cada medida vella que outra máis nova substitúe era un
+sitio máis onde algo podía quedar vello, e as roldas 52 e 53 atoparon así a maioría do que
+corrixiron. Ningún comportamento nin cifra actual saíu do README; nada desta rolda reescribe
+outra: o que só contaba o README vai abaixo, nesta.
+
+### Feito
+
+O README pasa de **2.440 liñas a 2.251** (165.319 bytes a 147.813), en commits dunha sección
+cada un, na rama `readme-trim`:
+
+- **Que fai.** Taboleiro, portada, mapa, planificador, «Vou nesta», liñas e avisos: fóra cada
+  «antes» e «ata o…» (Leaflet e a rolda 43, o globo de 578 px, o «Deixar de seguirme», os
+  discos azuis, os toques medidos antes e despois, o 42.086 da rolda 54, os avisos estruturais
+  quitados o 13 de outubro, os 16 s do 6 de outubro). Queda o que fai e o porqué en presente.
+  O aviso estrutural que queda leva a data da súa última revisión, o 29 de outubro, que é a
+  de `NOTICES_REVIEWED_ON`; dicía a do 13. As alturas da franxa do aviso levan a súa data, o 8
+  de outubro (rolda 30); dicían «ese día».
+- **Datos, a regra das horas, motor, planificador, buscador e API.** A revisión do 28 de
+  setembro (rolda 23) queda como catro afirmacións de hoxe; fóra os 485, 1.077 e 966, o 5ES
+  «con destino HULA», o 17:06, os dous buses da 2, os alias da API quitados o 19 de outubro
+  (rolda 39) e as voltas do planificador (o 12 diante do 1.2, o 09:00 a HULA).
+- **Tecnoloxías.** A táboa de descarga leva só a medida do 31 de outubro (rolda 52); o
+  1.224 → 1.100 de Leaflet queda na 44. Fóra a historia de `allowBuilds`, os 256 valores sen
+  nome (rolda 37), os 2.328 achados de antes da rolda 31, os 177/179 e 326 textos cortados, os
+  259 px da rolda 42 e o executor que atopou tres máis. Quedan a comprobación de cada cousa e
+  as súas cifras de hoxe; a proba en Ubuntu 26.04 do 14 e 15 de outubro queda, porque é a
+  razón de que os traballos sigan en 24.04.
+- **Tres idiomas, móbil e escritorio, despregue.** Fóra o enderezo único de antes, os
+  ternarios, os 751 px de paneis, o píxel 1.493 (queda o 103), a caixa de catro filas, os
+  813 por minuto, a mudanza desde Cloudflare contada como mudanza (queda a razón de non ir
+  alí) e os nove días de caché sen CORS.
+- **Verificación.** O parágrafo de `measure:browser` di que mide; as cifras son as do 31 de
+  outubro (rolda 52) e, para «Vou nesta», as do 1 de novembro (rolda 53). Fóra o 29 de
+  outubro do QR, o 28 de MapLibre fronte a Leaflet (rolda 44), o 26 do *worker* do
+  planificador, o 30 de setembro e as medidas de «Vou nesta» de antes da regra nova.
+  `stress:network` leva só as do 31 de outubro.
+- **Limitacións e ideas.** Fóra o 21 de setembro dos festivos e a cronoloxía de Search
+  Console; queda o que está feito e a data de alta do enderezo novo.
+- Os parágrafos tocados, reflúidos a 90 columnas coma o resto; o último commit só move
+  espazos e unha data.
+
+### O que só contaba o README
+
+A data e o commit son os do README que o contou por primeira vez; varias son de antes de que
+existise este rexistro (29 de agosto), e as outras non caen en ningunha rolda que as diga.
+
+- 25 de agosto (`287dea0`, o primeiro README): o conxunto anterior inventaba marquesiñas e
+  bancos; os tramos cun desvío viario de máis de 4× eran 14 (hoxe 2 de 1.136); o README citaba
+  o GTFS interurbano do PAN coma se fose o urbano; o motor usaba un só punto horario por
+  sentido, porque emparellar columna a columna daba saídas ás 03:00; a 5.1 chegaba a Ramón
+  Ferreiro ás 17:06 e non ás 17:10, e o planificador ofrecía un transbordo á 1.1 das 17:09 xa
+  marchado; nas liñas de dous buses a etiqueta emparellaba laborable con fin de semana, e a 2
+  remataba o día ás 8:15; o planificador ofrecía `5.1 → 5.1` e inventaba unha «liña de
+  enlace»; «preto de min» calculaba oito liñas e quedaba coa primeira; unha reordenación
+  levaba a cabeceira da volta a HULA (Ent. Personal), 651 m atrás; `?q[]=a` tiraba o endpoint
+  cun volcado de pila; a liña 2 estaba a 2,94:1, e os fallos de contraste eran 84 de 400.
+- 26 de agosto (`5ee215f`): nove liñas publicábanse como dezaoito paradas; «só as liñas que
+  pasan por aquí» era un filtro solto nunha fila de zonas e respondía pola parada
+  equivocada; coas dez paradas máis próximas a secas, desde Fonte dos Ranchos todas eran do
+  mesmo corredor (oito liñas), e Rda. Muralla (Obras Públicas), a 535 m, serve nove máis; a
+  pestana do mapa abría nunha tableta con 751 px de paneis e ningún mapa.
+- 3 de setembro (`bca491c`, `5c2a4b2`, `69e1e80`, `a223d1c`): unha saída caía do taboleiro
+  aos 60 s e anunciaba a seguinte (nunha liña cada 90 min, de «Chegando» a «88 min» co bus a
+  tres minutos); avisos e tarifas eran unha pantalla de sete seccións, e unha nota do Concello
+  sobre asfaltado facía dicir «1» á barra (tres etiquetas e sesenta días, auditados o 15 de
+  setembro); `data/` e `src/data/` ían mesturados; a tipografía viña da CDN de Google;
+  `allowBuilds` estivo mal dúas veces —o campo `pnpm` de `package.json`, que pnpm 10 deixou de
+  ler, e `onlyBuiltDependencies`, que pnpm 11 renomeou—, e o segundo atopouse no primeiro
+  despregue; o *worker* escribiuse para Cloudflare Workers e mudouse a Deno.
+- 4 de setembro (`bfd8219`): a posición era un só `getCurrentPosition` e o punto non se movía.
+- 8 de setembro (`4461c3e`, `5931e7e`, `c34999c`): o comentario da constante 1,35 poñíaa por
+  riba da mediana; sen alturas, os tres pares de subida e baixada daban o mesmo; a subida
+  empezou cobrándose como resta dos extremos; ás 09:00 a HULA, a espera na casa contaba como
+  viaxe: «50 min, sae ás 09:00», 21 deles no poste, onde despois foi «33 min, sae ás 09:17».
+- 13 de setembro (`01877cf`, `dc1940b`): a ida das 07:30 da liña 7 seguía debuxada a 139 m da
+  súa volta das 07:45; «Vou nesta» contaba a parada máis afastada a menos de 60 m e tachaba
+  nove de golpe (na 4.1 a 20 e a 29 están a 38 m).
+- 14 de setembro (`2612040`, `71c73a6`): o taboleiro foi `aria-live` e anunciaba ata quince
+  números soltos cada minuto; Tab saía dos diálogos, e co menú aberto catorce pulsacións
+  levaban ao QR de detrás; a caché do edge de Deno serviu nove días unha resposta sen CORS
+  dun arranque sen `ALLOWED_ORIGIN`.
+- 16 de setembro (`f04e470`): co enrutador alleo había que consentir que saísen os extremos
+  de cada tramo; con `@types/react`, dos 1.581 erros baixo `--strict` quedaron 19, todos
+  reais; as filas de liñas eran `div` cun clic, e a pestana non se abría sen rato.
+- 30 de setembro (`d8215ad`): ao 200 % as marxes en `rem` levaban 172 px dun teléfono de 375 e
+  deixaban un nome en 51 px.
+- 7 de outubro (`bdbca3d`): avisos e tarifas só se alcanzaban desde a navegación.
+- 13 de outubro (`9838f3a`): Liñas, no escritorio cunha liña aberta, baixaba 156 px ata unha
+  páxina baleira; sen a regra das caixas absolutas, a auditoría daba 36 achados.
+- 19 de outubro (`cd8cbbc`): 48 elementos ían escritos a man en entre dous e vinte sitios.
+- 21 de outubro (`cfdd2f3`, `2e39c91`): o punto da posición ía no lenzo das paradas, e tocar a
+  parada onde estabas abría un globo coa precisión; pintada coa liña recta, a resposta do
+  planificador cambiaba de bus de cabeza un instante despois.
+- 26 e 27 de outubro (`7b44911`, `5930529`, `f3f4f6b`): os nomes das paradas ían sempre á
+  dereita e pisábanse, e o toque nun nome pasaba á liña ou movía o mapa; a ficha de liña só
+  tiña o cadro de hoxe, e non cambiaba á medianoite ata cambiar de liña.
+- 28 de outubro (`2e6d2fb`): os carrís paralelos movían cada vértice en JavaScript a cada
+  chanzo de zoom.
+- 29 de outubro (`3bd6411`): no escritorio o mapa baixaba coa páxina, e as liñas ían nunha
+  caixa de catro filas que lle pasaba a roda á páxina.
+- 31 de outubro (`44804bb`, `244d72e`): seis teselas opacas contaban 38 MB na caché; unha
+  resposta gardada da API volvía coma se fose de agora; «Vou nesta» ocupaba 30,5–37,0 s de fío
+  por minuto co círculo da precisión posto en cada cadro do deslizamento (1.902–1.992
+  cadros).
+
+### Medido
+
+- `pnpm run check:policy`: 26 políticas, entre elas a que mira que cada ficheiro, script,
+  orde e encabezado que nomea un documento existe. Ningún encabezado cambiou, e o índice
+  segue enteiro.
+- `git diff --word-diff -w` do commit de reflúxo: só espazos e a data do 8 de outubro.
+- **As cinco portas** sobre a rama: lint, 162 comprobacións, 26 políticas, `check:deep` (as
+  dúas varreduras enteiras) e a build.
+
+### Mirado e descartado
+
+- **A táboa de WCAG 2.2.** As celas «Arranxado» din que fallaba e que o comproba agora, e o
+  propio README define así a palabra: é a declaración de conformidade, non unha crónica.
+  Reescribir 55 filas cambiaría o que declara e non aforraría liñas.
+- **A liña 9 vista entrar na muralla o 2 de setembro.** É a proba de que os 0,93 km
+  restrinxidos son unha etiqueta que falta en OSM, non un bus que queda fóra.
+- **«Tempo real colaborativo»**, implementado e retirado: a sección de ideas existe para dicir
+  de onde parte quen as retome.
+- **A mudanza á organización do 13 de outubro.** O enderezo vello dá 404 e as copias
+  instaladas non pasan: iso é o estado de hoxe.
+- **As medidas datadas que seguen sendo as últimas**: a táboa de `reconcile` do 20 de agosto
+  e a semanal do 26 de outubro, Ubuntu 26.04 o 14 e 15 de outubro, as execucións do
+  calendario de setembro e outubro, o feed do Concello desde o *worker* o 6 e o 13 de outubro,
+  o 404 do PAN desde o 31 de outubro.
+- **A árbore de «Estrutura do repositorio»**, 190 liñas: é o estado de hoxe, non historia, e
+  quitala é outra decisión.
+- Onde o porqué dun comportamento só se podía dicir co fallo que evita, quedou en
+  condicional («debuxaría», «tacharía»), non como crónica.
+
+### Queda
+
+- As cifras de `measure:browser` do README son as do 31 de outubro nesta máquina; a rolda 54
+  mediu no executor, que é a referencia dos orzamentos, e o README non as leva. Decidir cal
+  das dúas di o README é tarefa á parte.
