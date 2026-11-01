@@ -27,7 +27,7 @@ import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, normalizeText,
 import { LANGS, translations } from '../src/i18n';
 import type { RoutePlanResult, ServiceAlert, TripSegment } from '../src/types';
 import { tripProgress, rememberPassed, AT_STOP_RADIUS_M, MISSED_AFTER_MIN, BOARDING_SOON_MIN, boardingIsNow, startTrip, advanceTrip, tripPhase, currentLeg, legTimes, shouldAskIfMissed, confirmBoarded, missedBus, packTrip, unpackTrip } from '../src/utils/tripProgress';
-import { ALARM_RADIUS_M, subscribePosition } from '../src/services/stopAlarm';
+import { ALARM_RADIUS_M, subscribePosition, watchForStop } from '../src/services/stopAlarm';
 import { poleCode, FARES, linesByNumber } from '../src/data/transitData';
 import { STALE_AFTER_MS, isSnapshotStale } from '../src/utils/snapshotAge';
 import { MAX_PER_WINDOW, MAX_PLANS_PER_WINDOW, rateLimit } from '../src/security/rateLimit';
@@ -1287,6 +1287,51 @@ await okAsync('the one position watch serves every listener, and a late one gets
     assert(watches() === 2 && later.length === 0, 'a new watch handed out a fix from the last one');
     offLater();
     offAnother();
+  } finally {
+    delete g.navigator.geolocation;
+  }
+});
+
+ok('the arrival alarm rings once and lets go of the position', () => {
+  // It kept the GPS on after ringing until the alarm was turned off or the board left, while
+  // the board showed "arrived" and nothing that used it; PRIVACY.md said it ran "until you
+  // reach one stop" (31 October 2026). Another listener keeps the watch, and its own fixes.
+  const g = globalThis as unknown as { navigator: { geolocation?: unknown } };
+  const calls = { clear: 0 };
+  let report: ((pos: { coords: { latitude: number; longitude: number; accuracy: number } }) => void) | null = null;
+  Object.defineProperty(g.navigator, 'geolocation', {
+    configurable: true,
+    value: { watchPosition: (onFix: typeof report) => ((report = onFix), 1), clearWatch: () => void calls.clear++ },
+  });
+  const clears = () => calls.clear;
+  const fix = (lat: number) => report!({ coords: { latitude: lat, longitude: -7.55, accuracy: 10 } });
+  try {
+    const stop = { lat: 43.0, lng: -7.55 };
+    const far = stop.lat + (3 * ALARM_RADIUS_M) / 111_320;
+    const rang: number[] = [];
+    const seen: number[] = [];
+    // Read through functions, as above: TypeScript narrows a length to a literal after one assert.
+    const rings = () => rang.length;
+    const heard = () => seen.length;
+    const alarm = watchForStop(stop, (d) => rang.push(d), (d) => seen.push(d), () => {});
+    fix(far);
+    assert(rings() === 0 && heard() === 1 && clears() === 0, 'the alarm rang, or let go, before the stop was near');
+    fix(stop.lat);
+    assert(rings() === 1 && clears() === 1, `at the stop the alarm rang ${rings()} times and the watch was cleared ${clears()} times`);
+    fix(far);
+    fix(stop.lat);
+    assert(rings() === 1 && heard() === 2, 'the alarm kept listening after it rang');
+    alarm.stop();
+    assert(clears() === 1, 'turning a rung alarm off cleared a watch it no longer held');
+
+    // With the map following the reader too, the alarm leaves and the map keeps its fixes.
+    const map: number[] = [];
+    const offMap = subscribePosition((f) => map.push(f.lat), () => {});
+    watchForStop(stop, () => {}, () => {}, () => {});
+    fix(stop.lat);
+    fix(far);
+    assert(clears() === 1 && map.length === 2, 'the rung alarm took the map’s watch with it');
+    offMap();
   } finally {
     delete g.navigator.geolocation;
   }

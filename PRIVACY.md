@@ -57,8 +57,8 @@ about where you are.
 The map, the alarm and the ride read one and the same watch (`src/services/stopAlarm.ts`):
 one GPS client, one permission prompt, and for the alarm and the ride one radius and one
 sound. The difference is how long it runs — the map until you press the button again, the
-alarm until you turn it off or leave that stop's board (it goes on after it has rung, to show
-how far you are), the ride until you say you have finished — and in every
+alarm until it rings, or until you turn it off or leave that stop's board, the ride until you
+say you have finished — and in every
 case it runs only while the page is open, because a web page cannot wake itself in the
 background.
 

@@ -67,14 +67,17 @@ export function subscribePosition(onFix: (fix: PositionFix) => void, onError: (r
   };
 }
 
+/** Rings once, then lets go of the position: the board shows "arrived" from then on, and a GPS kept on for nothing is battery and a location mark on the phone. */
 export function watchForStop(target: { lat: number; lng: number }, onApproach: (distanceMeters: number) => void, onDistance: (distanceMeters: number) => void, onError: (reason: AlarmFailure) => void): AlarmHandle {
   let fired = false;
   const stop = subscribePosition((fix) => {
+    if (fired) return;
     const distance = getDistanceMeters(fix.lat, fix.lng, target.lat, target.lng);
     onDistance(distance);
-    if (!fired && distance <= ALARM_RADIUS_M) {
+    if (distance <= ALARM_RADIUS_M) {
       fired = true;
       onApproach(distance);
+      stop();
     }
   }, onError);
   return { stop };
