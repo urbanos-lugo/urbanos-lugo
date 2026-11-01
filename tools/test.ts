@@ -20,7 +20,7 @@ import { apiUrl } from '../src/services/apiUrl';
 import { createHash } from 'node:crypto';
 import { buildSync } from 'esbuild';
 import { REPO_URL } from '../src/project';
-import { ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
+import { ROOT_HEAD, SITE_LANGS, SITE_PATHS, canonicalUrl, pageHead, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml, structuredData, websiteData } from '../src/seo';
 import { CACHE_TTL_MS as ALERTS_CACHE_MS, MIN_OUTBOUND_INTERVAL_MS as ALERTS_MIN_OUTBOUND_MS, extractAlertsFromHtml, extractConcelloNotices } from '../src/services/alertSyncService';
 import { clockDriftFromTimetable, lugoOffsetByRule } from '../src/utils/clock';
 import { MAX_QUERY_LENGTH, calculateRelevanceScore, matchesQuery, normalizeText, withinEditDistance } from '../src/utils/searchUtils';
@@ -2446,6 +2446,14 @@ ok('the structured data does not pass this off as the operator', () => {
   // block, and the item was closed on 13 October without it.
   const website = JSON.parse(websiteData(site));
   assert(website['@type'] === 'WebSite' && website.url === site && website.name === data.name, `the WebSite data reads ${JSON.stringify(website)}, not the app's name at the site's root`);
+  // And both are what the build writes into the head: CI builds without SITE_URL, so no
+  // built page there carries them, and these tags are the only place it can see them.
+  const injected = siteHeadTags(site)
+    .map((tag) => /^<script type="application\/ld\+json">(.*)<\/script>$/.exec(tag)?.[1])
+    .filter((json): json is string => !!json)
+    .map((json) => JSON.parse(json)['@type']);
+  assert.deepStrictEqual(injected.sort(), ['WebApplication', 'WebSite'], `the head the build writes carries structured data of types ${injected.join(', ') || 'none'}`);
+  assert(siteHeadTags(site).includes(`<link rel="canonical" href="${site}" />`), 'the head the build writes has no canonical link to the site');
 
   // robots.txt has to point at a sitemap that is actually emitted beside it.
   const robots = robotsTxt(site);

@@ -7,7 +7,7 @@ import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { CSP_META, MAP_ORIGINS } from './src/security/csp';
 import { THEME_INIT_SOURCE } from './src/security/themeInit';
-import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteUrl, sitemapXml, structuredData, websiteData } from './src/seo';
+import { SITE_LANGS, SITE_PATHS, pageHtml, robotsTxt, siteHeadTags, siteUrl, sitemapXml } from './src/seo';
 import { pathFor } from './src/routes';
 
 // GitHub Pages project sites live under /<repo>/, so every asset URL needs that prefix.
@@ -92,27 +92,13 @@ const emitSeoFiles: Plugin = {
   },
 };
 
-/**
- * The canonical link, the preview image and the structured data, which all need the real
- * address. The image is absolute because the apps that unfurl a pasted link do not
- * resolve a relative one.
- */
+/** The tags that need the real address (`siteHeadTags`, in seo.ts), when the build is given one. */
 const injectSeoTags: Plugin = {
   name: 'inject-seo-tags',
   apply: 'build',
   transformIndexHtml(html) {
     if (!site) return html;
-    return beforeThemeColor(
-      html,
-      [
-        `<link rel="canonical" href="${site}" />`,
-        `<meta property="og:image" content="${site}icon-512.png" />`,
-        `<meta property="og:image:width" content="512" />`,
-        `<meta property="og:image:height" content="512" />`,
-        `<script type="application/ld+json">${websiteData(site)}</script>`,
-        `<script type="application/ld+json">${structuredData(site)}</script>`,
-      ].join('\n    '),
-    );
+    return beforeThemeColor(html, siteHeadTags(site).join('\n    '));
   },
 };
 

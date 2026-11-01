@@ -19,6 +19,23 @@ export function siteUrl(raw: string | undefined): string | null {
   }
 }
 
+/**
+ * What the build writes into the home page's head once it knows the real address: the
+ * canonical link, the preview image (absolute, because the apps that unfurl a pasted link do
+ * not resolve a relative one) and the structured data. Here and not in vite.config.ts so the
+ * suite reads the same tags: CI builds without SITE_URL, and its build carries none of them.
+ */
+export function siteHeadTags(site: string): string[] {
+  return [
+    `<link rel="canonical" href="${site}" />`,
+    `<meta property="og:image" content="${site}icon-512.png" />`,
+    `<meta property="og:image:width" content="512" />`,
+    `<meta property="og:image:height" content="512" />`,
+    `<script type="application/ld+json">${websiteData(site)}</script>`,
+    `<script type="application/ld+json">${structuredData(site)}</script>`,
+  ];
+}
+
 /** `WebSite` with the name, on the home page: what Google takes a result's site name from (NOTAS, Pendente 5). */
 export function websiteData(site: string): string {
   return JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: JSON.parse(structuredData(site)).name, url: site });
