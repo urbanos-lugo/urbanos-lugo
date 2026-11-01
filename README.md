@@ -172,18 +172,19 @@ enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres c
 que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras están en
 [`design/DECIDIDO.md`](design/DECIDIDO.md).
 
-Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á
-**dereita do seu sentido de marcha**, como circulan os buses. Onde varias comparten
-calzada van **en paralelo**, cun carril fixo por liña: 2 px a zoom 14, 3 desde o 15, ata
-catro carrís por sentido —máis alá compárteno, e o toque sobre o corredor lista todas as
-que pasan—; por debaixo do 14 o corredor é unha soa trenza. O desprazamento faino o
-renderizador en cada fotograma (`line-offset`). A liña escollida vai sempre polo bordo, coas súas paradas enriba, e os seus dous sentidos van separados a calquera
-zoom, tamén onde o resto do feixe aínda vai nunha soa trenza. Cunha liña escollida, os seus dous sentidos levan
-**frechas de sentido** cada 120 px de pantalla, do mesmo trazo e cor que a liña; por
-debaixo do zoom 13 non se amosan, e con varias liñas escollidas só desde o 16, que é onde
-os seus carrís xa se distinguen e unha frecha se lle pode atribuír á súa liña. As paradas
-son un disco a 8,4:1 sobre o chan nos dous temas: nítidas, e por debaixo da liña que as
-serve, que é a forma do mapa.
+Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á **dereita
+do seu sentido de marcha**, como circulan os buses. Onde varias comparten calzada van **en
+paralelo**, cun carril fixo por liña: 2 px a zoom 14, 3 desde o 15, ata catro carrís por
+sentido —máis alá compárteno, e o toque sobre o corredor lista todas as que pasan—; por
+debaixo do 14 o corredor é unha soa trenza. O desprazamento faino o renderizador en cada
+fotograma (`line-offset`). A liña escollida vai sempre polo bordo, coas súas paradas
+enriba, e os seus dous sentidos van separados a calquera zoom, tamén onde o resto do feixe
+aínda vai nunha soa trenza. Cunha liña escollida, os seus dous sentidos levan **frechas de
+sentido** cada 120 px de pantalla, do mesmo trazo e cor que a liña; por debaixo do zoom 13
+non se amosan, e con varias liñas escollidas só desde o 16, que é onde os seus carrís xa
+se distinguen e unha frecha se lle pode atribuír á súa liña. As paradas son un disco a
+8,4:1 sobre o chan nos dous temas: nítidas, e por debaixo da liña que as serve, que é a
+forma do mapa.
 
 Os trazados **seguen a rede viaria real**: cada
 itinerario está axustado ás rúas no momento de xerar os datos, non interpolado entre
@@ -331,9 +332,9 @@ A segunda é a que importa, porque é a poboación á que se lle aplica a estima
 túa primeira parada, os transbordos, e a última parada ata onde vas. Aí a constante de
 1,35 (`src/utils/places.ts`) queda **na mediana**.
 
-O que ningunha constante colle é a cola: **×32,96 no peor caso**, dous postes a poucas decenas de
-metros cun quilómetro de camiño entre eles porque hai unha vía polo medio. Por iso os
-tramos a pé non dependen dunha.
+O que ningunha constante colle é a cola: **×32,96 no peor caso**, dous postes a poucas
+decenas de metros cun quilómetro de camiño entre eles porque hai unha vía polo medio. Por
+iso os tramos a pé non dependen dunha.
 
 Cando **non hai camiño peonil**, a opción de ir andando retírase en vez de quedar cunha
 estimación. Nas paradas da N-VI en Ombreiro esa estimación sería un paseo de seis
@@ -466,11 +467,12 @@ meu bus» pregúntase de pé nunha parada, e «canto custa o bono» lese unha ve
 **Avisos** (`/avisos`) trae os avisos de servizo do operador, e por separado —sen contar
 para o distintivo da navegación— os **cortes e desvíos que anuncia o Concello**: as notas
 de prensa da etiqueta *Tráfico* da última semana cuxo titular anuncia un corte, un desvío
-ou unha restrición. Unha nota de prensa municipal non é unha incidencia do servizo. Ademais, os avisos
-estruturais escritos neste proxecto, cada un coa súa data de revisión. Revísanse cada mes
-contra as súas fontes: «Check the sources» falla o luns en que a última revisión pasa das
-cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses. Queda un, a
-cabeceira das liñas 7, 8, 9 e 12 no casco histórico, revisado o 29 de outubro de 2026.
+ou unha restrición. Unha nota de prensa municipal non é unha incidencia do servizo.
+Ademais, os avisos estruturais escritos neste proxecto, cada un coa súa data de revisión.
+Revísanse cada mes contra as súas fontes: «Check the sources» falla o luns en que a última
+revisión pasa das cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses.
+Queda un, a cabeceira das liñas 7, 8, 9 e 12 no casco histórico, revisado o 29 de outubro
+de 2026.
 
 Cando o operador escribe un aviso liña a liña na súa portada —o do San Froilán de 2026
 chegou así, e a campá só dicía «Cambios en las líneas por San Froilán»—, a app le esa
@@ -513,9 +515,10 @@ un aviso que non nomea días non remata así. E Ruta le o aviso da noite na que 
 viaxe, non o do momento da pregunta: á unha da madrugada do 13 a noite aínda é a do 12,
 pero o primeiro bus da mañá xa para en Praza Bretaña.
 
-Medido ese día nun navegador co reloxo posto en noites e días de festa, nun teléfono de
-375 px: a franxa pregada ocupa 46 px, 108 cunha parada pechada nela e 190 de noite, coas
-horas despregadas. En Ruta, 62 px de día. Fóra dos días do aviso, nada se pecha nin se risca.
+Medido o 8 de outubro de 2026 nun navegador co reloxo posto en noites e días de festa, nun
+teléfono de 375 px: a franxa pregada ocupa 46 px, 108 cunha parada pechada nela e 190 de
+noite, coas horas despregadas. En Ruta, 62 px de día. Fóra dos días do aviso, nada se
+pecha nin se risca.
 
 A consulta faise **desde o servidor** (o navegador non pode por CORS), contra buslugo.com e
 o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase a copia que
@@ -554,8 +557,8 @@ Non hai datos escritos a man. `stops.json` e `lines.json` xéranse a partir de:
 
 4. **OpenStreetMap** — cartografía base do mapa e, vía Overpass, os equipamentos
    levantados en cada poste (marquesiña, banco). O operador non publica eses datos; 399
-   das 417 paradas están emparelladas cun poste de OSM —398 a menos de 45 m e unha polo nome— e o que ninguén levantou queda como `null`,
-   non como "non".
+   das 417 paradas están emparelladas cun poste de OSM —398 a menos de 45 m e unha polo
+   nome— e o que ninguén levantou queda como `null`, non como "non".
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/datos-dark.png">
@@ -905,8 +908,9 @@ JSON e volver correr ese comando, nunca a imaxe.
 `data/stop-amenities.json` non se importan en ningures da aplicación: só os len as
 ferramentas. Non son restos.
 
-Viven en `data/` e non en `src/data/` precisamente por iso: `src/data/` é o que se envía, `data/` é o que alimenta a build, e unha comprobación falla se un dos
-segundos volve aparecer no primeiro ou se algo de `src/` o nomea.
+Viven en `data/` e non en `src/data/` precisamente por iso: `src/data/` é o que se envía,
+`data/` é o que alimenta a build, e unha comprobación falla se un dos segundos volve
+aparecer no primeiro ou se algo de `src/` o nomea.
 
 Son **instantáneas do que dixeron fontes de terceiros**, e están commiteadas por tres
 razóns. Regeneralas require que buslugo.com, Overpass e OSRM estean en pé e devolvan o
@@ -1022,11 +1026,12 @@ queda acoutado polo tramo en vez de acumularse ao longo de todo o percorrido. M�
 último punto horario xa non hai contra que interpolar, e manda o tempo de estrada.
 
 Encadear dous puntos non é gratuíto: unha liña cíclica imprime cada punto unha soa vez
-para toda a volta, e a mesma rúa adoita ter un poste por sentido, así que dúas filas
-poden nomear paradas que ningunha expedición visita nesa orde. Emparellalas columna a
-columna produciría saídas ás 03:00, así que o par compróbase: o oco impreso ten que ser positivo, plausible como un tramo, e da mesma orde
-que o tempo medido por estrada. Un desaxuste de ida/volta falla iso por decenas de
-minutos — a liña 5.1 imprime 40 min nun tramo que a estrada di que son 18 — e cae fóra.
+para toda a volta, e a mesma rúa adoita ter un poste por sentido, así que dúas filas poden
+nomear paradas que ningunha expedición visita nesa orde. Emparellalas columna a columna
+produciría saídas ás 03:00, así que o par compróbase: o oco impreso ten que ser positivo,
+plausible como un tramo, e da mesma orde que o tempo medido por estrada. Un desaxuste de
+ida/volta falla iso por decenas de minutos — a liña 5.1 imprime 40 min nun tramo que a
+estrada di que son 18 — e cae fóra.
 
 Efecto medible: a 5.1 saíndo de Avda. Américas ás 17:00 chega a Ramón Ferreiro ás
 **17:10**, como di o cadro.
@@ -1079,8 +1084,9 @@ Regras que evitan suxestións absurdas ou perigosas:
   interpolada. Pasarse de largo só empurra a suxestión ao seguinte bus, quedarse curto
   deixa a alguén na beirarrúa.
 - **Cando saír da casa.** Cada opción amosa `HH:MM → ~HH:MM`, e a primeira é a hora de
-  saír da orixe: a espera antes do primeiro bus pásase na casa, non na parada. Na parada quedan os mesmos
-  dous ou catro minutos de marxe que se lle dan a un transbordo, e pola mesma razón.
+  saír da orixe: a espera antes do primeiro bus pásase na casa, non na parada. Na parada
+  quedan os mesmos dous ou catro minutos de marxe que se lle dan a un transbordo, e pola
+  mesma razón.
 - **Ordénanse por cando chegas, non por canto duran.** Coa saída libre de moverse as dúas
   cousas deixan de ser a mesma: o traxecto máis curto de Fonte dos Ranchos a HULA é un
   5ES de 22 minutos que sae ás 14:08, e preguntando ás 09:00 encabezaría a lista. O que se
@@ -1317,12 +1323,12 @@ workbox-build e só ao compilar, porque non ten arranxo publicado.
 O servidor normaliza todo o que chega pola query string, devolve JSON en caso de erro en
 lugar da páxina de erro de Express, limita o corpo das peticións a 32 KB e envía
 `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`,
-`Cross-Origin-Opener-Policy` e `Cross-Origin-Resource-Policy`, e non `X-Powered-By`. Os nomes que se interpolan en HTML
-nos globos do mapa escápanse. As lecturas de buslugo.com, do feed do Concello e da páxina
-do poste non seguen redireccións. No navegador, o que chega da API pásase pola mesma
-lectura ca a copia de cada hora: texto onde se espera texto, e ligazóns só a buslugo.com e
-concellodelugo.gal. Unha API comprometida pode equivocarse nos avisos, pero non romper a
-pantalla nin levar a outro sitio.
+`Cross-Origin-Opener-Policy` e `Cross-Origin-Resource-Policy`, e non `X-Powered-By`. Os
+nomes que se interpolan en HTML nos globos do mapa escápanse. As lecturas de buslugo.com,
+do feed do Concello e da páxina do poste non seguen redireccións. No navegador, o que
+chega da API pásase pola mesma lectura ca a copia de cada hora: texto onde se espera
+texto, e ligazóns só a buslugo.com e concellodelugo.gal. Unha API comprometida pode
+equivocarse nos avisos, pero non romper a pantalla nin levar a outro sitio.
 
 ### Accesibilidade
 
@@ -1349,10 +1355,11 @@ tres mapas levan nome e controis no idioma da interface, porque o lenzo do mapa 
 parada de tabulación e os seus botóns —o zoom, o compás, o × dun globo— saen en inglés se
 ninguén llos traduce.
 
-**Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 12 px, e o número
-que leva é o único que hai que ler dun golpe de vista. As vinte e catro pasan o mínimo de
-WCAG AA para texto pequeno (4,5:1): cinco van escurecidas o mínimo que pasa a proba, entre un 10% e un 22%, mantendo o ton, e `pnpm test` non deixa entrar unha
-cor ilexible.
+**Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 12 px, e o
+número que leva é o único que hai que ler dun golpe de vista. As vinte e catro pasan o
+mínimo de WCAG AA para texto pequeno (4,5:1): cinco van escurecidas o mínimo que pasa a
+proba, entre un 10% e un 22%, mantendo o ton, e `pnpm test` non deixa entrar unha cor
+ilexible.
 
 **Obxectivos táctiles e tipografía.** WCAG 2.2 pide 24 px ou espazo arredor (2.5.8), e
 cúmpreo todo o que se toca: `audit:browser` mídeo en cada estado. A barra desta casa é
@@ -1612,11 +1619,11 @@ vista previa cando ven un 404 — tirando xusto as etiquetas `og:` que existen p
 enlaces se comparten. Son seis copias de 4,6 KB, e cada unha leva o seu título, a súa
 descrición e a súa canónica (`src/seo.ts`). Cunha excepción: a raíz *é* a pestana de
 paradas e `/paradas/` debuxa a mesma pantalla, así que `/paradas/` apunta á raíz como
-canónica e non vai no sitemap, que queda en seis entradas por idioma, dezaoito en total. As pestanas son
-ligazóns (`<a href>`) que un rastrexador pode seguir, o sitemap e «copiar ligazón» usan a
-barra final para non pasar polo 301 de Pages, e a `og:image` é o icono de 512 px. Os
-slugs saen de `src/routes.ts`, que é a única lista: dela len o enrutador, o sitemap e a
-build.
+canónica e non vai no sitemap, que queda en seis entradas por idioma, dezaoito en total.
+As pestanas son ligazóns (`<a href>`) que un rastrexador pode seguir, o sitemap e «copiar
+ligazón» usan a barra final para non pasar polo 301 de Pages, e a `og:image` é o icono de
+512 px. Os slugs saen de `src/routes.ts`, que é a única lista: dela len o enrutador, o
+sitemap e a build.
 
 O único que cambia sen servidor son os **avisos oficiais**: o navegador non pode ler
 buslugo.com por CORS, así que se usa a copia que deixa a tarefa programada e
@@ -1669,15 +1676,14 @@ Fai falta, unha vez: un token de organización de Deno Deploy (na consola, *Sett
 Organization tokens*) como segredo `DENO_DEPLOY_TOKEN` do ambiente `deno-deploy`, que en
 *Settings → Environments* só deixa despregar a `main` (un segredo do repositorio co mesmo
 nome tamén chega ao job), e a organización como variable `DENO_DEPLOY_ORG`. O resto ponno
-o workflow: crea a app
-`urbanos-lugo-api` se non existe e fixa no seu ambiente `ALLOWED_ORIGIN` co enderezo do
-sitio (`https://<usuario>.github.io`, derivado do dono do repositorio; para este,
-`https://urbanos-lugo.github.io`) — é o único que
-poderá chamalo. Sen ese valor o worker responde sen cabeceira de CORS e o navegador
-rexéitao: falla pechado, e tampouco garda esa resposta en ningunha caché, que a seguiría
-servindo despois de posta a variable. Tamén fixa `DEPLOY_SHA`, e `GET /api/version` devólveo: «está xa o worker
-novo?» é un `curl`. A páxina leva o mesmo dato en `<meta name="build">` cando a constrúe
-o workflow.
+o workflow: crea a app `urbanos-lugo-api` se non existe e fixa no seu ambiente
+`ALLOWED_ORIGIN` co enderezo do sitio (`https://<usuario>.github.io`, derivado do dono do
+repositorio; para este, `https://urbanos-lugo.github.io`) — é o único que poderá chamalo.
+Sen ese valor o worker responde sen cabeceira de CORS e o navegador rexéitao: falla
+pechado, e tampouco garda esa resposta en ningunha caché, que a seguiría servindo despois
+de posta a variable. Tamén fixa `DEPLOY_SHA`, e `GET /api/version` devólveo: «está xa o
+worker novo?» é un `curl`. A páxina leva o mesmo dato en `<meta name="build">` cando a
+constrúe o workflow.
 
 E na build do sitio, a variable de repositorio `API_ORIGIN` co enderezo do despregue. Iso
 fai dúas cousas á vez: as peticións van alí en lugar de a carón da páxina, e ese mesmo
@@ -1967,68 +1973,67 @@ orzamento de 1 s. Non era o código: alternando na mesma máquina e no mesmo cua
 build de `62bc5b7`, a do 26 de outubro, e a de `45be8fd`, a de hoxe, saíron 548–1.182 ms e
 542–802 ms. É unha medida que varía o dobre dunha volta a outra, e só vale alternando.
 
-E «Vou nesta», medido o 1 de novembro de 2026 (rolda 53): o punto do lector salta a cada fix
-cando os fixes chegan seguidos, coma nun bus, e só se desliza despois dunha pausa de dous
-segundos, así que a páxina pide 192 cadros por minuto e o fío queda ocupado 10,3–13,7 s por
-minuto. Segue por riba dos 5 s do orzamento, e o perfil di de que: o mapa debuxándose no
-SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun teléfono fai a GPU.
-Con movemento reducido (medido o 31 de outubro) baixa a 4,4–5,2 s, pero alí cambian máis
-cousas ca o punto.
-`audit:browser` mide a app contra as WCAG 2.2 nos niveis A e AA, estado por estado. Son
-corenta e un estados —a portada baleira e a dunha persoa con paradas gardadas, a busca con
-e sen resultados, o taboleiro (por hora, por liña, a outra hora e aberto desde o QR), «preto
-de min» con permiso e sen el, o menú, os favoritos, o lector de QR e o seu erro, as liñas, o
-mapa cos buses e coa ficha dunha parada, o planificador baleiro, coas suxestións abertas,
-planificado, coas rutas recentes borradas, a outra hora, sen ruta e sen GPS, a viaxe agardando o bus e xa nel (o reloxo da
-páxina pasa da saída e respóndese «Si, vou nel»), os avisos con incidencias,
-sen elas, comprobando, co servidor caído e sen rede, as tarifas, e a noite na portada, nunha
-parada e no planificador—, cada un alcanzado como o alcanza unha
-persoa, nun teléfono e nun escritorio, en galego, castelán e inglés e nos dous temas. O
-reloxo da páxina vai fixado (un martes ás 09:12, e ás 03:00 para a noite), as dúas respostas
-da API son fixtures e calquera petición a outro servidor rexéitase no propio navegador: unha
-execución non le o sitio de ninguén e dá o mesmo a calquera hora. En cada estado corre
-axe-core, todas as regras WCAG 2.0, 2.1 e 2.2 de nivel A e AA, e as sondas da casa: o
-contraste de cada texto (as cores en `oklch()` resólvense pintándoas nun lenzo, a opacidade
-herdada desconta, e o texto tecleado e o *placeholder* dun campo mídense polo seu
-pseudoelemento); o nome accesible de cada control, e que conteña as palabras que amosa
-(2.5.3, que axe deixa fóra); os obxectivos de 24 px ou o seu espazo (2.5.8), e os 44 px que
-son o listón desta casa, que se imprimen sen bloquear; o `lang`, un só `<h1>`, o título, a
-mesma navegación na mesma orde (3.2.3), o que un estado ten que anunciar (4.1.3) e a consola
-en cada carga fresca; o desbordamento lateral e vertical, do documento e de `<main>`, que é
-onde as pantallas fan scroll; que ningunha caixa absoluta dun panel con scroll propio se
-coloque contra `<main>`, que así fai scroll unha segunda vez; e o texto que non se ve
-—cortado cunha elipse ou cun `line-clamp`, saíndo da súa caixa
-ou pasado do bordo— a 320 px de ancho (1.4.10), co texto ao 200 %, que é o que fai o axuste
-«texto máis grande» dun móbil, e no escritorio co zoom do navegador ao 200 % (1.4.4), e cos
-espazados de texto de 1.4.12. Despois pulsa Tab de verdade por cada estado: o foco ten que
-verse (2.4.7), o contorno con 3:1 (1.4.11), sen quedar enteiro detrás doutra cousa nin fóra
-da pantalla (2.4.11), na orde na que se debuxa (1.3.2, 2.4.3), e chegar a todo o que se pode
-enfocar sen quedar atrapado (2.1.1, 2.1.2); nos diálogos, Tab non sae deles, o foco non se
-move só mentres ninguén preme nada, e Escape pecha e devolve o foco ao que os abriu. Un estado
-de diálogo sen o diálogo aberto é un achado. E o que un estado non amosa: os rótulos que o
-mapa amosa ao pasar o rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), e
-o dunha capa (un percorrido, unha parada) non abre co punteiro enriba dun bus ou dunha
-ventá. O mapa ten que moverse
-sen arrastrar (2.5.7), un botón premido ten que verse premido coas cores forzadas do sistema,
-con `prefers-reduced-motion` nada segue animándose, e a app ten que debuxarse co axuste «non
-permitir que os sitios garden datos», que fai que ler `localStorage` lance un erro. Sae con erro ante
-calquera achado WCAG, calquera estado que non alcanzou e calquera comprobación que non
-demostrou nada. `stress:network` xoga
-o outro lado de `stress:http`: non o servidor con carga, senón a pantalla cando a rede é
-o problema, que nunha parada é o normal. Catro formas, coa pila de rede do propio
-navegador: a API non contesta nunca, contesta 500, contesta seis segundos tarde, e non hai
-rede ningunha nunha segunda visita. O listón: o taboleiro nunca espera pola API, a
-pantalla de avisos nunca queda nunha lista baleira —que se le como «non hai incidencias»—
-máis dos dous segundos que o *hook* concede antes de amosar a copia gardada coa súa data,
-unha resposta tardía substitúe esa copia, e sen rede sae a copia que gardou o *service
-worker* coa build e o taboleiro sae da caché. Medido o 31 de outubro de 2026: a copia aos
-2.094 ms coa API colgada e aos 128 con erro, a resposta tardía aos 4.013, a copia sen rede
-aos 55, e o taboleiro en 2–171 ms. `measure:browser` e `stress:network` non son portas de CI: os orzamentos
-son relativos á máquina. `audit:browser` si o é desde a rolda 31: o que mide non depende da
-máquina, e corre sobre a build en cada push menos a `main` e en cada proposta, sen rede ningunha (as outras orixes
-rexeitadas, a API con fixtures, o reloxo fixado). `.github/workflows/measure.yml` execútaos
-os tres os luns e garda a saída como artefacto, para que unha regresión non dependa de que
-alguén se lembre.
+E «Vou nesta», medido o 1 de novembro de 2026 (rolda 53): o punto do lector salta a cada
+fix cando os fixes chegan seguidos, coma nun bus, e só se desliza despois dunha pausa de
+dous segundos, así que a páxina pide 192 cadros por minuto e o fío queda ocupado 10,3–13,7
+s por minuto. Segue por riba dos 5 s do orzamento, e o perfil di de que: o mapa
+debuxándose no SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun
+teléfono fai a GPU. Con movemento reducido (medido o 31 de outubro) baixa a 4,4–5,2 s,
+pero alí cambian máis cousas ca o punto. `audit:browser` mide a app contra as WCAG 2.2 nos
+niveis A e AA, estado por estado. Son corenta e un estados —a portada baleira e a dunha
+persoa con paradas gardadas, a busca con e sen resultados, o taboleiro (por hora, por
+liña, a outra hora e aberto desde o QR), «preto de min» con permiso e sen el, o menú, os
+favoritos, o lector de QR e o seu erro, as liñas, o mapa cos buses e coa ficha dunha
+parada, o planificador baleiro, coas suxestións abertas, planificado, coas rutas recentes
+borradas, a outra hora, sen ruta e sen GPS, a viaxe agardando o bus e xa nel (o reloxo da
+páxina pasa da saída e respóndese «Si, vou nel»), os avisos con incidencias, sen elas,
+comprobando, co servidor caído e sen rede, as tarifas, e a noite na portada, nunha parada
+e no planificador—, cada un alcanzado como o alcanza unha persoa, nun teléfono e nun
+escritorio, en galego, castelán e inglés e nos dous temas. O reloxo da páxina vai fixado
+(un martes ás 09:12, e ás 03:00 para a noite), as dúas respostas da API son fixtures e
+calquera petición a outro servidor rexéitase no propio navegador: unha execución non le o
+sitio de ninguén e dá o mesmo a calquera hora. En cada estado corre axe-core, todas as
+regras WCAG 2.0, 2.1 e 2.2 de nivel A e AA, e as sondas da casa: o contraste de cada texto
+(as cores en `oklch()` resólvense pintándoas nun lenzo, a opacidade herdada desconta, e o
+texto tecleado e o *placeholder* dun campo mídense polo seu pseudoelemento); o nome
+accesible de cada control, e que conteña as palabras que amosa (2.5.3, que axe deixa
+fóra); os obxectivos de 24 px ou o seu espazo (2.5.8), e os 44 px que son o listón desta
+casa, que se imprimen sen bloquear; o `lang`, un só `<h1>`, o título, a mesma navegación
+na mesma orde (3.2.3), o que un estado ten que anunciar (4.1.3) e a consola en cada carga
+fresca; o desbordamento lateral e vertical, do documento e de `<main>`, que é onde as
+pantallas fan scroll; que ningunha caixa absoluta dun panel con scroll propio se coloque
+contra `<main>`, que así fai scroll unha segunda vez; e o texto que non se ve —cortado
+cunha elipse ou cun `line-clamp`, saíndo da súa caixa ou pasado do bordo— a 320 px de
+ancho (1.4.10), co texto ao 200 %, que é o que fai o axuste «texto máis grande» dun móbil,
+e no escritorio co zoom do navegador ao 200 % (1.4.4), e cos espazados de texto de 1.4.12.
+Despois pulsa Tab de verdade por cada estado: o foco ten que verse (2.4.7), o contorno con
+3:1 (1.4.11), sen quedar enteiro detrás doutra cousa nin fóra da pantalla (2.4.11), na
+orde na que se debuxa (1.3.2, 2.4.3), e chegar a todo o que se pode enfocar sen quedar
+atrapado (2.1.1, 2.1.2); nos diálogos, Tab non sae deles, o foco non se move só mentres
+ninguén preme nada, e Escape pecha e devolve o foco ao que os abriu. Un estado de diálogo
+sen o diálogo aberto é un achado. E o que un estado non amosa: os rótulos que o mapa amosa
+ao pasar o rato teñen que quedar baixo o punteiro e irse con Escape (1.4.13), e o dunha
+capa (un percorrido, unha parada) non abre co punteiro enriba dun bus ou dunha ventá. O
+mapa ten que moverse sen arrastrar (2.5.7), un botón premido ten que verse premido coas
+cores forzadas do sistema, con `prefers-reduced-motion` nada segue animándose, e a app ten
+que debuxarse co axuste «non permitir que os sitios garden datos», que fai que ler
+`localStorage` lance un erro. Sae con erro ante calquera achado WCAG, calquera estado que
+non alcanzou e calquera comprobación que non demostrou nada. `stress:network` xoga o outro
+lado de `stress:http`: non o servidor con carga, senón a pantalla cando a rede é o
+problema, que nunha parada é o normal. Catro formas, coa pila de rede do propio navegador:
+a API non contesta nunca, contesta 500, contesta seis segundos tarde, e non hai rede
+ningunha nunha segunda visita. O listón: o taboleiro nunca espera pola API, a pantalla de
+avisos nunca queda nunha lista baleira —que se le como «non hai incidencias»— máis dos
+dous segundos que o *hook* concede antes de amosar a copia gardada coa súa data, unha
+resposta tardía substitúe esa copia, e sen rede sae a copia que gardou o *service worker*
+coa build e o taboleiro sae da caché. Medido o 31 de outubro de 2026: a copia aos 2.094 ms
+coa API colgada e aos 128 con erro, a resposta tardía aos 4.013, a copia sen rede aos 55,
+e o taboleiro en 2–171 ms. `measure:browser` e `stress:network` non son portas de CI: os
+orzamentos son relativos á máquina. `audit:browser` si o é desde a rolda 31: o que mide
+non depende da máquina, e corre sobre a build en cada push menos a `main` e en cada
+proposta, sen rede ningunha (as outras orixes rexeitadas, a API con fixtures, o reloxo
+fixado). `.github/workflows/measure.yml` execútaos os tres os luns e garda a saída como
+artefacto, para que unha regresión non dependa de que alguén se lembre.
 
 ---
 
