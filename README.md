@@ -1508,9 +1508,7 @@ castelán en `/es/…` e o inglés en `/en/…`, cada un coas súas palabras (`/
 tamén abre a pestana, e a app reescribe o enderezo. Cada copia leva o `lang`, o título e a
 descrición no seu idioma, a súa canónica e as outras dúas como alternativas (`hreflang`,
 co galego como `x-default`), e `sitemap.xml` lista as dezaoito. Así un buscador pode
-amosar a cada quen o resultado no idioma en que buscou. Antes había un só enderezo:
-Google lía a páxina cun navegador en inglés, a app seguía o navegador, e o resultado saía
-cun título en inglés sobre unha descrición en galego.
+amosar a cada quen o resultado no idioma en que buscou.
 
 O enderezo decide o idioma: unha ligazón compartida ábrese no idioma en que se copiou, e
 cambiar de idioma no menú cambia o enderezo sen engadir un paso ao historial. Nun enderezo
@@ -1525,10 +1523,6 @@ precaché: sen rede, a navegación cae en `index.html` e a app le o idioma do en
 Un dicionario por idioma en `src/i18n/`, sen librería. O galego é a fonte e os outros
 dous están tipados contra el (`type Dict = typeof gl`), así que **unha chave que falte
 ou sobre é un erro de compilación**, non un burato na pantalla.
-
-Isto substituíu doce bloques `{gl, es}` dentro dos compoñentes e **trinta e cinco
-ternarios** `lang === 'gl' ? a : b`. Eses ternarios eran o motivo real de facelo: cun
-terceiro idioma devolven castelán en silencio, sen erro e sen aviso.
 
 O motor tamén escribe prosa ("sube á Liña 5.1 e baixa tras 25 paradas"), así que recibe
 o idioma como parámetro en lugar de lelo dunha variable global. E as datas fórmanse con
@@ -1560,27 +1554,23 @@ Cada pestana garda o que se deixou nela, e tocar outra vez a pestana na que se e
 súa primeira pantalla, sen ir á esquina de arriba polo «volver».
 
 Non hai que rolar para facer o que se veu facer. O **mapa** vai primeiro e ocupa 62vh,
-coa fila de filtros asomando por debaixo: antes a barra lateral apilábase enriba e a
-pestana do mapa abría con 751 px de paneis e ningún mapa. Iso é nunha tableta; nun
-teléfono o mapa enche o oco entre as barras, tamén de lado. Co teléfono de lado collía a
-tarxeta da tableta, porque só se miraba o ancho: 378 px de mapa nunha pantalla de 222, co
-botón de localizarse 157 px por debaixo do bordo e o zoom 150. A tarxeta vai agora onde
-cabe, polo menos 640 × 576 px. Na **ruta**, o resumo —minutos,
+coa fila de filtros asomando por debaixo. Iso é nunha tableta, e só onde a tarxeta cabe,
+polo menos 640 × 576 px; nun teléfono o mapa enche o oco entre as barras, tamén de lado.
+Na **ruta**, o resumo —minutos,
 saída, chegada— vai antes das alternativas e do mapa; ao responder, o formulario prégase
 a unha liña co traxecto e os destinos rápidos retíranse, porque son para escoller, non
 para ler unha resposta. A pantalla abre cun traxecto de exemplo xa calculado, que en
 escritorio ensina o que fai a ferramenta e no móbil agarda a que preguntes.
 
-Medido a 390 px: a resposta pasou do píxel 1.493 ao 103, e a pantalla de ruta de 4,61
-a 3,18 pantallas de alto. O que queda é o itinerario paso a paso, que é unha lista.
+Medido a 390 px: a resposta empeza no píxel 103, e a pantalla de ruta mide 3,18 pantallas
+de alto. O que queda é o itinerario paso a paso, que é unha lista.
 
 **Escritorio (`lg` en diante).** Rail esquerdo fixo con os catro destinos etiquetados e,
 ao pé, avisos, tarifas, tema e idioma. Paradas e Liñas son dous paneis con **scroll
 independente**: escoller unha parada non che fai perder o sitio na lista. No planificador
 o formulario queda fixo mentres o itinerario baixa ao lado. A barra inferior desaparece.
 No **mapa** a páxina non baixa: o mapa enche o alto que queda, e os controis do lado
-baixan sós, coas liñas nunha soa lista; antes baixaba a páxina co mapa dentro, e as liñas
-ían nunha caixa de catro filas que, ao acabar, lle pasaba a roda á páxina. Nunha xanela
+baixan sós, coas liñas nunha soa lista. Nunha xanela
 máis baixa ca o chan do mapa, 380 px, volve baixar a páxina.
 
 ---
