@@ -52,19 +52,23 @@ export function readerMark(map: MapLibre, colors: MapColors): ReaderMark {
     if (!map.getLayer('app-accuracy'))
       placeLayer(map, { id: 'app-accuracy', type: 'fill', source: SOURCE, paint: { 'fill-color': colors.userFill, 'fill-opacity': DRAW.me.accuracyFill, 'fill-outline-color': colors.userStroke } });
   };
-  // Each fix slides the dot there instead of jumping to it, from wherever the last slide had
-  // got to; at once for a reader who asked for less motion, and for the first fix. The circle
-  // goes to the fix at once: set on every frame of the slide, a ride with a fix a second kept
-  // the page's thread busy 30–37 s a minute at 6x CPU (REXISTRO, round 52).
+  // A fix after a quiet spell slides the dot there instead of jumping to it, from wherever the
+  // last slide had got to; at once for the first fix, for a reader who asked for less motion,
+  // and for the steady stream of a GPS on the move (DRAW.me.slideAfter). The circle goes to the
+  // fix at once: set on every frame of the slide, a ride with a fix a second kept the page's
+  // thread busy 30–37 s a minute at 6x CPU (REXISTRO, round 52).
   let slide = 0;
+  let lastFixAt = -Infinity;
   const slideTo = (to: [number, number]) => {
     cancelAnimationFrame(slide);
     slide = 0;
     circle(to);
-    const was = dot.getElement().isConnected ? dot.getLngLat() : null;
-    if (!was || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return show(to);
-    const from: [number, number] = [was.lat, was.lng];
     const start = performance.now();
+    const quiet = start - lastFixAt >= DRAW.me.slideAfter;
+    lastFixAt = start;
+    const was = dot.getElement().isConnected ? dot.getLngLat() : null;
+    if (!was || !quiet || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return show(to);
+    const from: [number, number] = [was.lat, was.lng];
     const step = (now: number) => {
       const k = Math.min(1, (now - start) / DRAW.me.glide);
       show([from[0] + (to[0] - from[0]) * k, from[1] + (to[1] - from[1]) * k]);

@@ -746,19 +746,28 @@ async function ride(browser: Browser): Promise<void> {
     const perMinute = (a: number, b: number) => ((b - a) * 60) / seconds;
     console.log(`\n  ${lookedAtMap ? 'after a look at the map' : 'straight onto the ride'}  (on screen: ${onScreen.trim().slice(0, 30)})`);
     // Measured 1.8-2.0 s a minute at 6x; it was 42-45 s while the one looping animation was a box-shadow.
-    // On 31 October 2026, 19.8-22.5 s with the reader sliding to each fix (round 49), 4.4-5.2 s
-    // with reduced motion, which does not slide it.
+    // Since MapLibre (round 44) most of it is the map drawing in SwiftShader, "(program)" below:
+    // 10-14 s on 1 November 2026, which this budget measures as much as the app.
     budget('main thread busy per minute of ride', perMinute(m0.TaskDuration, m1.TaskDuration) * 1000, 5000);
     report('  of which script', `${(perMinute(m0.ScriptDuration, m1.ScriptDuration) * 1000).toFixed(0)} ms`);
     report('  of which style and layout', `${(perMinute(m0.RecalcStyleDuration + m0.LayoutDuration, m1.RecalcStyleDuration + m1.LayoutDuration) * 1000).toFixed(0)} ms`);
     report('React commits', `${perMinute(c0.commits, c1.commits).toFixed(0)}`, 'a minute');
-    report('animation frames the app asked for', `${perMinute(c0.frames, c1.frames).toFixed(0)}`, 'a minute');
+    // 3,382-3,539 a minute while the reader slid to every fix of a moving GPS; 192 once it steps.
+    budget('animation frames the app asked for a minute', perMinute(c0.frames, c1.frames), 1000, '');
     // 1,902-1,992 a minute while the reader's slide reset the accuracy circle on every frame,
     // each one a repaint of the whole map; 244-286 once it was set once a fix.
     budget('frames the map drew a minute', perMinute(c0.paints, c1.paints), 600, '');
     report('timer callbacks', `${perMinute(c0.timers, c1.timers).toFixed(0)}`, 'a minute');
     report('animations looping for ever', `${looping.length}`, looping.slice(0, 3).join('; '));
     budget('heap held after the ride', (heapAfter - heapBefore) / 1048576, 3, 'MB');
+    // Where that minute goes: fifteen more fixes with the sampler on, after the minute so as not to slow it.
+    const went = await profile(page, async () => {
+      for (let i = 1; i <= 15; i++) {
+        await fix(seconds + i);
+        await sleep(1000);
+      }
+    });
+    top('where the ride went, self time, top 10 (sampler attached, so slower)', went, 10);
     await page.close();
   }
 }

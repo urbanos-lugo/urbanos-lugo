@@ -2140,8 +2140,13 @@ E «Vou nesta» ocupaba o fío **30,5–37,0 s por minuto**: desde o 29 de outub
 lector deslízase ata cada fix, e cada cadro do deslizamento volvía poñer o círculo da
 precisión, que é unha capa do mapa, así que o mapa se debuxaba de novo en cada cadro
 (1.902–1.992 cadros por minuto). Co círculo posto unha vez por fix baixa a 19,8–22,5 s e
-244–286 cadros, e segue catro veces por riba do orzamento: o resto é o deslizamento do punto,
-porque con movemento reducido, que non o fai, son 4,4–5,2 s.
+244–286 cadros. Desde o 1 de novembro o punto xa non se desliza cando os fixes chegan seguidos,
+coma nun bus (un por segundo, uns píxeles cada un), só despois dunha pausa de dous segundos: a
+páxina pide 192 cadros por minuto en vez de 3.400, e alternando coa regra anterior o fío queda
+en 10,3–13,7 s fronte a 10,4–20,4. Segue por riba dos 5 s, e o perfil di de que: o mapa
+debuxándose no SwiftShader do navegador da medida, uns cinco cadros por segundo, que nun
+teléfono fai a GPU. Con movemento reducido baixa a 4,4–5,2 s, pero alí cambian máis cousas
+ca o punto.
 `audit:browser` mide a app contra as WCAG 2.2 nos niveis A e AA, estado por estado. Son
 corenta e un estados —a portada baleira e a dunha persoa con paradas gardadas, a busca con
 e sen resultados, o taboleiro (por hora, por liña, a outra hora e aberto desde o QR), «preto
