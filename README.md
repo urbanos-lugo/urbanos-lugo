@@ -1585,8 +1585,7 @@ estáticos. `.github/workflows/deploy-pages.yml` publica en Pages en cada `push`
 e por calendario, refrescando antes a copia dos avisos oficiais. O calendario di cada hora;
 GitHub execútao cando pode, e na práctica foron entre cinco e sete veces ao día en setembro
 de 2026 e catro o 7 e o 8 de outubro, con ocos de ata oito horas. Por iso a copia leva a
-súa data en pantalla e deixa de contar incidencias ás doce horas: ás seis caducaba entre
-dúas execucións boas.
+súa data en pantalla e deixa de contar incidencias ás doce horas.
 
 Para activalo: **Settings → Pages → Source: GitHub Actions**. O workflow define
 `BASE_PATH` co nome do repositorio para que as rutas apunten a
@@ -1608,17 +1607,14 @@ de novo desde o enderezo novo.
 
 A build escribe unha páxina en cada enderezo de pestana —`paradas/`, `linhas/`, `mapa/`,
 `ruta/`, `avisos/`, `tarifas/`— e deixa `404.html` detrás para todo o demais. Con só o
-`404.html`, Pages **debuxaba** ben `/tarifas` pero respondía 404 ao facelo, e iso non é
-un detalle: `sitemap.xml` anuncia esas seis rutas e un buscador descarta un enderezo
-listado que responde 404, e as aplicacións onde se pegan os enlaces de «copiar ligazón»
-saltan a vista previa cando ven un 404 — tirando xusto as etiquetas `og:` que existen
-porque eses enlaces se comparten. Son seis copias de 4,6 KB, e desde o 15 de setembro de
-2026 cada unha leva o seu título, a súa descrición e a súa canónica (`src/seo.ts`): antes
-as sete levaban as da raíz e un buscador vía unha soa páxina sete veces. Cunha excepción
-desde o 21 de setembro: a raíz *é* a pestana de paradas, e `/paradas/` debuxa a mesma
-pantalla, así que Search Console marcouna como «duplicada, Google elixiu outra canónica»
-—a raíz— e tiña razón. `/paradas/` apunta agora á raíz como canónica e non vai no
-sitemap, que queda en seis entradas por idioma, dezaoito en total. As pestanas son
+`404.html`, Pages **debuxaría** ben `/tarifas` pero respondería 404, e iso non é un
+detalle: `sitemap.xml` anuncia esas seis rutas e un buscador descarta un enderezo listado
+que responde 404, e as aplicacións onde se pegan os enlaces de «copiar ligazón» saltan a
+vista previa cando ven un 404 — tirando xusto as etiquetas `og:` que existen porque eses
+enlaces se comparten. Son seis copias de 4,6 KB, e cada unha leva o seu título, a súa
+descrición e a súa canónica (`src/seo.ts`). Cunha excepción: a raíz *é* a pestana de
+paradas e `/paradas/` debuxa a mesma pantalla, así que `/paradas/` apunta á raíz como
+canónica e non vai no sitemap, que queda en seis entradas por idioma, dezaoito en total. As pestanas son
 ligazóns (`<a href>`) que un rastrexador pode seguir, o sitemap e «copiar ligazón» usan a
 barra final para non pasar polo 301 de Pages, e a `og:image` é o icono de 512 px. Os
 slugs saen de `src/routes.ts`, que é a única lista: dela len o enrutador, o sitemap e a
@@ -1649,11 +1645,8 @@ delas pon a Cache API —trinta minutos para os avisos, un se a lectura fallou, 
 para unha parada—, que é a que mantén preto de unha por xanela as preguntas que chegan ao
 código, porque a caché en memoria dos módulos vive por illa. O teito que non depende de
 cantas illas haxa pono o propio código, en cada unha: buslugo.com como moito unha vez por
-minuto (o feed do Concello xa non o le), e a páxina do operador detrás do QR como moito 120 veces por
-minuto en total, pregunte quen pregunte e pola parada que sexa. Antes non había ese
-segundo teito: un só cliente percorrendo os postes con código facía 813 peticións por
-minuto a `info.urbanoslugo.com`, e cunha resposta de erro, que non se garda, cada
-pregunta aquí era unha alí.
+minuto (o feed do Concello non o le), e a páxina do operador detrás do QR como moito 120
+veces por minuto en total, pregunte quen pregunte e pola parada que sexa.
 
 **Vai en Deno Deploy**, e despregao `.github/workflows/deploy-worker.yml` cando cambia algo
 do que está feito. Non hai CLI que instalar nin sesión que iniciar nunha máquina: fai falta
@@ -1661,9 +1654,9 @@ un `DENO_DEPLOY_TOKEN` nos segredos do ambiente `deno-deploy`, e **sen ese segre
 workflow non fai nada e dío** —non deixa unha execución en vermello nun repositorio que
 decidiu non montalo.
 
-Escribiuse primeiro para Cloudflare Workers e mudarse custou tres liñas —o ambiente, a
-escritura diferida na caché e o punto de entrada—, porque todo o que importa aquí é
-estándar. Dúas razóns para a mudanza, e a segunda é local: Cloudflare envía telemetría
+Iría en Cloudflare Workers cambiando tres liñas —o ambiente, a escritura diferida na caché
+e o punto de entrada—, porque todo o que importa aquí é estándar. Non vai alí por dúas
+razóns, e a segunda é local: Cloudflare envía telemetría
 desde a súa ferramenta de despregue, e sobre todo, os **bloqueos por IP que LaLiga obtén
 en España** levan caído enriba de rangos de Cloudflare en tardes de fin de semana, que é
 exactamente cando alguén mira cando pasa o bus para volver á casa. Non é unha garantía
@@ -1683,9 +1676,8 @@ o workflow: crea a app
 sitio (`https://<usuario>.github.io`, derivado do dono do repositorio; para este,
 `https://urbanos-lugo.github.io`) — é o único que
 poderá chamalo. Sen ese valor o worker responde sen cabeceira de CORS e o navegador
-rexéitao: falla pechado, e desde a mesma rolda tampouco garda esa resposta en ningunha
-caché, porque a do edge de Deno serviu nove días unha resposta sen cabeceira dun arranque
-sen a variable. Tamén fixa `DEPLOY_SHA`, e `GET /api/version` devólveo: «está xa o worker
+rexéitao: falla pechado, e tampouco garda esa resposta en ningunha caché, que a seguiría
+servindo despois de posta a variable. Tamén fixa `DEPLOY_SHA`, e `GET /api/version` devólveo: «está xa o worker
 novo?» é un `curl`. A páxina leva o mesmo dato en `<meta name="build">` cando a constrúe
 o workflow.
 
