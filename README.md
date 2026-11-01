@@ -116,8 +116,7 @@ aí a pregunta xa é de planificación.
 **A outra hora, e noutro día.** Pregado baixo a lista, o taboleiro lese a calquera hora e
 co horario de calquera tipo de día: un venres á noite, «Sábados» ás 07:30 le o sábado
 seguinte, e un festivo conta como domingo. A frase de enriba di cal, «Paso previsto mañá ás
-07:30», e a seguinte saída dun taboleiro baleiro cóntase desde esa hora. Ata o 28 de outubro
-de 2026 só se podía preguntar pola hora de hoxe.
+07:30», e a seguinte saída dun taboleiro baleiro cóntase desde esa hora.
 
 **Cun dedo enriba, as filas non se moven.** O taboleiro lese outra vez cada 15 segundos e
 ao espertar o teléfono, e un bus que marcha sube todas as filas: os botóns da seguinte
@@ -130,10 +129,7 @@ estimadas, e o taboleiro explica por que en lugar de deixalo a interpretación.
 **Un bus que vai tarde non desaparece.** Unha saída segue no taboleiro cinco minutos
 despois da súa hora, marcada como «hai 3 min» e non como «Chegando», porque esta web non
 sabe onde está o bus e só sabe que a hora pasou. Cinco minutos, e non outro número, porque
-son os que cobren o 84% dos atrasos medidos contra o seguimento do propio operador. Antes
-caía aos sesenta segundos e o taboleiro anunciaba o servizo seguinte: nunha liña cada 90
-minutos iso significaba pasar de «Chegando» a «88 min» mentres o bus estaba a tres minutos
-da parada.
+son os que cobren o 84% dos atrasos medidos contra o seguimento do propio operador.
 
 ### Avisos de bus e de baixada
 Dous avisos, os dous opcionais:
@@ -161,19 +157,15 @@ se llo negas.
 
 O mapa pequeno de **preto de min**, e o dos postes arredor dunha parada no seu taboleiro,
 **numera cada parada pola súa distancia**, co mesmo número na súa fila da lista, e escribe
-o nome ao carón. Eran puntos grises iguais, cos nomes en etiquetas que só abre un rato: nun
-teléfono non había maneira de saber que punto era que fila. O teu punto leva o círculo da
+o nome ao carón. O teu punto leva o círculo da
 precisión e, nun teléfono con compás, cara a onde miras (no mapa da rede, abaixo); e un
 camiño a pé, polas beirarrúas e calculado no dispositivo, chega ata a parada máis próxima.
 
 ### Mapa da rede
-MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap. Ata a rolda 43
-era Leaflet cunha capa de MapLibre enriba, que non podía xirar; agora é MapLibre só. Nun
+MapLibre GL debuxa os tres mapas, sobre teselas vectoriais de OpenFreeMap. Nun
 dispositivo sen WebGL2 —ou cando o navegador perde o contexto WebGL e non o devolve en
-cinco segundos— no sitio do mapa hai un aviso que o di, e as listas din o mesmo: o mapa
-ráster de OpenStreetMap que había para eses casos marchou con Leaflet. Os zooms deste
-texto son os de MapLibre, un menos ca os de Leaflet para as mesmas rúas (o seu mundo mide
-512 px a zoom 0; o de Leaflet, 256). O **estilo é do repositorio**, derivado
+cinco segundos— no sitio do mapa hai un aviso que o di, e as listas din o mesmo. Os zooms
+deste texto son os de MapLibre. O **estilo é do repositorio**, derivado
 do publicado por OpenFreeMap e xerado por `tools/buildMapStyle.ts`: as teselas, os sprites
 e os glifos seguen sendo os seus, as cores son nosas. Están medidas contra o que se debuxa
 enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres capas de rúa
@@ -185,9 +177,7 @@ Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cad
 calzada van **en paralelo**, cun carril fixo por liña: 2 px a zoom 14, 3 desde o 15, ata
 catro carrís por sentido —máis alá compárteno, e o toque sobre o corredor lista todas as
 que pasan—; por debaixo do 14 o corredor é unha soa trenza. O desprazamento faino o
-renderizador en cada fotograma (`line-offset`); antes movíase cada vértice en JavaScript a
-cada chanzo de zoom. A liña escollida vai sempre
-polo bordo, coas súas paradas enriba, e os seus dous sentidos van separados a calquera
+renderizador en cada fotograma (`line-offset`). A liña escollida vai sempre polo bordo, coas súas paradas enriba, e os seus dous sentidos van separados a calquera
 zoom, tamén onde o resto do feixe aínda vai nunha soa trenza. Cunha liña escollida, os seus dous sentidos levan
 **frechas de sentido** cada 120 px de pantalla, do mesmo trazo e cor que a liña; por
 debaixo do zoom 13 non se amosan, e con varias liñas escollidas só desde o 16, que é onde
@@ -207,27 +197,19 @@ ficha da liña, deixando claro que as paradas e as horas seguen a ser as oficiai
 súa: o nome, o código, as próximas saídas, o taboleiro enteiro. Unha liña, «Liñas por
 aquí»: as que pasan onde tocaches, a máis próxima ao dedo primeiro, cunha frase que di que
 é a lista; escoller unha pecha a folla, debúxaa por riba das outras e encádraa enteira,
-coma desde as fichas de arriba, e a frecha abre a súa páxina. Até o 27 de outubro de 2026
-unha liña abría un globo de Leaflet, que no centro listaba once liñas en 578 px e se metía
-baixo a barra de busca; ao escoller quedaba aberto e o mapa non encadraba nada. O que se
+coma desde as fichas de arriba, e a frecha abre a súa páxina. O que se
 tocou sobe por riba da folla cando quedaría debaixo, para que o anel da parada se vexa, e
-mentres hai folla o zoom apártase: flotaba sobre os seus dous botóns. Un bus tocado abre o
-seu globo e pecha a folla que houbese: **unha cousa aberta de cada vez**. Co renderizador
-novo o toque nun bus parado nunha parada abría as dúas, o globo e a folla da parada, porque
-un marcador xa non se queda co clic e o mapa tamén o oía.
+mentres hai folla o zoom apártase. Un bus tocado abre o
+seu globo e pecha a folla que houbese: **unha cousa aberta de cada vez**.
 
 Desde a folla dunha parada podes deixar no mapa **só as liñas que pasan por aí** — as
 que paran nese poste e as que pasan a menos de 400 m a pé. A pregunta é da parada, así
-que se fai desde a parada; como filtro solto nunha fila de zonas non se entendía e
-respondía pola parada equivocada. Redúcelle a lista a algo máis pequeno nas 417
+que se fai desde a parada. Redúcelle a lista a algo máis pequeno nas 417
 paradas: catro liñas das 24 en As Termas, unha en Nadela, dezaoito en Rda. Muralla 56,
 que é o máis concorrido que hai en Lugo.
 
-**A túa posición segue ao teu móbil**, non queda onde estabas ao premer. Un só
-`getCurrentPosition` deixaba caer un punto e xa non se movía nunca máis; camiñabas
-douscentos metros cara á parada e o mapa seguía amosándote onde saíras, na única pantalla
-que existe para dicirche se chegas. Agora hai un `watchPosition`, e o botón é un
-interruptor: prémelo outra vez e apaga o GPS.
+**A túa posición segue ao teu móbil** (`watchPosition`), non queda onde estabas ao premer,
+e o botón é un interruptor: prémelo outra vez e apaga o GPS.
 
 O punto leva **un círculo do tamaño da precisión que informa o propio arreglo**. Un punto
 só afirma «estás aquí» coa mesma seguridade viñese do GPS na rúa ou do wifi dentro dun
@@ -239,7 +221,7 @@ a parada á que vas—, agás cando o punto se ía saír da vista.
 **E cara a onde miras.** Nun teléfono con compás, o punto leva un abano que xira coa
 brúxula: di que lado da rúa tes diante antes de dar un paso, que o punto só non dicía. O
 compás só se le mentres o mapa está na pantalla; no iPhone, Safari pide permiso no mesmo
-toque que a posición, e sen compás ou sen permiso o punto vai só, coma antes.
+toque que a posición, e sen compás ou sen permiso o punto vai só.
 
 **O mapa da rede xira.** Con dous dedos, co botón dereito ou con Maiúsculas e as frechas;
 inclinar, non: un mapa inclinado dunha cidade pequena lese peor, e separar dous dedos
@@ -255,51 +237,40 @@ arriba.
 
 **Os nomes das paradas non se pisan.** Desde o zoom 15 escríbense á dereita do punto, á
 esquerda, enriba ou debaixo, onde non tapen outro nome, outra parada nin a túa posición; o
-que non colle non se escribe. Antes ían sempre á dereita: dúas paradas a cada lado dunha
-rúa escribían un nome enriba do outro, e non se lía ningún. E **tocar un nome é tocar a súa
+que non colle non se escribe. E **tocar un nome é tocar a súa
 parada**, con 8 px de marxe para o dedo: no mapa da rede abre a súa folla, no pequeno o seu
-taboleiro. O nome é o máis grande que di que parada é un punto, e o toque nel pasaba á liña
-de debaixo ou movía o mapa.
+taboleiro. O nome é o máis grande que di que parada é un punto.
 
 Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
-preto. Ata a rolda 42 o botón dicía «Deixar de seguirme» sobre un mapa sen punto e sen
-centrar: o seguimento arrancaba antes de que o mapa existise e non o volvía mirar. Aberto
-desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o que pediches.
+preto. Aberto desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o
+que pediches.
 
 **A parada escollida é un anel de tinta** arredor do fondo, a tinta que na app quere dicir
-«escollido», e o azul do mapa é só o punto da túa posición. Antes eran dous discos azuis de
-9 e 8 px que, xunto a un poste, se montaban un enriba do outro e só os separaba o ton.
+«escollido», e o azul do mapa é só o punto da túa posición.
 
 O punto da túa posición é **información, non un botón**: vai por riba de todo o que debuxa
-o mapa, nomes incluídos, e non colle ningún toque. Ía no mesmo lenzo cás paradas, enriba ou
-debaixo segundo o que se repintase despois, e tocar a parada onde estabas abría un globo
-coa precisión, que o círculo xa debuxa.
+o mapa, nomes incluídos, e non colle ningún toque.
 
 **Un dedo non é un punteiro.** Nun ecrán táctil cada parada responde ata 12 px alén do
 seu bordo: a zoom 15, ata 21 px do seu centro, e a escollida ata 23; unha liña responde a
-20 px da súa raia, co dedo ou co rato. Antes un toque que fallaba o punto por uns píxeles caía na liña que pasa por el e abría
-«Liñas por aquí». Medido tocando arredor da parada escollida: a 12, 14 e 18 px, antes as
-liñas e agora a parada; a 21, a parada; a 25, as liñas. Se o toque cae ao alcance de dúas
+20 px da súa raia, co dedo ou co rato. Medido tocando arredor da parada escollida: a 12,
+14, 18 e 21 px ábrese a parada; a 25, as liñas. Se o toque cae ao alcance de dúas
 paradas ábrese a máis próxima ao dedo, non a debuxada de última, e o nome que o dedo abre
-enriba dunha parada xa non lle colle o toque: só o fai onde hai rato.
+enriba dunha parada non lle colle o toque: só o fai onde hai rato.
 
 O filtro **"preto de min"** amosa todas as liñas a menos de 750 m, cun panel lateral que
-lista cada unha coa distancia á súa parada máis próxima. Antes calculaba as oito liñas
-próximas e logo quedaba só coa primeira, así que dende Avda. Américas 88 vías a 8 e
-ningunha máis.
+lista cada unha coa distancia á súa parada máis próxima.
 
 As paradas son unha capa do estilo, debuxada na GPU, e non todas á vez: afastado gañan o
 sitio as máis servidas, e ningunha se pinta a menos de 24 px doutra que xa está, así que a
 vista de cidade é un reparto uniforme que se enche ao achegarse; cunha liña escollida
 están todas as súas, e desde o zoom 15 as 417, cos nomes pintados nun lenzo propio en lugar de 417 nodos
-DOM. As capas fanse unha vez por estilo e despois só cambian os seus datos: refeitas en
-cada cambio, liñas e paradas pestanexaban cada tres segundos co reloxo dos buses.
+DOM. As capas fanse unha vez por estilo e despois só cambian os seus datos.
 
 Os vehículos que se ven proveñen do cadro horario: unha expedición que xa saíu e aínda
 non rematou sitúase sobre o trazado onde debería ir. As dúas direccións dunha liña son
 o mesmo bus dando a volta, así que cando o cadro xa o ten saíndo de volta, o marcador da
-ida retírase nese minuto: a ida das 07:30 da liña 7 seguía debuxada a 139 m da súa propia
-volta das 07:45. O globo de cada un dío explicitamente; non son posicións medidas.
+ida retírase nese minuto. O globo de cada un dío explicitamente; non son posicións medidas.
 
 Por iso **empezan apagados**. Un bus que se move sobre un mapa lese como un bus seguido,
 diga o que diga un globo que só se abre ao tocalo. Acéndense en «Capas visibles», e mentres
@@ -319,20 +290,14 @@ dunha clase no Campus.
 **Pasado o último bus, a resposta é doutro día, e dío.** A opción sae do cadro do día en
 que a liña volve circular —sábado, domingo ou festivo teñen o seu— e leva o día diante da
 hora: «mañá 07:08 → ~07:30», ou «o martes» se no medio hai un fin de semana ou un festivo
-como o San Froilán. Antes movía a primeira saída de hoxe ao día seguinte: un venres ás
-23:30, 664 das 1.136 saídas ofrecidas para o sábado eran falsas, e 398 delas de liñas que
-o sábado nin circulan.
+como o San Froilán.
 
-**E ir andando esa mesma noite vai diante do bus de mañá.** Desde o 28 de setembro, un
-paseo ata a parada que remataba pasada a medianoite facía «en servizo» o primeiro bus do
-día seguinte. Ás 23:50 a resposta era andar quince minutos ata Sindicatos para coller ás
-07:15 o 1.1 que pasa por Praza Bretaña ás 07:11, e ir andando, que chega esa noite, nin
-aparecía entre as opcións. O día dun bus cóntase desde a pregunta, non desde o final do
-paseo.
+**E ir andando esa mesma noite vai diante do bus de mañá.** O día dun bus cóntase desde a
+pregunta, non desde o final do paseo: un paseo ata a parada que remata pasada a medianoite
+non fai «en servizo» o primeiro bus do día seguinte.
 
-**«Usar a miña localización» sen permiso dío e non calcula.** Calculaba desde o centro de
-Lugo co rótulo «📍 A miña localización», que é xusto o que a pantalla de paradas se nega a
-facer cunha posición que o móbil non deu.
+**«Usar a miña localización» sen permiso dío e non calcula**, igual que a pantalla de
+paradas se nega a inventar unha posición que o móbil non deu.
 
 Non devolve unha soa resposta: amosa as **opcións distintas** de facer o traxecto,
 agrupadas por combinación de liñas e ordenadas pola hora á que chegas, a que di cada fila:
@@ -352,9 +317,7 @@ leva dentro a rede peonil de Lugo — 21.093 cruces e 29.489 arestas levantadas 
 OpenStreetMap — e resolve cada camiño cun A\* en menos dun milisegundo
 (`src/utils/walkRouter.ts`). Nin conexión nin terceiros.
 
-O camiño debúxase sempre e sen pedir permiso: cando o trazaba un enrutador alleo había que
-consentir que saísen os extremos de cada tramo —un deles pode ser a túa posición—, e agora
-nada sae do móbil.
+O camiño debúxase sempre e sen pedir permiso: nada sae do móbil.
 
 **Canto se rodea de verdade**, medido co enrutador contra a liña recta. Depende de sobre
 que se mida, así que van as dúas:
@@ -366,12 +329,11 @@ que se mida, así que van as dúas:
 
 A segunda é a que importa, porque é a poboación á que se lle aplica a estimación: ti ata a
 túa primeira parada, os transbordos, e a última parada ata onde vas. Aí a constante de
-1,35 queda **na mediana**, non por riba dela como pretendía o seu comentario — e ese
-comentario xa está corrixido coa medición nova en `src/utils/places.ts`.
+1,35 (`src/utils/places.ts`) queda **na mediana**.
 
-O que nunca estivo ben é a cola: **×32,96 no peor caso**, dous postes a poucas decenas de
-metros cun quilómetro de camiño entre eles porque hai unha vía polo medio. Ningunha
-constante arregla iso, que é a razón de deixar de depender dunha.
+O que ningunha constante colle é a cola: **×32,96 no peor caso**, dous postes a poucas decenas de
+metros cun quilómetro de camiño entre eles porque hai unha vía polo medio. Por iso os
+tramos a pé non dependen dunha.
 
 Cando **non hai camiño peonil**, a opción de ir andando retírase en vez de quedar cunha
 estimación. Nas paradas da N-VI en Ombreiro esa estimación sería un paseo de seis
@@ -392,15 +354,13 @@ está en `STEPS_SPEED_FACTOR` (`src/utils/walkRouter.ts`) e nos tipos de vía de
 Non está en CI nin no `pnpm test`: bate contra un servidor alleo, á súa cadencia dunha
 petición por segundo, e cachea para que repetilo non custe nada.
 
-**E cobra a costa.** OpenStreetMap non leva altitude, así que ata aquí o enrutador
-acertaba a beirarrúa e calaba sobre a callada — nunha cidade co Miño abaixo e unha vila
-amurallada arriba, que é boa parte da diferenza entre subir e baixar pola mesma rúa. Cada
-un dos 21.093 cruces leva agora a súa altura, tomada do **MDT05 do IGN**, o modelo do
+**E cobra a costa.** OpenStreetMap non leva altitude, e nunha cidade co Miño abaixo e unha
+vila amurallada arriba esa é boa parte da diferenza entre subir e baixar pola mesma rúa.
+Cada un dos 21.093 cruces leva a súa altura, tomada do **MDT05 do IGN**, o modelo do
 terreo español a paso de 5 m levantado con LiDAR aéreo do PNOA.
 
 A regra é a de Naismith: un minuto por cada dez metros de subida, enriba do que xa custa a
-distancia. A baixada é de balde. Medido despois de poñelo, entre os mesmos dous puntos e
-nos dous sentidos:
+distancia. A baixada é de balde. Medido entre os mesmos dous puntos e nos dous sentidos:
 
 | | subindo | baixando |
 | :--- | ---: | ---: |
@@ -408,10 +368,8 @@ nos dous sentidos:
 | A Ponte → Catedral | 25 min | 18 min |
 | Campus USC → Rda. Muralla 56 | 39 min | 36 min |
 
-Antes desas alturas os tres pares daban o mesmo nas dúas direccións.
-
-**E o que se cobra é a subida da rúa, non a resta dos seus extremos.** Empezou sendo o
-segundo, que le como chá unha rúa que sobe e volve baixar entre dous cruces. Medido contra
+**E o que se cobra é a subida da rúa, non a resta dos seus extremos**, que le como chá
+unha rúa que sobe e volve baixar entre dous cruces. Medido contra
 o modelo de 5 m nas 29.489 arestas, co perfil que garda a app: 41.834 m de ascenso polos
 extremos fronte a 49.735 m polo perfil, un 19 % máis, e **3.099 arestas agochan algo de
 subida e 292 agochan dez metros ou máis, que é un minuto enteiro**. É unha cola, e son as
@@ -423,10 +381,9 @@ Ignóranse os ascensos de menos de 2 m: as alturas están en metros enteiros, e 
 osciliación ao longo de medio millón de mostras converte o ruído en 68.076 m de ascenso —
 27 m por quilómetro, que non é esta cidade. Con 3 m baixa a 42.112, case a resta dos
 extremos; con 5 m, a 33.159, por debaixo dela. Medido o 1 de novembro de 2026 sobre as
-mesmas teselas; ata entón este parágrafo poñía o perfil en 42.086 m, que é o de 3 m e non o
-que se garda.
+mesmas teselas.
 
-Un efecto secundario que é o correcto: **o camiño máis barato para subir xa non é sempre o
+Un efecto secundario que é o correcto: **o camiño máis barato para subir non é sempre o
 mesmo que para baixar.** O enrutador colle unha rúa máis longa e máis suave para subir,
 que é o que fai unha persoa. Da Ponte Romana á Praza Maior son 1.664 m subindo e 1.653 m
 baixando.
@@ -472,17 +429,15 @@ volve pedilo ao volver.
 
 As paradas cóntanse **en orde**: a seguinte que teñas a menos de 60 m, non a máis afastada.
 Seis dos 48 sentidos van e volven pola mesma avenida — na 4.1 a parada 20 e a 29 están a
-38 m — e contar a máis afastada tachaba nove de golpe e non volvía atrás.
+38 m —, e contar a máis afastada tacharía nove de golpe.
 
 ### Liñas e horarios
 Ficha de cada liña co seu percorrido en ambos sentidos, cadro horario por tipo de día
 (laborables / sábados / domingos e festivos) e tempo de paso estimado en cada parada. O
 cadro abre no tipo de día de hoxe e os outros dous están a un toque: un venres á noite a
-pregunta adoita ser o luns. Ata o 26 de outubro de 2026 só había o de hoxe, e nin sequera
-cambiaba á medianoite ata cambiar de liña. Noutro día, as paradas levan a hora sen «en X
+pregunta adoita ser o luns. Noutro día, as paradas levan a hora sen «en X
 min» nin o bus que o horario pon agora. O dato «Horario hoxe» é sempre o de **hoxe**, lido
-das expedicións de hoxe: poñía a primeira e a última saída de calquera día, «07:15 -
-22:00» para a 7 nun martes cuxo primeiro bus sae ás 07:30.
+das expedicións de hoxe.
 
 Baixo o nome, que o operador forma coas dúas cabeceiras, vai **por onde pasa**: as catro
 zonas con máis paradas da liña, na orde do percorrido («Pasa por Campus USC · Sur / Ramón
@@ -507,23 +462,15 @@ do poste é o que a pegatina prometía.
 ### Avisos, e tarifas por separado
 Dúas pantallas, porque son dúas preguntas feitas en momentos distintos: «afectoulle algo ao
 meu bus» pregúntase de pé nunha parada, e «canto custa o bono» lese unha vez e recórdase.
-Estaban apiladas nunha soa que chegara a sete seccións.
 
 **Avisos** (`/avisos`) trae os avisos de servizo do operador, e por separado —sen contar
 para o distintivo da navegación— os **cortes e desvíos que anuncia o Concello**: as notas
 de prensa da etiqueta *Tráfico* da última semana cuxo titular anuncia un corte, un desvío
-ou unha restrición. Unha nota de prensa municipal non é unha incidencia do servizo, e
-mesturalas facía que a barra dixese «1» por unha noticia sobre asfaltado. Líanse tres
-etiquetas —tamén *Buses urbanos* e *Obras*— e durante sesenta días; auditadas o 15 de
-setembro de 2026, en dous meses deran un récord de viaxeiros, unha declaración política e
-os cortes dunha carreira que seguirían en pantalla ata novembro. Ademais, os avisos
+ou unha restrición. Unha nota de prensa municipal non é unha incidencia do servizo. Ademais, os avisos
 estruturais escritos neste proxecto, cada un coa súa data de revisión. Revísanse cada mes
 contra as súas fontes: «Check the sources» falla o luns en que a última revisión pasa das
-cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses. Revisados o 13 de
-outubro de 2026 tras sete semanas, dous dos tres xa non eran certos —as obras da
-intermodal, entregadas o 9 de setembro, e un «50 % e Xente Nova» que era a tarifa social
-máis unha tarxeta da Xunta só para o transporte interurbano— e quitáronse; queda a
-cabeceira das liñas 7, 8, 9 e 12 no casco histórico.
+cinco semanas, e a pantalla avisa a quen le cando pasa dos dous meses. Queda un, a
+cabeceira das liñas 7, 8, 9 e 12 no casco histórico, revisado o 29 de outubro de 2026.
 
 Cando o operador escribe un aviso liña a liña na súa portada —o do San Froilán de 2026
 chegou así, e a campá só dicía «Cambios en las líneas por San Froilán»—, a app le esa
@@ -532,7 +479,7 @@ de cada liña na **ficha** desa liña, e unha franxa que leva a el no **taboleir
 coas liñas desa parada que nomea. Sempre coas palabras do operador, e só mentres o dato é
 fresco. Os horarios non se tocan: se o aviso di «ata as 03:07» sen publicar as saídas desas
 horas, a app non as inventa, e o aviso ao lado é o que explica a diferenza. Se o formato
-cambia, queda o titular da campá, como antes.
+cambia, queda só o titular da campá.
 
 E o que o aviso cambia, a app tamén o usa (`src/utils/noticeChanges.ts`). Le del os días
 («os días 3, 4, 5, 9, 10, 11 e 12 de outubro»), ata que hora segue cada liña, que paradas
@@ -568,19 +515,17 @@ pero o primeiro bus da mañá xa para en Praza Bretaña.
 
 Medido ese día nun navegador co reloxo posto en noites e días de festa, nun teléfono de
 375 px: a franxa pregada ocupa 46 px, 108 cunha parada pechada nela e 190 de noite, coas
-horas despregadas; aberta, antes, eran 166 px de día enriba da primeira saída. En Ruta, 62
-px de día. Fóra dos días do aviso, nada se pecha nin se risca.
+horas despregadas. En Ruta, 62 px de día. Fóra dos días do aviso, nada se pecha nin se risca.
 
 A consulta faise **desde o servidor** (o navegador non pode por CORS), contra buslugo.com e
 o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase a copia que
 deixou a tarefa programada e amósase **cando se tomou**, en lugar de facela pasar por
-actual. O feed do Concello lese despois da páxina do operador e ten catro segundos, non
-quince. O 6 de outubro de 2026 o servidor tardou 16 s en responder porque o feed non
-conectaba e os avisos do operador agardaban por el. Cada lectura deixa unha liña no
-rexistro do servidor, co que tardou e, se falla, o motivo. Esas liñas dixeron que desde o
-worker de Deno non conecta nunca: sete lecturas o 6 e o 13 de outubro, as sete sen resposta
-aos catro segundos. Desde aquela o worker só le buslugo.com, e o feed léno a copia de cada
-hora, que desde GitHub conecta algunhas veces, e un `server.ts` propio. Na app publicada,
+actual. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
+lectura deixa unha liña no rexistro do servidor, co que tardou e, se falla, o motivo.
+Desde o worker de Deno o feed non conectou nunca —sete lecturas o 6 e o 13 de outubro de
+2026, as sete sen resposta aos catro segundos—, así que o worker só le buslugo.com, e o
+feed léno a copia de cada hora, que desde GitHub conecta algunhas veces, e un `server.ts`
+propio. Na app publicada,
 logo, os avisos do Concello só aparecen cando se amosa esa copia.
 
 **Tarifas** (`/tarifas`) leva os títulos de transporte tal e como os publica o operador,
