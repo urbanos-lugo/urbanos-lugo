@@ -1155,19 +1155,17 @@ A aplicación é unha PWA instalable. Todo o que calcula —horarios, chegadas, 
 execútase en local sobre datos empaquetados, así que unha vez instalada segue a
 funcionar sen cobertura, que é xusto o que pasa nunha marquesiña. As teselas do mapa
 cachéanse segundo se van vendo —só as respostas con CORS, porque unha resposta opaca
-cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa: seis teselas eran 38 MB e
-agora son o que pesan— e os avisos oficiais pídense á rede e, se non responde, amósase a
-copia que vai coa build, coa hora á que se tomou: unha resposta da API gardada volvía como
-se fose de agora, horas despois.
+cóntalle ao Chrome megabytes de espazo sexa do tamaño que sexa— e os avisos oficiais
+pídense á rede e, se non responde, amósase a copia que vai coa build, coa hora á que se
+tomou.
 
 ### Tamaño de descarga
 
 A xeometría viaria, o renderizador do mapa e a rede peonil cárganse só cando fan falta.
 `index.html` só pide tres cousas: o anaco de entrada, unha folla de estilos e o rexistro
 do service worker; o script que fixa o tema antes do primeiro pintado vai inline, co seu
-hash na política de seguridade. O rexistro vai con `defer`: era un script corrente na
-cabeceira, que detiña o primeiro pintado ata chegar e correr (Lighthouse poñíalle 450 ms), e
-unha comprobación da build mira que ningún script que a páxina pide a deteña.
+hash na política de seguridade. O rexistro vai con `defer`, e unha comprobación da build
+mira que ningún script que a páxina pide deteña o primeiro pintado.
 
 E a build escribe un `.br` e un `.gz` ao lado de cada activo, que o servidor entrega cando
 o navegador di que sabe lelos. Medido contra a build de produción:
@@ -1186,23 +1184,15 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
 | Worker do planificador, coa súa copia de paradas e liñas | 233 KB | 55 KB | 44 KB, ao calcular a primeira ruta |
 
-Medido enteiro o 28 de outubro de 2026, na rolda 44, con Vite 8.3 e MapLibre 6.15, e outra
-vez o 31 de outubro (rolda 52), co mesmo: o anaco de entrada medra 1 KB sen comprimir e en
-gzip, e o resto dá o mesmo. Un KB son
-1.024 bytes, gzip ao nivel 9 e brotli á calidade 11. Sen Leaflet nin a ponte, o anaco do
-renderizador baixa de 1.224 a 1.100 KB (de 266 a 236 KB brotli) e os seus estilos de 84 a
-70 KB. Desde a medida anterior das outras filas, o 20 de outubro, o anaco de entrada pasou
-de 617 a 629 KB (de 142 a 146 brotli) e a folla de estilos de 63 a 67, co que trouxeron as
-roldas 42 a 44 —as cabeceiras por pestana, o planificador no seu *worker*, os estilos do
-mapa novo— sen repartir aquí canto é de cada unha. MapLibre non vai no anaco de entrada,
+Medido o 31 de outubro de 2026 (rolda 52), con Vite 8.3 e MapLibre 6.15. Un KB son 1.024
+bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
 xusto debaixo.
 
 A tipografía non leva columnas: o `woff2` xa vén comprimido e volver comprimilo non aforra
 nada, así que a build nin o intenta. Son dous ficheiros e non oito —son fontes variables,
-e o navegador instánciaas no peso que faga falta—, e antes viñan da CDN de Google. Os bytes
-que descarga o lector son os mesmos; o que cambia é a quen llos pide.
+e o navegador instánciaas no peso que faga falta—, e van no propio sitio, non nunha CDN.
 
 GitHub Pages comprime por si mesmo; `pnpm start` entrega o `.br` ou o `.gz` que a build
 deixa ao lado de cada ficheiro.
@@ -1232,9 +1222,8 @@ cambiada. Só un despregue de código cambia nomes agora.
 
 ### Rigor de tipos
 
-`strict` está activado, con `@types/react` e `@types/react-dom` instalados. Sen eles todo
-JSX era `any` e ningunha prop se comprobaba; ao poñelos, dos 1.581 erros que saíron baixo
-`--strict` quedaron 19, e eses eran reais.
+`strict` está activado, con `@types/react` e `@types/react-dom` instalados: sen eles todo
+JSX sería `any` e ningunha prop se comprobaría.
 
 ### Un só vocabulario visual
 
@@ -1247,28 +1236,16 @@ o renderizador quere. As escalas propias de Tailwind están borradas (`--*: init
 escrita contra un valor por defecto non xera nada en vez de traer de volta un valor que
 ninguén escolleu.
 
-Antes de outubro de 2026 había 256 valores sen nome: 96 clases, 57 valores crus nas
-regras do propio `index.css`, 44 números nas capas dos mapas, 24 cores en cadeas, 18
-atributos `style` e 6 atributos SVG no HTML dos popups, unha clase que non xeraba nada e un
-tamaño que nada usaba; e iso contando as escalas de Tailwind como se fosen tokens. Agora
-son 0, e unha comprobación de `pnpm run check:policy` compila cada clase do código contra o
-tema sen resolver e falla en canto unha non le un `var(--…)`, e tamén nun estilo en liña,
-nun número dunha capa, nunha cor escrita nunha cadea ou nun token que xa non usa ninguén.
+Non queda ningún valor sen nome: unha comprobación de `pnpm run check:policy` compila cada
+clase do código contra o tema sen resolver e falla en canto unha non le un `var(--…)`, e
+tamén nun estilo en liña, nun número dunha capa, nunha cor escrita nunha cadea ou nun token
+que xa non usa ninguén.
 
-O que se repite é un compoñente ou unha clase: 48 elementos estaban escritos a man en
-entre dous e vinte sitios cada un, e cada un ten agora o seu (`.btn`, `.card`, `.tag`,
-`CloseButton`, `Drawer`, `NameStack`…). Outra comprobación garda 42 sinaturas que só leva
-unha copia feita a man, e catro máis dentro dun mesmo ficheiro, e di que usar no seu lugar.
-
-Onde dúas copias diferían por descoido xuntáronse, e cada fusión que move un píxel está
-listada na rolda 37 do rexistro de probas; onde a diferenza podía ser querida quedou como
-variante, e o 20 de outubro escolleuse unha de cada (DECIDIDO): unha soa ficha de escolla,
-en tinta; unha soa caixa de etiqueta; os espazos das irmás. A proba son as fotos de cada
-estado, 2.122 cadros por tanda (`visual:shoot`, abaixo en «Verificación»): sobre o código
-final, coas fusións listadas postas de volta como debuxaban antes, o que queda fronte á build
-de antes é o ruído que dan dúas fotos da mesma build e tres diferenzas de subpíxel ou ao
-200 % de texto, tamén listadas. Esa mesma proba atopou tres campos co texto un píxel máis
-arriba, sen que ningún commit o dixese, e arranxouse.
+O que se repite é un compoñente ou unha clase (`.btn`, `.card`, `.tag`, `CloseButton`,
+`Drawer`, `NameStack`…). Outra comprobación garda 42 sinaturas que só leva unha copia feita
+a man, e catro máis dentro dun mesmo ficheiro, e di que usar no seu lugar. Como se chegou
+aí, fusión por fusión e coa súa proba píxel a píxel, está na rolda 37 do rexistro de
+probas; as variantes escollidas, en DECIDIDO.
 
 ### Seguridade
 
@@ -1284,12 +1261,9 @@ do renderizador do mapa e o do planificador, e sérvense desde esta orixe, non h
 `BarcodeDetector` do navegador en vez dunha librería. As únicas orixes remotas
 permitidas son as que a app usa de verdade — OpenFreeMap polas teselas vectoriais,
 tamén en `connect-src`: servida como cabeceira, a política é tamén a do service worker,
-que volve pedir con `fetch` as teselas que garda, e sen iso o mapa autoaloxado quedaba en
-gris. tile.openstreetmap.org, o respaldo ráster dun navegador sen WebGL2, marchou con
-Leaflet: ese navegador ve agora un aviso no sitio do mapa. O enrutador peonil de OSM estivo aquí ata
-que a rede peonil pasou a ir dentro do paquete: unha orixe menos. `font-src` é
-`'self'` a secas: a tipografía viña de Google e agora sérvese desde aquí, así que abrir un
-horario de bus xa non llo conta a Google. buslugo.com tampouco está: só o servidor o
+que volve pedir con `fetch` as teselas que garda, e sen iso o mapa autoaloxado quedaría en
+gris. `font-src` é `'self'` a secas: a tipografía sérvese desde aquí, así que abrir un
+horario de bus non llo conta a Google. buslugo.com tampouco está: só o servidor o
 consulta, nunca o navegador.
 
 A política escríbese unha vez en [`src/security/csp.ts`](src/security/csp.ts) e vai a
@@ -1313,7 +1287,7 @@ só o de despregar escribe en Pages) e `persist-credentials: false` no checkout,
 o token non quede en `.git/config` durante o resto do traballo. Cada acción vai fixada ao
 seu commit, coa versión ao lado, e o traballo que ten o token de Deno Deploy corre unha
 versión exacta de Deno e de `@deno/deploy`: unha etiqueta pódese mover a outro código
-despois de revisada, e `setup-deno@v2` nin sequera era unha etiqueta, senón unha póla.
+despois de revisada.
 
 **Scripts de instalación.** Ningunha dependencia executa un `postinstall` —que é onde
 correría primeiro unha comprometida—, e `pnpm-workspace.yaml` declárao explícitamente en
@@ -1323,15 +1297,11 @@ comproba o que xa está. Comprobado con el saltado: `transformSync` funciona e `
 produce `dist-server`. A seguinte dependencia que traia un script **detén a instalación**
 ata que alguén decida.
 
-Este axuste estivo mal dúas veces, e as dúas fallou no `install` e non nas probas. Vivía no
-campo `pnpm` de `package.json`, que pnpm 10 deixou de ler; despois chamouse
-`onlyBuiltDependencies`, e pnpm 11 renomeouno a `allowBuilds`. Poñer o nome vello non dá
-erro nin aviso: a instalación simplemente para con `ERR_PNPM_IGNORED_BUILDS`, que é como se
-atopou o segundo —no primeiro despregue do repositorio—. A instalación bloqueada de CI
-é a comprobación: sen o axuste, co nome vello ou co marcador que pnpm escribe el só no
-canto de `true` ou `false`, `pnpm install --frozen-lockfile` para con ese erro. Probado
-nas tres. Nunha máquina con `ignore-scripts` na configuración global de pnpm non para,
-porque alí non corre ningún script.
+A instalación bloqueada de CI é a comprobación: sen o axuste, co nome que tiña antes de
+pnpm 11 (`onlyBuiltDependencies`) ou co marcador que pnpm escribe el só no canto de `true`
+ou `false`, `pnpm install --frozen-lockfile` para con `ERR_PNPM_IGNORED_BUILDS`, sen máis
+aviso. Probado nas tres. Nunha máquina con `ignore-scripts` na configuración global de pnpm
+non para, porque alí non corre ningún script.
 
 **Versións das dependencias.** `pnpm-workspace.yaml` fixa tamén `qs`, `fast-uri`,
 `brace-expansion` e `serialize-javascript` por riba do seu aviso de seguridade. `qs` é con
@@ -1346,11 +1316,10 @@ que `ejs` trae só para a súa liña de comandos, quítase da árbore: nada aqu�
 con el marcha unha `minimatch` vella. Queda un aviso aberto, `deepmerge`, dentro de
 workbox-build e só ao compilar, porque non ten arranxo publicado.
 
-O servidor normaliza todo o que chega pola query string (`?q[]=a` facía caer o endpoint
-cun volcado de pila), devolve JSON en caso de erro en lugar da páxina de erro de Express,
-limita o corpo das peticións a 32 KB e envía `X-Content-Type-Options`, `X-Frame-Options`,
-`Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy` e
-`Cross-Origin-Resource-Policy`, e xa non `X-Powered-By`. Os nomes que se interpolan en HTML
+O servidor normaliza todo o que chega pola query string, devolve JSON en caso de erro en
+lugar da páxina de erro de Express, limita o corpo das peticións a 32 KB e envía
+`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`,
+`Cross-Origin-Opener-Policy` e `Cross-Origin-Resource-Policy`, e non `X-Powered-By`. Os nomes que se interpolan en HTML
 nos globos do mapa escápanse. As lecturas de buslugo.com, do feed do Concello e da páxina
 do poste non seguen redireccións. No navegador, o que chega da API pásase pola mesma
 lectura ca a copia de cada hora: texto onde se espera texto, e ligazóns só a buslugo.com e
@@ -1362,34 +1331,30 @@ pantalla nin levar a outro sitio.
 `lang` do documento segue o idioma elixido, hai ligazón de salto ao contido e as filas
 clicables son alcanzables co teclado.
 
-O taboleiro de chegadas **non** é unha rexión `aria-live`. Foino, para que un lector de
-pantalla oíse cambiar as horas, e oíaas: o tic de cada minuto move a conta de todas as
-filas á vez, así que cada minuto anunciaba ata quince números soltos —«4», «9», «14»—
-sen liña nin destino e sen maneira de calalo. O taboleiro lese cando se quere, coma
-calquera lista; para que che avisen está a alarma.
+O taboleiro de chegadas **non** é unha rexión `aria-live`: o tic de cada minuto move a
+conta de todas as filas á vez, así que cada minuto anunciaría ata quince números soltos
+—«4», «9», «14»— sen liña nin destino e sen maneira de calalo. O taboleiro lese cando se
+quere, coma calquera lista; para que che avisen está a alarma.
 
 **Teclado nos diálogos.** O menú, os favoritos, o lector de QR, a ficha de parada no
 mapa e os seus filtros son diálogos modais: Escape pecha, o foco entra ao abrir e volve
-ao que os abriu ao pechar, e **Tab non sae deles**. Saía: `aria-modal` esconde a páxina
-ao lector de pantalla, non ao tabulador, e co menú aberto catorce pulsacións deixaban o
-foco no botón do QR detrás do caixón. Todo pasa por un só hook, `useDialog`, e
+ao que os abriu ao pechar, e **Tab non sae deles**, porque `aria-modal` esconde a páxina
+ao lector de pantalla, non ao tabulador. Todo pasa por un só hook, `useDialog`, e
 `audit:browser` percorre o menú con Tab nos dous sentidos e péchao con Escape. Ao calcular unha ruta, o foco vai á resposta
 —as tres cifras, ou a frase que di que non hai— en lugar de caer ao principio do
 documento cando o formulario se prega debaixo do botón.
 
 As filas da lista de liñas e as suxestións do planificador son botóns, non `div` cun
-clic —chegaron a selo, e a pestana Liñas enteira non se abría sen rato—, e a sonda de
+clic, e a sonda de
 accesibilidade marca `cursor: pointer` sobre calquera cousa que non sexa interactiva. Os
 tres mapas levan nome e controis no idioma da interface, porque o lenzo do mapa é unha
 parada de tabulación e os seus botóns —o zoom, o compás, o × dun globo— saen en inglés se
 ninguén llos traduce.
 
 **Contraste.** A insignia dunha liña é texto branco sobre a cor da liña a 12 px, e o número
-que leva é o único que hai que ler dun golpe de vista. Cinco das vinte e catro non chegaban
-ao mínimo de WCAG AA para texto pequeno —a liña 2 quedaba en 2,94:1 fronte ao 4,5 esixido—,
-o que nunha marquesiña a pleno sol non se le. Escureceuse cada unha o mínimo que pasa a
-proba, entre un 10% e un 22%, mantendo o ton. Medido no navegador, os fallos de contraste
-pasaron de **84 de 400 elementos a 0**, e `pnpm test` xa non deixa entrar unha cor ilexible.
+que leva é o único que hai que ler dun golpe de vista. As vinte e catro pasan o mínimo de
+WCAG AA para texto pequeno (4,5:1): cinco van escurecidas o mínimo que pasa a proba, entre un 10% e un 22%, mantendo o ton, e `pnpm test` non deixa entrar unha
+cor ilexible.
 
 **Obxectivos táctiles e tipografía.** WCAG 2.2 pide 24 px ou espazo arredor (2.5.8), e
 cúmpreo todo o que se toca: `audit:browser` mídeo en cada estado. A barra desta casa é
@@ -1415,16 +1380,13 @@ base de 16), así que o axuste de tamaño de letra do sistema operativo funciona
 a aplicación en lugar de quedar conxelado en píxeles. `prefers-reduced-motion` desactiva
 transicións e animacións.
 
-**Texto grande.** Co texto ao 200 %, as marxes en `rem` dobraban coa letra: entre a
-páxina, o panel e a tarxeta levaban 172 px dun teléfono de 375 e deixaban o nome dunha
-liña en 51 px, «R…». Agora as marxes laterais deixan de crecer onde a pantalla non ten
-sitio (`px-cap-*`: nunca máis do que miden nun teléfono de 320 px coa letra normal), e
-onde un nome comparte fila cunha insignia ou cunha hora ten un mínimo en `rem`, así que o
-outro baixa á liña seguinte en lugar de espremelo. `audit:browser` conta o texto que non se
-ve a 200 % sen que a páxina se alargue: 177 textos en claro e 179 en escuro nos doce
-estados antes desta rolda, 0 despois. A rolda 31 estendeuno a todos os estados, tres idiomas,
-320 px e o espazado do texto de 1.4.12, e quitou os `line-clamp` e `truncate` que aínda
-cortaban nomes: 326 textos na `develop` de antes da rolda, 0 despois.
+**Texto grande.** Co texto ao 200 %, as marxes laterais deixan de crecer onde a pantalla
+non ten sitio (`px-cap-*`: nunca máis do que miden nun teléfono de 320 px coa letra
+normal), e onde un nome comparte fila cunha insignia ou cunha hora ten un mínimo en `rem`,
+así que o outro baixa á liña seguinte en lugar de espremelo. Non hai `line-clamp` nin
+`truncate` que corten nomes. `audit:browser` conta o texto que non se ve a 200 % sen que a
+páxina se alargue, en todos os estados, os tres idiomas, a 320 px e co espazado do texto de
+1.4.12: 0.
 
 **Movemento.** O que se move é a interface, nunca un número. Os paneis entran polo bordo
 ao que pertencen (o menú pola dereita, a ficha de parada e a barra da viaxe por abaixo),
@@ -1432,10 +1394,8 @@ os despregables abren coa frecha xirando, o control Próximas/Por liña leva un 
 esvara, e a estrela, a campá e o tick confírmanse unha vez ao activalos. Todo en CSS,
 só `opacity` e `transform`, e só de entrada: pechar segue sendo instantáneo, tamén nos
 bloques que se pregan (o formulario de Ruta, «N opcións máis», o mapa da viaxe, o aviso
-nocturno). Ata a rolda 42 pregábanse animados, e o navegador pinta o primeiro cadro dunha
-transición no seu comezo: ao responder, a resposta saía un cadro debaixo do formulario aínda
-aberto, o traballo de despois alongaba ese cadro 100–200 ms, e «Vou nesta» subía 259 px
-baixo o dedo. Cada un dura
+nocturno): o navegador pinta o primeiro cadro dunha transición no seu comezo, e un prego
+animado deixaría a resposta un cadro debaixo do formulario aínda aberto. Cada un dura
 entre 120 e 240 ms, tamén as confirmacións (o anel arredor de «Vou nesta» agarda 300 ms
 antes de saír), e só un se repite: os puntos de «Calculando» mentres calcula. A marca da
 seguinte parada en «Vou nesta» late dúas veces cada vez que cambia, e queda quieta. Á parte van os indicadores de espera, que duran o que dura
@@ -1444,8 +1404,8 @@ de actualizar xira mentres se sincronizan os avisos. Unha hora nunca se anima �
 a única excepción é a pantalla «Vou nesta», onde a conta ata un só bus roda ao cambiar
 e a marca da seguinte parada late, porque aí a posición si vén do GPS. Con
 `prefers-reduced-motion` non queda nada en movemento, e `audit:browser` compróbao. O latexo
-repetíase mentres duraba a viaxe; dúas veces e quieto é o que pide WCAG 2.2.2, que non
-deixa moverse máis de cinco segundos á beira doutro contido sen un xeito de paralo.
+é dúas veces e quieto porque WCAG 2.2.2 non deixa moverse máis de cinco segundos á beira
+doutro contido sen un xeito de paralo.
 
 **Estado anunciado.** Os conmutadores levan `aria-pressed` (vistas do taboleiro, capas
 do mapa, filtros de liña, modo de hora, opcións de traxecto, saídas dunha liña, destinos
@@ -1455,17 +1415,14 @@ rápidos, tema e idioma) e a navegación usa `aria-current="page"`.
 31 (outubro de 2026) en cada pantalla e estado: claro e escuro, galego, castelán e inglés,
 teléfono e escritorio, só teclado, texto ao 200 %, 320 px, espazado do texto, teléfono
 deitado, movemento reducido, cores forzadas, sen rede, erros e baleiros: 242 medicións de
-162 estados. Antes da rolda, `audit:browser` atopaba 2.328 fallos; despois, 0, en dúas
-execucións seguidas en Windows, e desde entón é unha porta da CI. A súa primeira execución
-no executor de GitHub atopou tres máis, que Windows non ensinaba: ao 200 %, a fila da hora
-de Ruta saía 14–49 px da pantalla, porque alí a letra monoespazada é máis ancha. Arranxada,
-o executor tamén dá 0. Por iso os traballos piden `ubuntu-24.04` polo seu nome e non
-`ubuntu-latest`, que GitHub pasa a 26.04 desde o 19 de outubro de 2026: outra imaxe trae
-outras letras, e cambiala é unha decisión con auditoría, non algo que pase un luns.
-Probouse o 14 e o 15 de outubro: en 26.04 a CI e a auditoría pasan enteiras, pero os catro
-pasos de zoom de `measure:browser` bloquearon o fío 921, 1.140 e 1.003 ms en tres
-execucións, fronte a 308 e 305 en 24.04, cun orzamento de 900. Seguen en 24.04 mentres non
-se saiba por que.
+162 estados, 0 fallos en Windows e no executor de GitHub, e desde entón `audit:browser` é
+unha porta da CI. Os traballos piden `ubuntu-24.04` polo seu nome e non `ubuntu-latest`,
+que GitHub pasa a 26.04 desde o 19 de outubro de 2026: outra imaxe trae outras letras —ao
+200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e cambiala é unha
+decisión con auditoría, non algo que pase un luns. Probado o 14 e o 15 de outubro de 2026:
+en 26.04 a CI e a auditoría pasan enteiras, pero os catro pasos de zoom de
+`measure:browser` bloquearon o fío 921, 1.140 e 1.003 ms en tres execucións, fronte a 308 e
+305 en 24.04, cun orzamento de 900. Seguen en 24.04 mentres non se saiba por que.
 «Arranxado» quere dicir que fallaba
 e que agora o comproba algo que falla se volve. Do que unha máquina non pode oír, o lector
 de pantalla de verdade, hai un guión para seguir a man:
