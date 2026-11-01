@@ -4553,3 +4553,56 @@ seu check.
   mapa por fix (o círculo da precisión fóra do lenzo, como elemento da páxina, por exemplo)
   sería o seguinte paso; canto aforra nun teléfono de verdade non se mediu.
 - `main` sen publicar: é do dono.
+
+## Rolda 54: o que quedaba das roldas 52 e 53 — 1 de novembro de 2026
+
+Pedido: rematar o que as dúas roldas anteriores deixaran aberto.
+
+### Feito
+
+- **Os datos estruturados xa os mira a CI.** A build da CI non leva `SITE_URL`, e sen el non
+  se escribe nin o canónico nin a imaxe nin ningún dos dous bloques. As etiquetas saen agora
+  de `siteHeadTags`, en `seo.ts`, que `vite.config.ts` escribe coma antes (a portada construída
+  con `SITE_URL`, idéntica byte a byte), e a suite comproba que levan `WebSite`,
+  `WebApplication` e o canónico. Sen a etiqueta de `WebSite`, falla.
+- **As cifras da subida da rede peonil**, medidas outra vez sen rede, coas teselas gardadas:
+  41.834 m entre os extremos das arestas, coma dicía o README, pero 49.735 polo perfil que
+  garda a app, onde dicía 42.086 e «case non cambia nada». 42.086 era o perfil co limiar de
+  3 m (hoxe 42.112), non o de 2 m que se usa. 3.099 arestas agochan subida e 292 dez metros
+  ou máis (dicía 3.169 e 287, tamén DATA.md); a peor, a mesma aresta rural de 1.941 m, con
+  78 m. Sen limiar, 68.076 m; con 5 m, 33.159. `walk-network.json`, reconstruído idéntico.
+- **A táboa de `reconcile`**, datada o 20 de agosto, di agora o que atopou a comprobación
+  semanal do 26 de outubro contra a web do operador: itinerarios sen diferenzas, 47/48 na
+  mesma orde, 24/24 cadros, 417/417 liñas e nomes, e 9 postes con dous nomes (eran 8). As
+  posicións e as fusións non se volveron medir: piden 1.187 páxinas, vinte minutos no
+  servidor do operador, e a caché que hai aquí é de agosto.
+
+### Medido
+
+- **`measure.yml` lanzado a man sobre `main` (57d8fb7)**, no executor, que é a referencia dos
+  orzamentos: saíndo agora 464 ms (orzamento 1 s), chegando antes das 17:00 1,4 s; a viaxe
+  3,3–3,5 s de fío por minuto (orzamento 5 s), 90–104 cadros pedidos e 152–192 debuxados polo
+  mapa; o mapa, primeiro debuxado en 1,3 s, 0,9 s de fío ao abrilo, zoom 612 ms, arrastres
+  5 ms; `stress:network` 2.098, 13, 2.121 e 50 ms. Dentro de todos os orzamentos. As medidas
+  desta máquina por riba deles eran a máquina: o comentario do planificador xa o dicía («a
+  run here on a slow day can go over them, and the runner's is the one that is read»).
+- **As cinco portas** sobre esta rama: lint, 162 comprobacións antes e despois da build, 26
+  políticas, `check:deep`, `data:build` sen cambios e a build.
+
+### Mirado e descartado
+
+- **Debuxar o círculo da precisión fóra do lenzo**, que a rolda 53 deixaba como seguinte
+  paso: no executor a viaxe xa está en 3,3–3,5 s, dentro do orzamento. Non fai falta.
+- **Repetir a planificación para xulgar unha mediana**: o orzamento xa se escribiu sobre o
+  executor, e no executor pasa con marxe.
+- Unha build con `--outDir` noutro cartafol falla nun árbore sen `dist/`: un complemento le
+  `dist` polo nome. A build normal non se ve afectada; queda así.
+
+### Queda
+
+- **O × do globo dun bus, enfocado e fóra da pantalla.** A auditoría do mesmo `measure.yml`
+  deu un achado (2.4.11) en «teléfono gl · mapa/bus aberto · claro»; a da CI pasou ese estado
+  nos dous commits do día, e aquí, seis veces co modo do executor, claro e escuro, ningún. O
+  bus móvese co reloxo, e o executor chega a ese estado noutro segundo. Sen reproducilo non
+  se lle pon causa: a auditoría da CI pásao en cada push, e é a que o collerá se se repite.
+- Recortar do README a historia que xa garda este rexistro: proposto como tarefa á parte.
