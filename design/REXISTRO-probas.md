@@ -4990,6 +4990,13 @@ Pedido: no mapa, unha fila de «Liñas por aquí» escolle a liña no mapa e a s
 páxina da liña; na folla dunha parada, tocar unha saída levaba sempre á páxina. O mesmo
 xesto, dúas cousas.
 
+### A 1.7.5
+
+- Por orde do dono: o commit da versión (efaaa75), as cinco portas, a CI de `develop` verde nas
+  súas sete partes, e `main` e a etiqueta nun só push. Pages despregou: o anaco do mapa
+  publicado leva a folla nova. O worker non, nin tiña por que: ningún dos seus ficheiros
+  cambiou desde a 1.7.4, e `/api/version` segue dicindo 4824036.
+
 ### Medido
 
 - **Antes de tocar a auditoría**, a súa parte dos percorridos contra a build de `develop`
@@ -5053,5 +5060,6 @@ xesto, dúas cousas.
 ### Queda
 
 - Sen probar nun teléfono de verdade: a auditoría finxe o toque.
+- A páxina da 1.7.5 en GitHub (Releases), por facer: publicala quedou para o dono.
 - A tira das fichas non se despraza ata a ficha escollida desde unha folla, e pode quedar
   fóra pola dereita; xa pasaba con «Liñas por aquí».
