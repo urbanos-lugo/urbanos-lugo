@@ -1299,7 +1299,8 @@ ok('a slow fix is not a refusal, and after a refusal the next listener asks afre
   // refusal the dead watch stayed open, and the ride joined it and said «Localizando» for ever.
   const g = globalThis as unknown as { navigator: { geolocation?: unknown } };
   const calls = { watch: 0, clear: 0 };
-  let fail: ((error: { code: number; PERMISSION_DENIED: number }) => void) | null = null;
+  // A plain code, as auditBrowser.ts fakes it: compared with the constant, the refusal was missed.
+  let fail: ((error: { code: number }) => void) | null = null;
   Object.defineProperty(g.navigator, 'geolocation', {
     configurable: true,
     value: {
@@ -1312,9 +1313,9 @@ ok('a slow fix is not a refusal, and after a refusal the next listener asks afre
   try {
     const errors: string[] = [];
     const offRide = subscribePosition(() => {}, (reason) => errors.push(reason));
-    fail!({ code: 3, PERMISSION_DENIED: 1 });
+    fail!({ code: 3 });
     assert(errors.length === 0 && clears() === 0, `a timeout reached the listener as "${errors.join()}" or ended the watch`);
-    fail!({ code: 1, PERMISSION_DENIED: 1 });
+    fail!({ code: 1 });
     assert(errors.join() === 'denied' && clears() === 1, `a refusal reached the listener as "${errors.join()}" and cleared ${clears()} watch(es)`);
     const offMap = subscribePosition(() => {}, () => {});
     assert(watches() === 2, 'a listener after a refusal joined the dead watch instead of asking again');

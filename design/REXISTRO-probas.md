@@ -4862,6 +4862,11 @@ mapa, ganchos, a canle de datos, os workflows, `checkPolicy` e `auditBrowser`. S
 - As cinco portas: lint, 165 comprobacións, 26 políticas, `check:deep` e a build.
 - No navegador, co reloxo da páxina nun venres ás 21:00: Praza Maior → HULA, chegar antes das
   08:30, «mañana 07:51 → ~08:15», sen «Voy en esta» e sen erros na consola.
+- A CI de `5001f21` caeu na parte dos percorridos: «o mapa, onde estou · lapela do mapa,
+  posición rexeitada», pequeno e grande. A negativa comparábase coa constante
+  `PERMISSION_DENIED`, que o erro do navegador trae e o `{ code: 1 }` co que a auditoría a
+  finxe non; o mapa seguía «Localizando». Comparada co 1, o número da especificación, as dúas
+  len igual; a falsa da suíte manda agora o código só. Os percorridos con `AUDIT_RUNNER=1`: 0.
 
 ### Queda
 
