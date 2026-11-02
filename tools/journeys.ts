@@ -1089,6 +1089,9 @@ export async function runJourney(w: Worker, j: Journey, phone: Phone, lang: Lang
     if (process.env.SCROLL_LOG) await page.evaluate(`(() => { const m = document.querySelector('main'); window.__sl = []; const t0 = performance.now(); if (!window.__slOn) { window.__slOn = 1; m.addEventListener('scroll', () => window.__sl.push(Math.round(performance.now() - t0) + 'ms ' + Math.round(m.scrollTop) + ' active=' + (document.activeElement && (document.activeElement.id || document.activeElement.tagName + '.' + String(document.activeElement.className).slice(0, 30)))), { passive: true }); } })()`);
     // Where the screen was scrolled when the finger left it, the reach for this tap included.
     scrolledAtTap = await page.evaluate<number>(`Math.round(document.querySelector('main').scrollTop)`);
+    // The picture of a finding above, still being taken when the finger landed, took the tap with
+    // it: with AUDIT_EVIDENCE, as in CI, a finding before a tap was followed by a tap on nothing.
+    await flush();
     await page.evaluate(`window.__watchFrames && window.__watchFrames()`);
     await touch(page, now.x, now.y);
     run.taps++;

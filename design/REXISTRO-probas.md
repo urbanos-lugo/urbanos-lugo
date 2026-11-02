@@ -5006,6 +5006,12 @@ xesto, dúas cousas.
   (`invisible`, fóra da pantalla), ten a frecha da 13 mentres o mapa amosa todas as liñas;
   cando «preto de min» as deixa en seis, esa frecha marcha e a da folla da parada herda o seu
   rastro.
+- **E o toque que non entraba tamén era do arnés.** Na primeira pasada enteira o toque na
+  frecha non abriu a páxina (paso 5, os dous teléfonos); só, pasaba. A pasada enteira levaba
+  `AUDIT_EVIDENCE`, coma a CI, e un achado garda a súa foto sen agardar por ela: a foto do
+  falso achado de xusto antes, aínda en curso cando chegaba o dedo, levaba o toque. Co falso
+  achado de volta, o paso 5 fallou 2 de 2 con `AUDIT_EVIDENCE` e pasou sen el. Na CI, calquera
+  achado antes dun toque traía detrás un «never came» que aquí non saía.
 
 ### Feito
 
@@ -5020,6 +5026,8 @@ xesto, dúas cousas.
   line · map, a stop’s sheet, the arrow».
 - `FRAMES` deixa fóra o control oculto (`visibility: hidden`), coma xa facía o `shown()` dos
   pasos.
+- O toque dun paso agarda polas fotos pendentes (`flush`) antes de que chegue o dedo. Co falso
+  achado de volta e `AUDIT_EVIDENCE`, o toque entra 2 de 2.
 - DECIDIDO, a decisión.
 
 ### Comprobado
@@ -5032,11 +5040,18 @@ xesto, dúas cousas.
 - No escritorio, no navegador a 1280 × 800 e en castelán: a fila da 4.1 pecha a folla, deixa «1 elegida» e
   a 4.1 debuxada e encadrada; a súa frecha abre a páxina da 4.1. Na consola, só o rexistro do
   *service worker* en localhost.
+- Coa espera antes do toque, `audit:browser` enteiro por partes, con `AUDIT_RUNNER=1` e
+  `AUDIT_EVIDENCE`: os estados, 0 achados WCAG en 162 estados e catro pases, a barra da casa
+  25 e 3 coma sempre (os globos dos buses, o «All», o mapa a 320 × 256), 388 s; as
+  secuencias, 0, 148 s; os percorridos tres veces, 0 `flow` e 0 `back` en 150, 148 e 161 s, os
+  62 da barra da casa os mesmos de antes as tres veces, e ningunha foto de proba.
+- Os percorridos do mapa na matriz enteira (`JOURNEYS=map`, os sete pases: castelán, inglés,
+  200 %, de lado, sen rede): 70 execucións, 0 `flow` e 0 `back`. Os 8 da barra da casa son de
+  percorridos que non se tocaron, e os dous de 200 % e de lado son a resposta baixo o bordo,
+  que a esas medidas é da barra da casa.
 
 ### Queda
 
-- Na primeira pasada enteira dos percorridos co cambio, o toque na frecha non abriu a páxina
-  (paso 5, os dous teléfonos). Ese percorrido só, e as dúas pasadas enteiras seguintes,
-  pasaron. Sen causa atopada.
+- Sen probar nun teléfono de verdade: a auditoría finxe o toque.
 - A tira das fichas non se despraza ata a ficha escollida desde unha folla, e pode quedar
   fóra pola dereita; xa pasaba con «Liñas por aquí».
