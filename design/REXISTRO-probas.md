@@ -4873,3 +4873,77 @@ mapa, ganchos, a canle de datos, os workflows, `checkPolicy` e `auditBrowser`. S
 - Sen probar nun teléfono: que `watchPosition` siga tras un tempo esgotado é a especificación.
 - `compare:walk` non se volveu correr (le servidores alleos): o arranxo do router move un
   minuto en 7 pares de 5.243, así que as súas cifras no README non deberían cambiar.
+  *Corrido na rolda 58: igual, agás o p10 (−5,9%).*
+
+## Rolda 58: o traballo dos luns en vermello, e os flecos das 56 e 57 — 2 de novembro de 2026
+
+«Check the sources» fallou o luns 2 por dúas cousas, e quedaban os flecos das dúas roldas
+anteriores.
+
+### Medido
+
+- **Os festivos de 2027.** A resolución dos locais saíu no DOG 204 do 26 de outubro: anexo II,
+  entrada 28, Lugo, 9 de febreiro (Martes de Entroido) e 5 de outubro (San Froilán). O
+  Decreto 68/2026 (DOG do 2 de xullo), artigo 1: doce días, co 19 de marzo e o 17 de maio.
+  Lidos os dous textos no DOG, non nun resumo.
+- **Tres rutas de OSM, de 25 a 48% máis longas.** 1.3 cara ao Ceao, 3.2 desde Tolda e 11 desde
+  Bóveda empezaban nun anaco de 27 m e ían en liña recta 2,6, 3,0 e 4,9 km ata a súa saída. O
+  resto, igual. Unha rotonda cartografada o 30 de outubro (changeset 191238954), partida en
+  tres vías, entrou nas tres relacións coas dúas vías polas que pasa o bus de primeiras (#0 e
+  #1), en vez de entre as dúas rúas que une; entre esas dúas quedaba un oco de 13 m. Con eses
+  datos a build pasaba 1.3 e 11 a OSRM, peor do que se publica. As outras 37 rutas cambiadas
+  son retoques de 1 a 11 m.
+- **Un bus do 5.1, na súa liña, «61 m fóra».** A comprobación medía ao vértice máis próximo:
+  un bus a medio dun tramo recto de 161 m está lonxe dos dous extremos. Cos datos de antes,
+  59 m; co retoque de 2 m nos tramos, 61, e a suíte fallaba. Á liña, os 99 buses a 0,00 m.
+- **O globo dun bus** non tiña ancho máximo: 383 px nun mapa de 390, máis do que deixan os
+  12 + 12 de `popupClear`.
+
+### Feito
+
+- `festivos.json`, 2027: os catorce días e as dúas fontes. NOTAS, Pendente 3, pechado.
+- `stitch` (`tools/osm.ts`): un tramo de vías encadeadas que non toca as veciñas pero pecha
+  un oco entre outras dúas volve a ese oco, do revés se estaba listado ao revés; o resto
+  queda onde o pon a relación. É a costura do importador e da comprobación dos luns, así que
+  as dúas len igual. `data:osm` e `data:build` outra vez: 417 paradas, 24 liñas, 48 sentidos,
+  45 desde OSM e 3 desde OSRM, coma antes; ningún sentido move máis de 11 m.
+- A comprobación «every drawn bus stays on its own route» mide á liña (`projectOnto`, agora
+  exportada de `walkRouter.ts`), con 5 m en vez de 60 ao vértice.
+- O globo dun bus leva `maxWidth` = o mapa menos `popupClear` (esquerda + dereita).
+- `compare:walk`, desde a súa caché (un par preguntado de novo): mediana −1,2%, p10 −5,9%, p90
+  +0,5%, 39 de 40 dentro do 10%. O README tiña −6,0% no p10.
+- Catorce ramas locais xa en `develop`, borradas.
+
+### Comprobado
+
+- As cinco portas: lint, 166 comprobacións, 26 políticas, `check:deep` e a build.
+- `checkHolidaysAhead`: «covers 2026, 2027; nothing due yet».
+- `audit:browser` con `AUDIT_RUNNER=1`, os estados `mapa/bus`: 0 achados WCAG en 8 estados e
+  catro pases.
+- Nun mapa de 390 px, os globos abertos: 366 px, 12 a cada lado, o × visible.
+- Peticións a terceiros: dúas páxinas do DOG, `data:osm` tres veces (a costura nova non se
+  pode aplicar sen volver preguntar), unha consulta pequena a Overpass para ver a relación do
+  1.3, e unha a FOSSGIS dende `compare:walk`.
+
+### O cartafol do repositorio, baleirado e recuperado
+
+- Despois, cos sete worktrees vellos e as ramas superadas quitados por orde do dono, quedaban
+  22 cartafoles `urbanos-*` co que Windows non borrara (`node_modules` con rutas longas). Un
+  `Remove-Item -Recurse` sobre `-Filter 'urbanos-*'` no cartafol pai colleu tamén o
+  repositorio, porque en Windows o filtro non distingue maiúsculas: baleirou a copia de
+  traballo, o `.git`, todo o ignorado e os catro commits desta rolda, sen subir. Parou só no
+  propio cartafol, que estaba en uso.
+- Recuperado: un clon novo de GitHub (`develop` = 3c0c6dc); o ignorado, dende a instantánea
+  de C: do 1 de novembro ás 17:19 (2.725 ficheiros, `.claude/`, `.cache/`, `.agents/`, os
+  informes de seguridade, `data/osm-walk-network.json`); e os cambios desta rolda, repetindo
+  as edicións da sesión desde a súa transcrición, máis outro `data:osm`. Os mesmos 417, 24 e
+  48, as mesmas 45 rutas de OSM, ningunha movida máis de 50 m.
+- `CLAUDE.md` ten agora un bloque para todo borrado: lista de rutas absolutas lida antes,
+  nunca un patrón, os commits sen subir gardados noutro disco primeiro.
+
+### Queda
+
+- As relacións de OSM seguen coa rotonda fóra de sitio; a app xa non depende diso. A rotonda
+  é nova na rúa, da urbanización da estación intermodal.
+- O que cambiou no ignorado entre o 1 de novembro ás 17:19 e o borrado non volveu (os permisos
+  aprobados desde entón, a caché de `compare:walk` dun par).

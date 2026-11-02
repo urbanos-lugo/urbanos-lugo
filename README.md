@@ -347,7 +347,7 @@ quilómetros a campo través, e alí non hai beirarrúa ningunha.
 
 **Substituír algo é afirmar que o teu é igual de bo, así que se comproba.**
 `pnpm run compare:walk` colle 40 traxectos reais e pregúntallos aos dous enrutadores, ao
-noso e ao de FOSSGIS que había antes. Última medición: mediana **−1,2%**, p10 −6,0%, p90
+noso e ao de FOSSGIS que había antes. Última medición: mediana **−1,2%**, p10 −5,9%, p90
 +0,5%, e **39 dos 40 dentro do 10%**, os 40 dentro do 25%.
 
 O signo importa e é honesto dicilo: os nosos camiños son sistematicamente un chisco máis
