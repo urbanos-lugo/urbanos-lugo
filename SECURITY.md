@@ -63,7 +63,10 @@ someone else could register the name that was freed, and the site would go on as
   nothing: the work per request is one `existsSync` and one `sendFile`, both answered from
   the operating system's cache. The published site is on GitHub Pages and never reaches
   this code at all; anyone self-hosting it on the open internet wants a reverse proxy or a
-  CDN in front, which is where request flooding is actually handled.
+  CDN in front, which is where request flooding is actually handled. Behind one, set
+  `TRUST_PROXY` (`1` for a single proxy), or every visitor arrives from the proxy's address
+  and the rate limit is one bucket for the whole site; unset, a forwarded address is never
+  believed.
 - **buslugo.com being scraped.** It is a public timetable, fetched at most once a minute
   behind a thirty-minute cache, with an honest User-Agent. `DATA.md` covers the terms.
 

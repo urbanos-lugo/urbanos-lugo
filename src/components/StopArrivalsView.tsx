@@ -155,6 +155,8 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
     if (alarmOn) return stopAlarm();
     setAlarmError(null);
     setAlarmFired(false);
+    // On before the watch: a browser with no geolocation answers inside watchForStop, and the off that answer sets must come last.
+    setAlarmOn(true);
     alarmRef.current = watchForStop(
       selectedStop,
       () => {
@@ -163,11 +165,11 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
       },
       setAlarmDistance,
       (reason) => {
+        // Off for real, not on screen only: the watch left running went on ringing at the stop.
+        stopAlarm();
         setAlarmError(reason === 'denied' ? t.arrivals.alarmDenied : t.arrivals.alarmUnavailable);
-        setAlarmOn(false);
       },
     );
-    setAlarmOn(true);
   };
 
   /** The moment the board is read at: now, or the time asked for, today or on the day asked for. */

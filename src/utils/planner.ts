@@ -56,6 +56,14 @@ const ARRIVE_BY_LOOKBACK_MIN = 180;
 const ARRIVE_BY_STEP_MIN = 5;
 
 /**
+ * A time asked for that is more than this behind the clock is tomorrow's: at 21:00, «chegar
+ * antes das 08:30» is the morning after. Read as this morning, the evening before an
+ * appointment got no answer at all, and «saír ás 08:00» on a Friday night got Friday's buses
+ * for a Saturday. Within the hour it is still today: a field left at the time it was opened.
+ */
+const ASKED_TIME_IS_TOMORROW_AFTER_MIN = 60;
+
+/**
  * A one-stop ride is never offered: measured over 2,254 legs it costs what the walk costs
  * (1.2 min riding after 5.3 waiting, against a 5-minute walk) and is not yours to control.
  */
@@ -359,16 +367,33 @@ const NOTHING_SKIPPED: Skips = () => false;
 /** The lines that call at both stops, in the first one's order: a line the notice takes off either is not one of them. */
 const servingBoth = (a: BusStop, b: BusStop, skips: Skips): string[] => a.lines.filter((l) => b.lines.includes(l) && !skips(l, a.id) && !skips(l, b.id));
 
+/** The moment a question is planned from, on `now`'s day: now, or the time asked to leave. */
+export function plannedFrom(now: Date, departAt?: number): Date {
+  const at = new Date(now);
+  if (departAt !== undefined) at.setHours(Math.floor(departAt / 60), Math.round(departAt % 60), 0, 0);
+  return at;
+}
+
 /** Every distinct way of making the trip, quickest first. */
 export function planTrips(fromQuery: string, toQuery: string, options: PlanOptions = {}): RoutePlanResult[] {
   const { userLocation, now = new Date(), lang = 'gl', measuredWalkToStop, skipsStop = NOTHING_SKIPPED } = options;
   const question = ask(lang, fromQuery, toQuery, userLocation, measuredWalkToStop);
   // One of the two places is not in the dataset: no itinerary beats one from somewhere else.
   if (!question) return [];
-  if (options.arriveBy !== undefined) return planArrivingBy(lang, question, options.arriveBy, now, skipsStop);
-  const at = new Date(now);
-  if (options.departAt !== undefined) at.setHours(Math.floor(options.departAt / 60), Math.round(options.departAt % 60), 0, 0);
-  return planDeparting(lang, question, at, skipsStop);
+  const asked = options.arriveBy ?? options.departAt;
+  const tomorrow = asked !== undefined && asked < now.getHours() * 60 + now.getMinutes() - ASKED_TIME_IS_TOMORROW_AFTER_MIN;
+  const day = new Date(now);
+  if (tomorrow) {
+    day.setDate(day.getDate() + 1);
+    day.setHours(0, 0, 0, 0);
+  }
+  const plans =
+    options.arriveBy !== undefined ? planArrivingBy(lang, question, options.arriveBy, day, skipsStop) : planDeparting(lang, question, plannedFrom(day, options.departAt), skipsStop);
+  if (!tomorrow) return plans;
+  // That day's buses answer it, as they always have «chegar antes das»: one that does not run
+  // then carries a notice worded from that day, "non presta servizo hoxe", read the day before.
+  // And a plan's day is counted from now, as every day the app prints is.
+  return plans.filter((plan) => plan.isServiceActive).map((plan) => ({ ...plan, daysAhead: (plan.daysAhead ?? 0) + 1 }));
 }
 
 /** A question with its two places found and its boarding stops chosen: none of that depends on the clock. */
@@ -423,7 +448,8 @@ function planDeparting(lang: Lang, { fromRes, toRes, starts, ends }: Question, n
     const current = byJourney.get(key);
     if (!current || isBetterPlan(plan, current)) byJourney.set(key, plan);
   }
-  return [...byJourney.values()].sort((a, b) => (isBetterPlan(a, b) ? -1 : 1));
+  // Equal is said as equal: a comparator that never answers 0 leaves the order to the engine.
+  return [...byJourney.values()].sort((a, b) => (isBetterPlan(a, b) ? -1 : isBetterPlan(b, a) ? 1 : 0));
 }
 
 const isWalkOnly = (p: RoutePlanResult) => !p.segments.some((seg) => seg.type === 'bus');

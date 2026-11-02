@@ -42,6 +42,11 @@ async function startServer() {
   app.set('case sensitive routing', true);
   // Express names itself in every response unless told not to: a version to look up, for nothing.
   app.disable('x-powered-by');
+  // Behind the reverse proxy SECURITY.md advises, every visitor arrived from the proxy's address,
+  // and the rate limit was one bucket for the whole site. TRUST_PROXY names the hops (`1`) or
+  // the addresses (`loopback`) to believe X-Forwarded-For from; unset, nobody's is believed.
+  const trustProxy = process.env.TRUST_PROXY;
+  if (trustProxy) app.set('trust proxy', /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy);
   app.use(express.json({ limit: '32kb' }));
 
   app.use((req, res, next) => {

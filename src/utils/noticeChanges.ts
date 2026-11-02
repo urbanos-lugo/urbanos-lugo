@@ -238,15 +238,21 @@ export function pastTimetable(change: LineChange, stopId: string, now: Date): bo
   const night = new Date(now);
   if (night.getHours() < 5) night.setDate(night.getDate() - 1);
   const kind = dayKind(night);
+  let boardable = false;
   let last = -1;
-  for (const line of BUS_LINES.filter((l) => (l.number === change.line || l.id === change.line) && lineRunsOn(l, kind))) {
+  for (const line of BUS_LINES.filter((l) => l.number === change.line || l.id === change.line)) {
     line.directions.forEach((direction, d) => {
       // Where a run ends is not a call anybody can board, as on the board itself.
       const at = direction.stops.indexOf(stopId);
-      if (at >= 0 && at < direction.stops.length - 1) for (const run of buildRuns(line, d, BUS_STOPS, kind)) last = Math.max(last, run.minutesByStopIndex[at] ?? -1);
+      if (at < 0 || at === direction.stops.length - 1) return;
+      boardable = true;
+      if (lineRunsOn(line, kind)) for (const run of buildRuns(line, d, BUS_STOPS, kind)) last = Math.max(last, run.minutesByStopIndex[at] ?? -1);
     });
   }
-  return minutesOf(now) > last;
+  // A line that only ends its run here has no call to be past: the 7 at Rúa Montevideo was said
+  // to run on the notice's word there from midday. One that does not run today has none either,
+  // and there the notice is all there is.
+  return boardable && minutesOf(now) > last;
 }
 
 /** The latest of these lines' end times tonight, the way the night runs: "03:15" after "01:00". */

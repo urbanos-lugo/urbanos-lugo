@@ -1292,6 +1292,39 @@ await okAsync('the one position watch serves every listener, and a late one gets
   }
 });
 
+ok('a slow fix is not a refusal, and after a refusal the next listener asks afresh', () => {
+  // Every error was "denied": a first fix slower than twenty seconds, indoors or with the GPS
+  // waking up, told a rider to check permissions that were fine, and the board showed its alarm
+  // off while the watch, which goes on after a timeout, ran on and could still ring. After a real
+  // refusal the dead watch stayed open, and the ride joined it and said «Localizando» for ever.
+  const g = globalThis as unknown as { navigator: { geolocation?: unknown } };
+  const calls = { watch: 0, clear: 0 };
+  let fail: ((error: { code: number; PERMISSION_DENIED: number }) => void) | null = null;
+  Object.defineProperty(g.navigator, 'geolocation', {
+    configurable: true,
+    value: {
+      watchPosition: (_onFix: unknown, onError: typeof fail) => ((fail = onError), ++calls.watch),
+      clearWatch: () => void calls.clear++,
+    },
+  });
+  const watches = () => calls.watch;
+  const clears = () => calls.clear;
+  try {
+    const errors: string[] = [];
+    const offRide = subscribePosition(() => {}, (reason) => errors.push(reason));
+    fail!({ code: 3, PERMISSION_DENIED: 1 });
+    assert(errors.length === 0 && clears() === 0, `a timeout reached the listener as "${errors.join()}" or ended the watch`);
+    fail!({ code: 1, PERMISSION_DENIED: 1 });
+    assert(errors.join() === 'denied' && clears() === 1, `a refusal reached the listener as "${errors.join()}" and cleared ${clears()} watch(es)`);
+    const offMap = subscribePosition(() => {}, () => {});
+    assert(watches() === 2, 'a listener after a refusal joined the dead watch instead of asking again');
+    offRide();
+    offMap();
+  } finally {
+    delete g.navigator.geolocation;
+  }
+});
+
 ok('the arrival alarm rings once and lets go of the position', () => {
   // It kept the GPS on after ringing until the alarm was turned off or the board left, while
   // the board showed "arrived" and nothing that used it; PRIVACY.md said it ran "until you
@@ -1613,6 +1646,16 @@ ok('an operator notice becomes changes the app uses: stops closed and moved, lin
   assert(pastTimetable(line('13')!, head13, new Date(2026, 9, 10, 23, 30)) && pastTimetable(line('13')!, head13, new Date(2026, 9, 11, 2, 0)), 'the 13 past its last printed call was not handed to the notice');
   assert(!pastTimetable(line('13')!, head13, new Date(2026, 9, 11, 3, 30)) && !pastTimetable(line('13')!, head13, new Date(2026, 9, 10, 5, 30)), 'the notice spoke for the 13 after its end, or on the morning before');
   assert(!pastTimetable(line('10')!, head10, new Date(2026, 9, 10, 23, 30)) && pastTimetable(line('10')!, head10, new Date(2026, 9, 12, 23, 30)), 'the 10 was handed to the notice on a night it does not extend, or not on the 12th');
+  // Where a line only ends its run there is no call to be past: on a night the notice extends
+  // the 7, Rúa Montevideo's board said from midday that it ran there on the notice's word.
+  const onlyEnds = BUS_STOPS.flatMap((stop) =>
+    stop.lines
+      .map((id) => BUS_LINES.find((l) => l.id === id)!)
+      .filter((l) => l.directions.every((d) => !d.stops.includes(stop.id) || d.stops.indexOf(stop.id) === d.stops.length - 1))
+      .map((l) => ({ stop, change: { line: l.number, until: { time: '03:00' }, closed: [], moved: [] } })),
+  );
+  assert(onlyEnds.length > 0, 'no line only ends its run anywhere, so the next line checks nothing');
+  for (const { stop, change } of onlyEnds) assert(!pastTimetable(change, stop.id, new Date(2026, 9, 10, 13, 0)), `the ${change.line} ran past its timetable at ${stop.name}, where it only ends its run`);
 
   // A name in the notice is a stop only when it clearly is one, among the line's own.
   const ofLine = (id: string) => BUS_STOPS.filter((s) => s.lines.includes(id));
@@ -2176,7 +2219,7 @@ const ask = (port: number, path: string, { host = '127.0.0.1', method = 'GET', h
  * build of three files and, beside it, a dist-server/ that must never be served. Returns
  * the port, everything it printed, and a way to stop it.
  */
-async function startServer(args: string[]): Promise<{ port: number; printed: () => string; stop: () => Promise<void>; folder: string }> {
+async function startServer(args: string[], settings: Record<string, string> = {}): Promise<{ port: number; printed: () => string; stop: () => Promise<void>; folder: string }> {
   const folder = mkdtempSync(join(tmpdir(), 'urbanos-server-'));
   mkdirSync(join(folder, 'dist'));
   mkdirSync(join(folder, 'dist-server'));
@@ -2193,6 +2236,8 @@ async function startServer(args: string[]): Promise<{ port: number; printed: () 
   });
   const env: NodeJS.ProcessEnv = { ...process.env, PORT: String(port) };
   delete env.HOST;
+  delete env.TRUST_PROXY;
+  Object.assign(env, settings);
   // Node with tsx's loader, not node_modules/.bin/tsx: on Windows that is a .cmd, which spawn cannot start.
   const child = spawn(process.execPath, ['--import', import.meta.resolve('tsx'), join(root, 'server.ts'), ...args], { cwd: folder, env, stdio: ['ignore', 'pipe', 'pipe'] });
   let out = '';
@@ -2254,6 +2299,9 @@ await okAsync('the built server sends its policy and headers, and keeps the rate
     const plans = [];
     for (let i = 0; i <= MAX_PLANS_PER_WINDOW; i++) plans.push((await ask(server.port, '/api/plan')).status);
     assert(plans.slice(0, MAX_PLANS_PER_WINDOW).every((s) => s === 400) && plans[MAX_PLANS_PER_WINDOW] === 429, `the plans in a minute came back ${plans.join(' ')}`);
+    // With no proxy named, a forwarded address is the caller's own say-so and buys no new budget.
+    const forged = await ask(server.port, '/api/plan', { headers: { 'x-forwarded-for': '203.0.113.9' } });
+    assert(forged.status === 429, `a made-up X-Forwarded-For got past the limit: ${forged.status}`);
 
     const typed = 'Rúa-da-Raíña-14-segundo';
     const malformed = await ask(server.port, `/api/paradas/%E0%A4%A/agora?from=${encodeURIComponent(typed)}`);
@@ -2274,6 +2322,22 @@ await okAsync('the built server sends its policy and headers, and keeps the rate
     // Self-hosting listens everywhere; the development server, below, does not.
     const outward = Object.values(networkInterfaces()).flat().find((a) => a && a.family === 'IPv4' && !a.internal)?.address;
     if (outward) assert((await ask(server.port, '/api/health', { host: outward })).status === 200, `the built server does not answer on ${outward}`);
+  } finally {
+    await server.stop();
+  }
+});
+
+await okAsync('behind a named proxy each visitor has their own rate limit', async () => {
+  // Behind the reverse proxy SECURITY.md advises, every request came from the proxy's address:
+  // the whole site was one bucket, and about sixty open boards turned everyone away with 429s.
+  const server = await startServer([], { TRUST_PROXY: '1' });
+  try {
+    const from = (address: string) => ask(server.port, '/api/plan', { headers: { 'x-forwarded-for': address } }).then((res) => res.status);
+    const first = [];
+    for (let i = 0; i <= MAX_PLANS_PER_WINDOW; i++) first.push(await from('198.51.100.1'));
+    assert(first[MAX_PLANS_PER_WINDOW] === 429, `one visitor's plans were not limited: ${first.join(' ')}`);
+    const second = await from('198.51.100.2');
+    assert(second === 400, `a second visitor behind the same proxy was turned away with the first: ${second}`);
   } finally {
     await server.stop();
   }
@@ -3639,6 +3703,13 @@ await okAsync('the walking router returns a route you could actually walk', asyn
     }
   }
   assert(sampled > 50, `only ${sampled} pairs routed; the sweep is not sweeping`);
+
+  // The last street's climb counts in the search as it does in the answer: flat, the search
+  // took the way up to San Eufrasio over the way down, 15 min where 14 would do.
+  const fontinas = BUS_STOPS.find((s) => s.name === 'Fontiñas (Inst. San Xillao)')!;
+  const abrite = BUS_STOPS.find((s) => s.name === 'San Eufrasio 7 (Abrite)')!;
+  const uphill = await routeOnFoot([fontinas.lat, fontinas.lng], [abrite.lat, abrite.lng]);
+  assert(uphill && uphill.minutes <= 14, `${fontinas.name} -> ${abrite.name} walks ${uphill?.minutes} min, up the last street`);
 });
 
 await okAsync('no option promises a bus the measured walk cannot reach', async () => {
@@ -4124,6 +4195,26 @@ ok('asked before midnight, a walk that ends past it does not make tomorrow a run
   const direct = plans.map((p) => p.segments.filter((seg) => seg.type === 'bus')).filter((legs) => legs.length === 1 && legs[0].line?.number === '1.1');
   assert(direct.length > 0 && direct.every(([leg]) => leg.fromStop?.name === 'Praza Bretaña'), `the 1.1 straight there is boarded at ${direct.map(([leg]) => leg.fromStop?.name).join(', ')}, a walk away from the pole it passes first`);
   for (const plan of sampleTrips(night)) assert(!plan.daysAhead || !plan.isServiceActive, `a trip that sets off tomorrow at ${plan.departureTime} was counted as running tonight`);
+});
+
+ok('a time already gone today is asked of tomorrow, and the answer says tomorrow', () => {
+  // Read as this morning: asked at 21:00, «chegar antes das 08:30» answered nothing at all, "no
+  // departure gets you there in time", and «saír ás 08:00» on a Friday night offered Friday's
+  // 08:00 arriving 08:35, a bus Saturday does not run, with no day said and «Vou nesta» on it.
+  const friday = new Date(2026, 10, 6, 21, 0);
+  const saturday = new Date(2026, 10, 7, 7, 30);
+  assert(friday.getDay() === 5 && saturday.getDay() === 6, 'the probe dates are not a Friday and a Saturday');
+  const times = (plans: ReturnType<typeof planTrips>) => plans.map((p) => `${p.departureTime}-${p.arrivalTime}`).join(' ');
+  const arrive = planTrips('Praza Maior', 'HULA', { now: friday, arriveBy: 8 * 60 + 30 });
+  assert(arrive.length > 0 && arrive.every((p) => p.daysAhead === 1), `the evening before, arriving by 08:30 gave ${arrive.length} plan(s) on day(s) ${arrive.map((p) => p.daysAhead)}`);
+  const depart = planTrips('Praza Maior', 'HULA', { now: friday, departAt: 8 * 60 });
+  assert(depart.length > 0 && depart.every((p) => p.daysAhead === 1), `a departure tomorrow morning is on day(s) ${depart.map((p) => p.daysAhead)}, not tomorrow`);
+  // Saturday's own buses, without its Monday ones: those say "not today", which the evening before is the wrong day.
+  const onSaturday = planTrips('Praza Maior', 'HULA', { now: saturday, departAt: 8 * 60 }).filter((p) => p.isServiceActive);
+  assert.equal(times(depart), times(onSaturday), "Friday night's answer for 08:00 is not Saturday's timetable");
+  // Within the hour it is still today: a field left at the time it showed when it was opened.
+  // (A plan past some line's last bus is on another day either way; tomorrow's question has no plan today at all.)
+  assert(planTrips('Praza Maior', 'HULA', { now: friday, departAt: 20 * 60 + 30 }).some((p) => p.isServiceActive && !p.daysAhead), 'half an hour ago was read as tomorrow');
 });
 
 ok('an empty board names a bus that can be boarded there, on the day it runs', () => {

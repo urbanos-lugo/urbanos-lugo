@@ -8,8 +8,8 @@ export const MAX_QUERY_LENGTH = 120;
  * (5.35 ms a keystroke before, 1.34 after). The corpus is 1,343 strings; the map is
  * cleared, not grown, past two thousand.
  */
-function remembering(compute: (str: string) => string): (str: string) => string {
-  const seen = new Map<string, string>();
+function remembering<T>(compute: (str: string) => T): (str: string) => T {
+  const seen = new Map<string, T>();
   return (str) => {
     const found = seen.get(str);
     if (found !== undefined) return found;
@@ -139,16 +139,7 @@ const searchForm = remembering((str: string): string => {
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** The word-boundary pattern for a query, built once per query rather than once per stop. */
-let boundaryFor = { key: '', regex: /(?:)/ };
-const wordBoundary = (q: string): RegExp => {
-  if (boundaryFor.key !== q) boundaryFor = { key: q, regex: new RegExp(`\\b${escapeRegex(q)}`, 'i') };
-  return boundaryFor.regex;
-};
-let boundaryExpFor = { key: '', regex: /(?:)/ };
-const wordBoundaryExp = (q: string): RegExp => {
-  if (boundaryExpFor.key !== q) boundaryExpFor = { key: q, regex: new RegExp(`\\b${escapeRegex(q)}`, 'i') };
-  return boundaryExpFor.regex;
-};
+const wordBoundary = remembering((q) => new RegExp(`\\b${escapeRegex(q)}`, 'i'));
 
 /** Relevance of a name to a query, in tiers; 0 for no match. */
 export function calculateRelevanceScore(name: string, code: string, id: string, query: string, context?: string): number {
@@ -164,7 +155,7 @@ export function calculateRelevanceScore(name: string, code: string, id: string, 
   const asLine = asLineNumber(q);
   if (c === q || i === q || c === asLine || i === asLine) return 1000;
   if (n.startsWith(q) || nExp.startsWith(qExp)) return 800;
-  if (wordBoundary(q).test(n) || wordBoundaryExp(qExp).test(nExp) || nExp.includes(qExp)) return 600;
+  if (wordBoundary(q).test(n) || wordBoundary(qExp).test(nExp) || nExp.includes(qExp)) return 600;
   if (n.includes(q)) return 400;
   // Every word of the query starts a word of the name, not side by side: "Armórica 138"
   // against "Rúa Armórica (enfte. Nº 138)". Word starts, not substrings, or "de la" is

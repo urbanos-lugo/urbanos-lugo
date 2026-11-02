@@ -48,7 +48,16 @@ export function subscribePosition(onFix: (fix: PositionFix) => void, onError: (r
         lastFix = fix;
         for (const l of listeners) l.onFix(fix);
       },
-      () => {
+      (error) => {
+        // Only a refusal ends a watch. A slow fix (indoors, a GPS waking up) times out and the
+        // watch goes on trying: read as "denied", it told a rider to check permissions that
+        // were fine, and the board showed its alarm off while the watch ran on and could ring.
+        if (error.code !== error.PERMISSION_DENIED) return;
+        // Refused, the watch reports nothing more. Let it go, so whoever asks next asks afresh
+        // and hears the answer: joined, a dead watch left the ride saying «Localizando» for ever.
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        lastFix = null;
         for (const l of listeners) l.onError('denied');
       },
       { enableHighAccuracy: true, maximumAge: 5_000, timeout: 20_000 },

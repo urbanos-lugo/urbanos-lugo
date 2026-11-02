@@ -288,6 +288,11 @@ Tres modos: **agora**, **saír ás** e **chegar antes das**. O terceiro devolve 
 máis tardía que aínda chega a tempo, que é a pregunta real antes dunha cita no HULA ou
 dunha clase no Campus.
 
+**Unha hora que xa pasou é a de mañá.** Ás 21:00, «chegar antes das 08:30» é a mañá
+seguinte: a resposta sae do cadro dese día —un venres á noite, o do sábado—, só con buses
+que circulan ese día, e dío, «mañá». Dentro da última hora aínda é hoxe, que é o que queda no campo cando se abre e se
+pregunta un pouco despois. «Vou nesta» só se ofrece para unha viaxe de hoxe.
+
 **Pasado o último bus, a resposta é doutro día, e dío.** A opción sae do cadro do día en
 que a liña volve circular —sábado, domingo ou festivo teñen o seu— e leva o día diante da
 hora: «mañá 07:08 → ~07:30», ou «o martes» se no medio hai un fin de semana ou un festivo
@@ -1285,7 +1290,10 @@ check:policy` que as orixes permitidas son exactamente as que lista `PRIVACY.md`
 que é a única chamada que custa decenas de milisegundos. Devolve `429` con `Retry-After`.
 Está en memoria e por proceso a propósito: dúas instancias detrás dun repartidor de
 carga permitirían o dobre, e [o comentario que o di](src/security/rateLimit.ts) é o
-sitio onde buscalo se algún día se replica.
+sitio onde buscalo se algún día se replica. Detrás dun proxy inverso, como `SECURITY.md`
+aconsella aloxalo, todas as peticións chegan do enderezo do proxy e o límite sería un só
+para todo o sitio: `TRUST_PROXY=1` (un proxy diante) ou `TRUST_PROXY=loopback` di de quen
+crer `X-Forwarded-For`, e cada visitante ten o seu. Sen el non se lle cre a ninguén.
 
 **Integración continua.** Permisos mínimos por traballo (o de construír só le a árbore;
 só o de despregar escribe en Pages) e `persist-credentials: false` no checkout, para que
@@ -1738,7 +1746,7 @@ pnpm start
 ```
 
 Non fai falla ningunha chave nin conta: os datos van no repositorio e a app funciona sen
-conexión. `.env.example` só ten o porto.
+conexión. `.env.example` só ten o porto e `TRUST_PROXY`, para cando hai un proxy diante.
 
 ---
 

@@ -4806,3 +4806,65 @@ Pedido: o achado que a rolda 54 deixaba en «Queda» e que tirou a CI de 539b158
 - O globo dun bus mide 383 px nun teléfono de 390, máis do oco que lle deixa `popupClear`
   (12 e 12): `keepClear` arrímao a un bordo e o outro queda ata 5 px fóra. O × cabe; non se
   tocou.
+
+## Rolda 57: unha hora pasada é a de mañá, e un GPS lento non é unha negativa — 2 de novembro de 2026
+
+Auditoría do repositorio enteiro: servidor, worker, servizos, motor, planificador, pantallas,
+mapa, ganchos, a canle de datos, os workflows, `checkPolicy` e `auditBrowser`. Sete arranxos.
+
+### Medido
+
+- **O planificador lía toda hora como de hoxe.** Un venres ás 21:00, «chegar antes das 08:30»
+  de Praza Maior ao HULA daba 0 plans e «ningunha saída chega a tempo»; «saír ás 08:00» daba o
+  cadro do venres, trece horas atrás, sen día e con «Vou nesta», e unha das tres opcións
+  (08:00 → 08:35) non circula o sábado.
+- **Toda falla de posición era «denegado».** Un tempo esgotado (20 s sen posición, dentro dun
+  edificio ou co GPS espertando) apagaba a alarma na pantalla e deixaba a vixilancia aberta,
+  que podía soar despois. Tras unha negativa de verdade a vixilancia morta quedaba, e quen se
+  unía a ela agardaba para sempre.
+- **Detrás dun proxy inverso, un só balde.** Sen `trust proxy` todo visitante chegaba co
+  enderezo do proxy, e as 120 peticións por minuto eran para todo o sitio.
+- **A orde dos plans iguais quedaba ao motor**: o comparador nunca dicía 0. En 1.800 preguntas
+  entre lugares, ningún plan bate ao primeiro; en 35, cal de dous iguais vai diante dependía da
+  orde en que chegaban.
+- Dúas copias da mesma caché dunha expresión regular en `searchUtils.ts`.
+- `.env.example` dicía que cun porto ocupado o servidor pasaba ao seguinte; para.
+- **A pé, a busca non contaba a subida da última rúa**, que a resposta si conta: en 7 de
+  5.243 pares de paradas escollía subila e non baixala, un minuto máis lento; nunca ao revés.
+- **Unha liña que só remata nunha parada dábase alí por pasada do seu horario** desde o
+  mediodía, nunha noite de aviso que a prolongue (`pastTimetable`). Nos datos, a 7 en Rúa
+  Montevideo 7.
+
+### Feito
+
+- `planTrips`: unha hora máis dunha hora por detrás do reloxo é de mañá. Responden só os buses
+  que circulan ese día, e `daysAhead` cóntase desde hoxe, así que «mañá» sae onde xa saía.
+  `plannedFrom` é unha soa función, en `planner.ts`, que a pantalla tamén usa. «Vou nesta» non
+  se ofrece para outro día.
+- `subscribePosition`: só `PERMISSION_DENIED` é un erro, e entón a vixilancia péchase e a
+  seguinte pregunta de novo. O cadro chama a `stopAlarm()` no erro, e acende a alarma antes de
+  abrir a vixilancia, para que o «non dispoñible» síncrono a deixe apagada.
+- `TRUST_PROXY` en `server.ts` (`1` ou `loopback`); sen el non se lle cre a ninguén. README,
+  SECURITY, PRIVACY e `.env.example` dino.
+- O comparador di 0 aos iguais; `wordBoundary` é un `remembering`.
+- `walkRouter.ts`: o tramo final da busca leva a súa subida, coma o da resposta. Os 5.243 pares,
+  outra vez: ningún cambia contra a versión corrixida.
+- `pastTimetable`: só unha liña que se pode coller alí ten un último paso que deixar atrás; a
+  que non circula hoxe segue tendo só o aviso.
+- Comprobacións: unha hora pasada pregúntase de mañá; un tempo esgotado non é negativa e tras
+  unha negativa a seguinte vixilancia é nova; detrás dun proxy cada visitante ten o seu
+  límite, e na do servidor construído un `X-Forwarded-For` inventado non compra orzamento;
+  Fontiñas → San Eufrasio 7 en 14 min; ningunha liña que só remata nunha parada pasa alí do
+  seu horario.
+
+### Comprobado
+
+- As cinco portas: lint, 165 comprobacións, 26 políticas, `check:deep` e a build.
+- No navegador, co reloxo da páxina nun venres ás 21:00: Praza Maior → HULA, chegar antes das
+  08:30, «mañana 07:51 → ~08:15», sen «Voy en esta» e sen erros na consola.
+
+### Queda
+
+- Sen probar nun teléfono: que `watchPosition` siga tras un tempo esgotado é a especificación.
+- `compare:walk` non se volveu correr (le servidores alleos): o arranxo do router move un
+  minuto en 7 pares de 5.243, así que as súas cifras no README non deberían cambiar.

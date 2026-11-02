@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useReducer, useRef, lazy, Suspense } from
 import { Navigation, MapPin, ArrowDownUp, Clock, Bus, Footprints, AlertCircle, ArrowRight, ChevronDown } from 'lucide-react';
 import { useLang, useT } from '../i18n';
 import { BusStop, BusLine, RoutePlanResult } from '../types';
-import { planTrips } from '../utils/planner';
+import { planTrips, plannedFrom } from '../utils/planner';
 import type { PlanJob } from '../utils/plannerJob';
 import { askPlanner, Superseded } from './planner/askPlanner';
 import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type NoticeChanges } from '../utils/noticeChanges';
@@ -47,12 +47,6 @@ async function measureWalks(plans: RoutePlanResult[], ends: Endpoints): Promise<
   const done = await Promise.race([all, new Promise<null>((resolve) => setTimeout(() => resolve(null), WALKS_WAIT_MS))]);
   return done ? Object.fromEntries(done) : {};
 }
-/** The moment a question is planned from, as planTrips reads it: now, or today at the time asked to leave. */
-const plannedFrom = (opts: { departAt?: number }): Date => {
-  const at = new Date();
-  if (opts.departAt !== undefined) at.setHours(Math.floor(opts.departAt / 60), Math.round(opts.departAt % 60), 0, 0);
-  return at;
-};
 /** Once the frame already committed is on screen: the next animation frame, then a task after it. */
 const afterPaint = (run: () => void) => requestAnimationFrame(() => setTimeout(run, 0));
 const clockNow = () => {
@@ -250,7 +244,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     opts,
     lang,
     now: Date.now(),
-    plannedFrom: plannedFrom(opts).getTime(),
+    plannedFrom: plannedFrom(new Date(), opts.departAt).getTime(),
     changes,
     measured,
   });
@@ -425,8 +419,8 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
     },
   });
 
-  /** "Vou nesta": not for a walk, nor once the service is over; at headline size within ten minutes of the bus. */
-  const canStart = planResult !== null && planResult.isServiceActive && planResult.segments.some((seg) => seg.type === 'bus');
+  /** "Vou nesta": not for a walk, nor once the service is over, nor for another day; at headline size within ten minutes of the bus. */
+  const canStart = planResult !== null && planResult.isServiceActive && !planResult.daysAhead && planResult.segments.some((seg) => seg.type === 'bus');
   const boardingSoon = canStart && boardingIsNow(planResult, now, userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null);
   const startTripButton = (prominent: boolean) => (
     <button
@@ -662,7 +656,7 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                 // Two moments: the end times running now are tonight's, and the stops and cuts the trip meets are those of the night it sets off on.
                 const now = new Date();
                 const tonight = changesNow(changes, now);
-                const onTheDay = changesNow(changes, setsOff(planResult, plannedFrom(askedRef.current.opts)));
+                const onTheDay = changesNow(changes, setsOff(planResult, plannedFrom(new Date(), askedRef.current.opts.departAt)));
                 const used = new Set(planResult.segments.filter((seg) => seg.type === 'bus').map((seg) => seg.line?.number));
                 const late = (tonight?.lines ?? [])
                   .filter((c) => used.has(c.line))

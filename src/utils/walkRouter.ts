@@ -321,7 +321,9 @@ export async function routeOnFoot(from: [number, number], to: [number, number]):
 
   const endA = g.edgeA[finish.edge];
   const endB = g.edgeB[finish.edge];
-  const tailSeconds = (junction: number) => (junction === endA ? finish.metresFromA : metresOf(finish.edge) - finish.metresFromA) * secondsPerMetre(finish.edge);
+  // With its climb, as the answer counts it: flat, the search took the way up the last street
+  // over the way down it, a minute slower on 7 of 5,243 pairs of stops.
+  const tailSeconds = (junction: number) => along(finish.edge, junction === endA ? 0 : metresOf(finish.edge), finish.metresFromA).seconds;
 
   let reached: number | null = null;
   let reachedSeconds = Infinity;
