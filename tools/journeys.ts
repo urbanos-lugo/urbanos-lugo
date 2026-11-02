@@ -140,6 +140,18 @@ const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) &&
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
 const answerFigure = `[...document.querySelectorAll('main .figure')].find(shown)`;
+/** The map opened on the reader 70 m south of HOME, and HOME's sheet opened from its dot. */
+const NEAR_HOME: Start = { geo: 'granted', at: [HOME.lat - 70 / 111_320, HOME.lng] };
+const homeSheet: Step[] = [
+  tab('T.nav.map'),
+  // A reader who has allowed the position once finds the map already on them; anyone else taps the button.
+  { tap: `labelled(T.map.stopFollowing) ? null : labelled(T.map.myLocation)`, optional: true, wait: `labelled(T.map.stopFollowing)` },
+  { wait: `labelled(T.map.stopFollowing) && new Promise((r) => setTimeout(() => r(true), 900))`, note: 'the map flies to the position' },
+  { tapMap: 'stop', wait: `css('[role=dialog][aria-modal=true]')` },
+];
+const sheetRows = `[...document.querySelectorAll('[role=dialog][aria-modal=true] li > button:first-child')].filter(shown)`;
+/** Picked out on the map, the sheet gone: a line's chip is pressed, and only a line in the map's scope has a chip. */
+const linePicked = `!css('[role=dialog][aria-modal=true]') && css('.z-map-chips button[aria-pressed="true"][title]')`;
 /** Off the pole's sticker, the operator's own minutes come first, on purpose (StopArrivalsView); else the first departure. */
 const scannedAnswer = `[...document.querySelectorAll('main section h3')].find((h) => shown(h) && h.textContent.trim() === T.arrivals.operatorSaysTitle) || ${firstDeparture}`;
 
@@ -356,6 +368,20 @@ export const JOURNEYS: Journey[] = [
     ],
     answer: lineHeading,
   },
+  {
+    task: 'a line',
+    entry: 'map, a stop’s sheet, the arrow',
+    start: NEAR_HOME,
+    steps: [
+      ...homeSheet,
+      {
+        tap: `all().filter(shown).find((b) => b.closest('[role=dialog][aria-modal=true]') && (b.getAttribute('aria-label') || '').startsWith(T.map.openLineInfo + ':'))`,
+        options: `all().filter(shown).filter((b) => b.closest('[role=dialog][aria-modal=true]') && (b.getAttribute('aria-label') || '').startsWith(T.map.openLineInfo + ':'))`,
+        wait: lineHeading,
+      },
+    ],
+    answer: lineHeading,
+  },
 
   /* --- A trip from here to there --- */
   {
@@ -456,6 +482,24 @@ export const JOURNEYS: Journey[] = [
       { tap: `saying(T.map.controls)`, wait: `css('[role=dialog][aria-modal=true]')` },
       { tap: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].find((b) => shown(b) && b.textContent.includes(T.at.line0))`, options: `[...document.querySelectorAll('[role=dialog] button[aria-pressed]')].filter(shown)`, wait: `!css('[role=dialog][aria-modal=true]')` },
     ],
+    answer: `css('.maplibregl-map canvas.maplibregl-canvas')`,
+  },
+  {
+    task: 'the map, one line',
+    entry: 'map tab, a stop’s sheet',
+    // A departure tapped in a stop's sheet picks its line, as a row of the lines under a tap does:
+    // it left the map for the line's page instead. A line the chips leave out first, since the
+    // sheet lists every line of the stop and "near me" draws six: the map has to widen to draw it.
+    start: NEAR_HOME,
+    steps: [
+      ...homeSheet,
+      {
+        tap: `${sheetRows}.find((b) => ![...document.querySelectorAll('.z-map-chips button[aria-pressed][title] > span:first-child')].some((c) => c.textContent === b.querySelector('span')?.textContent)) || ${sheetRows}[0]`,
+        options: sheetRows,
+        wait: linePicked,
+      },
+    ],
+    // The map, not the chip: the strip does not scroll to a chip picked from elsewhere.
     answer: `css('.maplibregl-map canvas.maplibregl-canvas')`,
   },
   {
@@ -820,6 +864,9 @@ const FRAMES = `(() => {
     for (const el of document.querySelectorAll('button, a[href], input, summary, [role=button], [role=link]')) {
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) continue;
+      // Hidden is not drawn: the map's closed sheet keeps its controls laid out, and a line's
+      // arrow there lent its place to the stop sheet's arrow of that line, 1,743 px away.
+      if (getComputedStyle(el).visibility === 'hidden') continue;
       const l = label(el);
       // Two controls saying the same are not told apart: neither is followed.
       by.set(l, by.has(l) ? null : el);

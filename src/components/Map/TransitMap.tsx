@@ -181,12 +181,19 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
   };
 
   /**
-   * A line chosen from the lines under a tap: the same as choosing it from the chips, drawn over
-   * the rest and framed whole, with the sheet out of the way. It stayed a popup over the map,
-   * and the map stayed where it was, showing whatever part of the line was in view.
+   * A line chosen from the lines under a tap, or from a stop's sheet: the same as choosing it from
+   * the chips, drawn over the rest and framed whole, with the sheet out of the way. It stayed a
+   * popup over the map, and the map stayed where it was, showing whatever part of the line was in
+   * view; from a stop's sheet the same tap left the map for the line's page.
    */
   const chooseLine = (line: BusLine) => {
     setLinesHere(null);
+    setTappedStop(null);
+    // A stop's sheet lists every line serving it, in the scope or not, and the routes are drawn for the scope only: one outside it would be picked and drawn nowhere.
+    if (scopeLineIds && !scopeLineIds.includes(line.id)) {
+      setPreset('all');
+      setAroundStop(null);
+    }
     if (!pickedLineIds.includes(line.id)) {
       setPickedLineIds([...pickedLineIds, line.id]);
       onSelectLine(line);
@@ -317,6 +324,7 @@ export function TransitMap({ selectedStop, focus = 'line', selectedLine, onSelec
                 stop={tappedStop}
                 onHeight={(px) => keepAbove([tappedStop.lat, tappedStop.lng], px)}
                 onClose={() => setTappedStop(null)}
+                onChooseLine={chooseLine}
                 onOpenLine={(line) => {
                   setTappedStop(null);
                   onOpenLine(line);

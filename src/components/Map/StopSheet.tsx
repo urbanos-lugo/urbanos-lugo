@@ -8,10 +8,13 @@ import { useClock } from '../../hooks/useClock';
 import { MapSheet } from './MapSheet';
 import { LineBadge } from '../ui/LineBadge';
 import { Approx, Provenance } from '../ui/Provenance';
+import { IconButton } from '../ui/controls';
 
 interface StopSheetProps {
   stop: BusStop;
   onClose: () => void;
+  /** Pick the line out on the map, as a row of the lines under a tap does. */
+  onChooseLine: (line: BusLine) => void;
   onOpenLine: (line: BusLine) => void;
   /** Narrow the map to the lines serving this stop, without leaving the map. */
   onShowLinesHere: (stop: BusStop) => void;
@@ -31,7 +34,7 @@ const REFRESH_MS = 30_000;
  * departures and a way through to the full board. A panel inside the map container, so
  * the same markup is a sheet on a phone and a panel over the map card on a desktop.
  */
-export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFullBoard, onHeight }: StopSheetProps) {
+export function StopSheet({ stop, onClose, onChooseLine, onOpenLine, onShowLinesHere, onOpenFullBoard, onHeight }: StopSheetProps) {
   const t = useT();
 
   const now = useClock(REFRESH_MS);
@@ -74,24 +77,36 @@ export function StopSheet({ stop, onClose, onOpenLine, onShowLinesHere, onOpenFu
         ) : (
           <ul className="divide-y divide-line">
             {arrivals.map((a, i) => (
-              <li key={keys[i]}>
+              // As in the lines under a tap (LinesHereSheet): the row picks the line on the map, the arrow opens its page.
+              <li key={keys[i]} className="flex items-center gap-1 pr-2">
                 <button
                   type="button"
                   onClick={() => {
                     const line = lineById(a.lineId);
-                    if (line) onOpenLine(line);
+                    if (line) onChooseLine(line);
                   }}
-                  className="flex min-h-row-departure w-full items-center gap-2.5 px-3.5 py-2 text-left"
+                  className="flex min-h-row-departure min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1 px-3.5 py-2 text-left"
                 >
                   <LineBadge number={a.lineNumber} color={a.lineColor} size="row" />
-                  <span className="min-w-0 flex-1">
+                  {/* A floor for the destination, the minutes under it when both do not fit, as on the board:
+                      beside the arrow, with the type at 200%, the name was squeezed to one letter a line. */}
+                  <span className="min-w-floor-name flex-1">
                     <span className="block break-words text-label font-semibold text-ink-2">{a.destination}</span>
                     <span className="mt-0.5 inline-block">
                       <Provenance precision={a.precision} extra={a.etaTime} title={a.precision === 'published' ? t.arrivals.publishedHint : t.arrivals.estimatedHint} />
                     </span>
                   </span>
-                  <span className="shrink-0 text-emph">{when(a)}</span>
+                  <span className="ml-auto shrink-0 text-emph">{when(a)}</span>
                 </button>
+                <IconButton
+                  icon={ChevronRight}
+                  label={`${t.map.openLineInfo}: ${a.lineNumber}`}
+                  title={t.map.openLineInfo}
+                  onClick={() => {
+                    const line = lineById(a.lineId);
+                    if (line) onOpenLine(line);
+                  }}
+                />
               </li>
             ))}
           </ul>

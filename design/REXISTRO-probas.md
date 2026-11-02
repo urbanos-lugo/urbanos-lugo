@@ -4983,3 +4983,60 @@ anteriores.
 ### Queda
 
 - As ramas `ubuntu-26` e `ubuntu-26-maplibre` en GitHub, para borrar cando o diga o dono.
+
+## Rolda 60: na folla dunha parada, a liña escóllese no mapa — 2 de novembro de 2026
+
+Pedido: no mapa, unha fila de «Liñas por aquí» escolle a liña no mapa e a súa frecha abre a
+páxina da liña; na folla dunha parada, tocar unha saída levaba sempre á páxina. O mesmo
+xesto, dúas cousas.
+
+### Medido
+
+- **Antes de tocar a auditoría**, a súa parte dos percorridos contra a build de `develop`
+  (dd88a98), con `AUDIT_RUNNER=1`: 0 achados `flow` e `back`, 62 da barra da casa, 145 s.
+- **A folla lista toda liña da parada, e o mapa debuxa só as do ámbito.** Co reloxo da
+  auditoría e «preto de min» (seis liñas), a primeira saída da parada con máis liñas é a 13,
+  que non está entre as seis fichas. `RouteLayer` só debuxa as liñas do ámbito: escollida
+  así, quedaría marcada e sen debuxar (lido, non medido sen o arranxo). «Liñas por aquí» non
+  o ten: só ofrece liñas debuxadas.
+- **Co texto ao 200 %**, a frecha xunto aos minutos deixaba o destino sen ancho: «spilling
+  out of its box (17 px)», o ancho dunha letra, nas catro filas da folla, en gl, es e en.
+- **Un falso achado do arnés.** O percorrido da frecha daba «drawn 1,743 px from where it
+  came to rest». `FRAMES` segue cada control polo seu nome, e a folla dos controis, pechada
+  (`invisible`, fóra da pantalla), ten a frecha da 13 mentres o mapa amosa todas as liñas;
+  cando «preto de min» as deixa en seis, esa frecha marcha e a da folla da parada herda o seu
+  rastro.
+
+### Feito
+
+- `StopSheet`: a fila escolle a súa liña (`onChooseLine`), e ao lado vai a frecha de «Liñas
+  por aquí» (`IconButton`, `t.map.openLineInfo`), que abre a páxina. Ningún texto novo.
+- `chooseLine` (`TransitMap`) serve ás dúas follas: pecha a que estea aberta e, se a liña
+  está fóra do ámbito, pasa o mapa a todas, coma cando se escolle unha liña noutra pantalla.
+- O destino co chan de 6rem (`min-w-floor-name`) e os minutos debaixo cando non caben, coma
+  no taboleiro.
+- Dous percorridos: «the map, one line · map tab, a stop’s sheet», que toca primeiro a saída
+  dunha liña que as fichas non listan e agarda a súa ficha premida coa folla pechada; e «a
+  line · map, a stop’s sheet, the arrow».
+- `FRAMES` deixa fóra o control oculto (`visibility: hidden`), coma xa facía o `shown()` dos
+  pasos.
+- DECIDIDO, a decisión.
+
+### Comprobado
+
+- As cinco portas: lint, 166 comprobacións, 26 políticas, `check:deep` e a build.
+- `audit:browser` con `AUDIT_RUNNER=1`. Os percorridos: 0 `flow` e 0 `back`, 147 s; os 62 da
+  barra da casa, entrada a entrada os mesmos de antes. Os estados `mapa` e `paradas` nos catro
+  pases: 0 achados WCAG en 86 estados; a barra da casa, 13 e 2, dos globos dos buses, do «All»
+  e da noite no escritorio, ningún da folla.
+- No escritorio, no navegador a 1280 × 800 e en castelán: a fila da 4.1 pecha a folla, deixa «1 elegida» e
+  a 4.1 debuxada e encadrada; a súa frecha abre a páxina da 4.1. Na consola, só o rexistro do
+  *service worker* en localhost.
+
+### Queda
+
+- Na primeira pasada enteira dos percorridos co cambio, o toque na frecha non abriu a páxina
+  (paso 5, os dous teléfonos). Ese percorrido só, e as dúas pasadas enteiras seguintes,
+  pasaron. Sen causa atopada.
+- A tira das fichas non se despraza ata a ficha escollida desde unha folla, e pode quedar
+  fóra pola dereita; xa pasaba con «Liñas por aquí».

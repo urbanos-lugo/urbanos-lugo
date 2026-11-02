@@ -545,6 +545,10 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
 - **Un nome escrito no mapa tócase coma a súa parada**, cos 8 px dun dedo arredor da súa
   caixa. Gaña ao punto doutra parada que estea ao alcance do dedo: quen toca un nome quere
   esa parada.
+- **Na folla dunha parada, unha saída tocada escolle a súa liña no mapa** (2 de novembro),
+  coma unha fila de «Liñas por aquí»: pecha a folla, debúxaa por riba e encádraa; a frecha ao
+  lado, a mesma, abre a súa páxina. Ía sempre á páxina. Unha liña da parada fóra do que se
+  está a ver (as seis de «preto de min», un destino) pasa o mapa a todas, ou non se debuxaría.
 
 ## A ficha de liña, o buscador e compartir — 26 de outubro de 2026
 
