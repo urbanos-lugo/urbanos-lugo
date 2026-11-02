@@ -153,7 +153,9 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         // The focus stays where it was: the renderer would move it to the popup's first button
         // as it opens, so a tap on a bus left a focus ring on its line, and Tab then reached a
         // button that had been showing it all along (2.4.7). Leaflet's popups never took it.
-        const popup = new Popup({ offset: DRAW.icon.bus / 2, maxWidth: 'none', focusAfterOpen: false }).setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
+        // No wider than the room keepClear leaves: at 383 px on a 390 px phone one edge stayed 5 px out.
+        const maxWidth = `calc(100% - ${DRAW.popupClear.left + DRAW.popupClear.right}px)`;
+        const popup = new Popup({ offset: DRAW.icon.bus / 2, maxWidth, focusAfterOpen: false }).setDOMContent(popupNode(bus, onOpenLineRef.current, lang));
         popup.on('open', () => {
           onOpenBusRef.current?.();
           keepClear(map, popup);
