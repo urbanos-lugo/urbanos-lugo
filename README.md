@@ -1183,14 +1183,15 @@ o navegador di que sabe lelos. Medido contra a build de produción:
 | `index.html` | 5 KB | 2 KB | **2 KB** |
 | **Primeira carga** | **702 KB** | ~192 KB | **~159 KB** |
 | Tipografía | 51 KB | — | 51 KB, en paralelo |
-| Renderizador do mapa, co estilo e a paleta | 1.100 KB | 289 KB | 236 KB, ao abrir un mapa |
+| Renderizador do mapa, co estilo e a paleta | 1.111 KB | 292 KB | 238 KB, ao abrir un mapa |
 | Estilos do renderizador | 70 KB | 10 KB | 8 KB, ao abrir un mapa |
 | Worker do renderizador | 507 KB | 144 KB | 119 KB, ao abrir un mapa |
 | Xeometría viaria | 511 KB | 82 KB | 28 KB, ao abrir un mapa |
 | Rede peonil con alturas | 1.282 KB | 446 KB | 396 KB, ao trazar o primeiro camiño a pé |
 | Worker do planificador, coa súa copia de paradas e liñas | 233 KB | 55 KB | 44 KB, ao calcular a primeira ruta |
 
-Medido o 31 de outubro de 2026 (rolda 52), con Vite 8.3 e MapLibre 6.15. Un KB son 1.024
+Medido o 31 de outubro de 2026 (rolda 52), con Vite 8.3 e MapLibre 6.15, e o 2 de novembro
+outra vez con MapLibre 6.16, que só move o renderizador (1.101 KB e 236 brotli con 6.15). Un KB son 1.024
 bytes, gzip ao nivel 9 e brotli á calidade 11. MapLibre non vai no anaco de entrada,
 senón enteiro no do renderizador, que baixa ao abrir un mapa.
 A instantánea de avisos tampouco: é un ficheiro á parte, `alerts.json`, e o motivo está
@@ -1208,8 +1209,8 @@ páxina pide para pintarse; o service worker é outra cousa. Para que a app func
 cobertura, na primeira visita garda **todo** o que a app usa —fóra quedan só as copias en
 castelán e inglés de cada páxina, que son para os buscadores, `robots.txt` e
 `sitemap.xml`—: 30 ficheiros distintos (o manifesto lista 34: catro iconas van dúas veces e
-baixan unha), 4,47 MB sen comprimir, 1,30 MB en gzip e 1,07 MB en brotli, medidos sobre
-`dist/sw.js` o 31 de outubro de 2026, sen esperar a que
+baixan unha), 4,48 MB sen comprimir, 1,30 MB en gzip e 1,07 MB en brotli, medidos sobre
+`dist/sw.js` o 2 de novembro de 2026, sen esperar a que
 se abra un mapa nin se trace un camiño. Non bloquea nada: vai detrás da primeira
 pantalla, e a partir de aí cada anaco sae da caché. É o prezo de que o planificador e o
 mapa vaian dentro do móbil, e está á vista aquí para que ninguén o tome por unha primeira
