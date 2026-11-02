@@ -28,10 +28,11 @@ export const distance = (a: [number, number], b: [number, number]): number => me
  * whichever end touches what came before.
  */
 export function stitch(members: any[]): [number, number][] {
+  const ways: [number, number][][] = members
+    .filter((m) => m.type === 'way' && m.geometry)
+    .map((m) => m.geometry.map((p: any) => [p.lat, p.lon]));
   const path: [number, number][] = [];
-  for (const member of members) {
-    if (member.type !== 'way' || !member.geometry) continue;
-    const way: [number, number][] = member.geometry.map((p: any) => [p.lat, p.lon]);
+  for (const way of reseat(ways)) {
     if (!path.length) {
       path.push(...way);
       continue;
@@ -40,6 +41,41 @@ export function stitch(members: any[]): [number, number][] {
     path.push(...(distance(tail, way[way.length - 1]) < distance(tail, way[0]) ? [...way].reverse() : way));
   }
   return path;
+}
+
+const sameNode = (a: [number, number], b: [number, number]) => a[0] === b[0] && a[1] === b[1];
+const touches = (a: [number, number][], b: [number, number][]) =>
+  [a[0], a[a.length - 1]].some((p) => sameNode(p, b[0]) || sameNode(p, b[b.length - 1]));
+
+/**
+ * Ways added in an editor can land in the relation out of place. A roundabout mapped on
+ * 30 October 2026 went in first in three relations (1.3, 3.2, 11), and the stitched routes ran
+ * a straight 2.6–4.9 km from it to their real start. A run of members that connects to
+ * neither neighbour but closes a gap between two others goes back into that gap, turned round
+ * if it was listed backwards; anything else stays where the relation put it.
+ */
+function reseat(ways: [number, number][][]): [number, number][][] {
+  const runs: [number, number][][][] = [];
+  for (const way of ways) {
+    const run = runs[runs.length - 1];
+    if (run && touches(run[run.length - 1], way)) run.push(way);
+    else runs.push([way]);
+  }
+  for (let i = 0; i < runs.length; i++) {
+    const run = runs[i];
+    const rest = runs.filter((_, k) => k !== i);
+    for (let k = 0; k < rest.length - 1; k++) {
+      const before = rest[k][rest[k].length - 1];
+      const after = rest[k + 1][0];
+      if (touches(before, after)) continue;
+      const fit = touches(before, run[0]) && touches(run[run.length - 1], after) ? run
+        : touches(before, run[run.length - 1]) && touches(run[0], after) ? [...run].reverse() : null;
+      if (!fit) continue;
+      rest.splice(k + 1, 0, fit);
+      return reseat(rest.flat());
+    }
+  }
+  return ways;
 }
 
 /** Metres along a polyline. */

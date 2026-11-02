@@ -43,7 +43,7 @@ import { STORAGE_KEYS, readJson, readString, writeJson, writeString } from '../s
 import { LANG_PREFIX, PATHS, SLUGS, isCrawler, parsePath, pathFor, pickLang } from '../src/routes';
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src/services/walkingPath';
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
-import { routeOnFoot } from '../src/utils/walkRouter';
+import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
 import { nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
@@ -62,7 +62,7 @@ import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtS
 import { getScheduledBuses } from '../src/utils/vehicles';
 import { getDistanceMeters } from '../src/utils/geo';
 import { hydrateGeometry } from './hydrateGeometry';
-import { overpass } from './osm';
+import { overpass, stitch } from './osm';
 import { rideTimeReport } from './validateRideTimes';
 
 hydrateGeometry();
@@ -250,7 +250,9 @@ ok('a drawn bus moves at a steady pace, not vertex by vertex', () => {
 
 ok('every drawn bus stays on its own route', () => {
   // The end of the chain the two checks above protect: sample the fleet through the day
-  // and make sure no vehicle is placed off the polyline it belongs to.
+  // and make sure no vehicle is placed off the polyline it belongs to. Measured to the line,
+  // not to its nearest vertex: on 2 November 2026 a bus on the 5.1, on its route, was 61 m
+  // from both ends of a straight 161 m piece, and a 60 m limit to the vertices failed it.
   for (const hour of [8, 11, 14, 17, 20]) {
     const now = new Date(2026, 7, 20, hour, 25);
     const fleet = getScheduledBuses(now);
@@ -258,8 +260,14 @@ ok('every drawn bus stays on its own route', () => {
     for (const bus of fleet) {
       const line = BUS_LINES.find((l) => l.id === bus.lineId)!;
       const dir = line.directions.find((d) => d.id === bus.direction)!;
-      const nearest = Math.min(...dir.pathCoordinates.map(([lat, lng]) => getDistanceMeters(lat, lng, bus.currentLat, bus.currentLng)));
-      assert(nearest < 60, `line ${bus.lineNumber} is ${Math.round(nearest)} m off its route at ${hour}:25`);
+      const path = dir.pathCoordinates;
+      const nearest = Math.min(
+        ...path.slice(1).map(([lat, lng], i) => {
+          const p = projectOnto(bus.currentLat, bus.currentLng, path[i][0], path[i][1], lat, lng);
+          return getDistanceMeters(p.lat, p.lng, bus.currentLat, bus.currentLng);
+        }),
+      );
+      assert(nearest < 5, `line ${bus.lineNumber} is ${Math.round(nearest)} m off its route at ${hour}:25`);
     }
   }
 });
@@ -1797,6 +1805,26 @@ await okAsync('an Overpass that cannot be reached is no answer, not a crash', as
     globalThis.fetch = realFetch;
     console.warn = realWarn;
   }
+});
+
+ok('ways an editor put out of place in a route relation go back into their gap', () => {
+  // 2 November 2026: a roundabout mapped three days before went in first in three relations,
+  // two ways of it, and the stitched 1.3, 3.2 and 11 ran a straight 2.6–4.9 km from it to
+  // their real start.
+  const way = (...pts: [number, number][]) => ({ type: 'way', geometry: pts.map(([lat, lon]) => ({ lat, lon })) });
+  const arcIn = way([1, 2], [2, 2]);
+  const arcOut = way([2, 2], [1, 3]);
+  const start = way([0, 0], [1, 0]);
+  const before = way([1, 0], [1, 2]);
+  const after = way([1, 3], [1, 5]);
+  const want = JSON.stringify([[0, 0], [1, 0], [1, 0], [1, 2], [1, 2], [2, 2], [2, 2], [1, 3], [1, 3], [1, 5]]);
+  const got = (members: object[]) => JSON.stringify(stitch(members));
+  assert(got([arcIn, arcOut, start, before, after]) === want, `out of place: ${got([arcIn, arcOut, start, before, after])}`);
+  assert(got([arcOut, arcIn, start, before, after]) === want, `out of place and listed backwards: ${got([arcOut, arcIn, start, before, after])}`);
+  assert(got([start, before, arcIn, arcOut, after]) === want, 'a relation already in order came out different');
+  // A way that fits no gap is the relation's own word, even when it does not connect.
+  const stray = way([9, 9], [9, 8]);
+  assert(JSON.stringify(stitch([stray, start])) === JSON.stringify([[9, 9], [9, 8], [1, 0], [0, 0]]), 'a way with no gap to fill was moved');
 });
 
 await okAsync('when Overpass will not answer, a second instance is asked the same question', async () => {

@@ -142,7 +142,7 @@ function loadWalkNetwork(): Promise<Graph> {
 const LNG_SCALE = Math.cos((43.01 * Math.PI) / 180);
 
 /** The point on segment a→b closest to p, and how far along it lies. */
-function projectOnto(pLat: number, pLng: number, aLat: number, aLng: number, bLat: number, bLng: number): { lat: number; lng: number; t: number } {
+export function projectOnto(pLat: number, pLng: number, aLat: number, aLng: number, bLat: number, bLng: number): { lat: number; lng: number; t: number } {
   const ax = aLng * LNG_SCALE;
   const bx = bLng * LNG_SCALE;
   const px = pLng * LNG_SCALE;
