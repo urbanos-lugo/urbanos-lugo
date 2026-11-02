@@ -58,16 +58,23 @@ function popupNode(bus: ScheduledBus, onOpenLine: (lineId: string) => void, lang
  * notice over its top and the locate and controls buttons over its foot. A bus's popup opened
  * under the notice, which covered its close button (WCAG 2.5.8), and a button in it reached by
  * Tab could sit under them (2.4.11). The renderer does not pan to a popup; this does, the least.
+ * For the keyboard's focus at once, as the browser scrolls to a focused control: eased, the
+ * control sat off the screen for half a second, and longer on a page short of frames.
  */
-function keepClear(map: MapLibre, popup: Popup): void {
+function keepClear(map: MapLibre, popup: Popup, now = false): void {
   const el = popup.getElement();
   if (!el) return;
-  const box = map.getContainer().getBoundingClientRect();
+  const container = map.getContainer();
+  // A control focused past the map's right or bottom edge has the browser scroll the map's box
+  // to it before focusin, and MapLibre scrolls it back only at the scroll event, a frame later.
+  // Measured scrolled, the pan went the wrong way and the × stayed off the screen: back first.
+  container.scrollLeft = container.scrollTop = 0;
+  const box = container.getBoundingClientRect();
   const r = el.getBoundingClientRect();
   const room = DRAW.popupClear;
   const dx = r.left < box.left + room.left ? r.left - box.left - room.left : r.right > box.right - room.right ? r.right - box.right + room.right : 0;
   const dy = r.top < box.top + room.top ? r.top - box.top - room.top : r.bottom > box.bottom - room.bottom ? r.bottom - box.bottom + room.bottom : 0;
-  if (dx || dy) map.panBy([dx, dy]);
+  if (dx || dy) map.panBy([dx, dy], { animate: !now });
 }
 
 export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine, onOpenBus }: VehicleLayerProps) {
@@ -150,7 +157,7 @@ export function VehicleLayer({ map, buses, visibleLineIds, showBuses, onOpenLine
         popup.on('open', () => {
           onOpenBusRef.current?.();
           keepClear(map, popup);
-          popup.getElement()?.addEventListener('focusin', () => keepClear(map, popup));
+          popup.getElement()?.addEventListener('focusin', (e) => keepClear(map, popup, e.target instanceof Element && e.target.matches(':focus-visible')));
         });
         markersRef.current[bus.id] = new Marker({ element: el }).setLngLat([bus.currentLng, bus.currentLat]).setPopup(popup).addTo(map);
       }

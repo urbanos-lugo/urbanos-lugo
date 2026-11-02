@@ -848,7 +848,7 @@ const CHECK = `function () {
     if (over) issues.push('2.4.3: this Tab stop is drawn ' + Math.round(over.top - here.top) + ' px above ' + over.label + ', which the focus reached before it, in the same column');
   }
   if (here) run.push(here);
-  return { at, where: label(a), issues, map: !!a.closest('.maplibregl-map') };
+  return { at, where: label(a), issues };
 }`;
 
 /**
@@ -869,14 +869,10 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
   for (let i = 0; i < count * 2 + 20 && (reached.size < count || i < count); i++) {
     await press(page, 'Tab', 9);
     await sleep(60);
-    let got = await page.call<{ at: number; where: string; issues: string[]; map: boolean }>(CHECK);
-    // A popup's close button taking the focus can have the map pan it into view, in a fraction
-    // of a second of animation: judged before that, a control off the edge read as hidden. No
-    // marker is a Tab stop now (buses are tabindex -1), so the wait is for what a popup holds.
-    if (got.issues.some((i) => i.startsWith('2.4.11')) && got.map) {
-      await sleep(600);
-      got = await page.call(CHECK);
-    }
+    // Judged at once, a map popup's controls too: the map brings a focused one into view in the
+    // same task (VehicleLayer's keepClear). It waited 600 ms for an eased pan once, and on CI's
+    // runner, short of frames, a pan can take longer than that to be drawn.
+    let got = await page.call<{ at: number; where: string; issues: string[] }>(CHECK);
     // Inside a run Chrome sometimes withholds :focus-visible from a Tab into a time field, away
     // and back again included, where every reproduction outside one, and a screenshot, show it
     // given and the ring drawn. The question 2.4.7 asks is whether a keyboard focus shows, so
@@ -888,7 +884,7 @@ async function traverse(page: Session, dialog: boolean): Promise<{ findings: Fin
       const { nodeId } = await page.send<{ nodeId: number }>('DOM.requestNode', { objectId: result.objectId });
       await page.send('CSS.enable');
       await page.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: ['focus', 'focus-visible'] });
-      const forced = await page.call<{ at: number; where: string; issues: string[]; map: boolean }>(CHECK);
+      const forced = await page.call<{ at: number; where: string; issues: string[] }>(CHECK);
       await page.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: [] });
       got = { ...forced, issues: forced.issues.filter((i) => !i.startsWith('2.4.7')).concat(forced.issues.some((i) => i.startsWith('2.4.7')) ? [`2.4.7: nothing visible changes even with :focus-visible forced on it`] : []) };
     }
@@ -1441,15 +1437,22 @@ async function runState(w: Worker, pass: Pass, state: State): Promise<Result[]> 
     await page.send('Emulation.setDeviceMetricsOverride', metrics);
     await sleep(350);
     if (state.tap === 'bus') {
-      // A popup half off the map: focusing its close button scrolled the map's own box and the
-      // button stayed past the edge of the screen -- once in five runs, wherever the bus had
-      // left it. Three of the map's own arrow keys put it there every time: 240 px, with a
-      // pause after each so the pan has ended before the next key.
+      // The popup wholly past the map's right edge, where focusing a control in it has the
+      // browser scroll the map's box before focusin: measured so, the pan went the wrong way and
+      // the × stayed off the screen. Three of the map's arrow keys were to put it off the map:
+      // with every frame they took it past the left edge, where no box scrolls, and on CI's
+      // runner, short of frames, a key pressed before the last pan was drawn began again from
+      // where the map still was, the popup stayed on the right, and the finding came now and
+      // then (1 November 2026). So pressed until it is there, each key once its pan is drawn.
+      const left = `document.querySelector('.maplibregl-popup:not(.map-hover-label)')?.getBoundingClientRect().left`;
+      const past = `(() => { const m = [...document.querySelectorAll('.maplibregl-map')].find((e) => e.getBoundingClientRect().width > 300); return !!m && ${left} > m.getBoundingClientRect().right; })()`;
       await page.evaluate(`document.querySelector('.maplibregl-map canvas.maplibregl-canvas').focus()`);
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 16 && !(await page.evaluate<boolean>(past)); i++) {
+        const before = await page.evaluate<number>(left);
         await press(page, 'ArrowLeft', 37);
-        await sleep(400);
+        await page.call(`async function (before) {${REACH} await until(() => ${left} !== before, 3000); await pause(400); }`, before);
       }
+      if (!(await page.evaluate<boolean>(past))) first.findings.push({ kind: 'reach', where: label(state), detail: 'the bus popup never went past the right edge of the map, so the keyboard reaching it there was not tested' });
     }
     await page.call(SETTLE);
     const tab = await traverse(page, !!state.dialog);

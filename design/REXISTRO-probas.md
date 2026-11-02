@@ -4750,3 +4750,59 @@ existise este rexistro (29 de agosto), e as outras non caen en ningunha rolda qu
 - As cifras de `measure:browser` do README son as do 31 de outubro nesta máquina; a rolda 54
   mediu no executor, que é a referencia dos orzamentos, e o README non as leva. Decidir cal
   das dúas di o README é tarefa á parte.
+
+## Rolda 56: o × do globo dun bus, fóra da pantalla — 2 de novembro de 2026
+
+Pedido: o achado que a rolda 54 deixaba en «Queda» e que tirou a CI de 539b158, só no traballo
+`audit (phone-gl)` e só el: 2.4.11, «focused but off screen», no × do globo dun bus, en
+«teléfono gl · mapa/bus aberto · claro».
+
+### Medido
+
+- **Pásalle a unha persoa, con todos os cadros.** Co globo dun bus enteiro pasado o bordo
+  dereito do mapa, Maiúsculas+Tab desde o control seguinte leva o foco ao ×, e o × queda en
+  x 889–913 nunha pantalla de 390, alí aínda 2 s despois. Con dous Tab seguidos, o segundo
+  antes de que remate o movemento do primeiro, en 838–862.
+- **A causa.** Chrome despraza a caixa do mapa ata o control enfocado antes de `focusin`
+  (`scrollLeft` 477 e 528 rexistrados no `focusin`), e MapLibre devólvea a 0 no evento
+  `scroll`, un cadro despois. `keepClear` medía o globo coa caixa desprazada, víao pasado o
+  bordo esquerdo e movía o mapa cara ao outro lado, parando de paso o movemento bo. A versión
+  de Leaflet (`867ed90`, 8 de outubro) medía como se a caixa non se desprazase; o paso a
+  MapLibre (rolda 44) perdeu esa corrección. Pasado o bordo esquerdo ou o de arriba non
+  ocorre: ningunha caixa se despraza cara a alí.
+- **Por que só na CI, e só ás veces.** Non era o reloxo: adiantado de 0 a 90 s, a auditoría
+  toca sempre o mesmo bus, o 2N-VI. As tres frechas do mapa movíano 300 px, abondo para que o
+  globo cambiase de lado e quedase pasado o bordo esquerdo, onde o fallo non se dá. A frecha
+  de MapLibre parte de onde está o mapa, e un movemento novo para o anterior sen rematalo: unha
+  tecla premida antes de que se debuxe a anterior pérdea, e as tres quedan en menos. Coa
+  auditoría sen cambiar e un cadro cada 450 ms (algo máis que os 400 ms entre teclas), o achado
+  da CI letra por letra; cada 250 ms, ningún. Con dúas teclas ou unha, con todos os cadros, o
+  mesmo achado.
+
+### Feito
+
+- **`keepClear` volve a caixa do mapa a 0 antes de medir**, o que MapLibre faría un cadro
+  despois, e **para o foco do teclado (`:focus-visible`) move o mapa dunha vez**, coma o
+  navegador cando se despraza a un control enfocado. Suave, o control quedaba fóra da pantalla
+  medio segundo, e máis nunha páxina con poucos cadros. Ao abrir o globo cun toque, e para un
+  punteiro, segue o movemento suave de antes.
+- **A auditoría pon o globo enteiro pasado o bordo dereito**, cada vez: frecha a frecha, cada
+  unha cando o mapa xa se moveu coa anterior, ata 16; se non chega, dío («the bus popup never
+  went past the right edge…») en vez de pasar calada. Saen os 600 ms de espera para os
+  controles dun mapa: xúlganse ao momento, coma o resto.
+
+### Comprobado
+
+- A auditoría nova contra a app de develop: 2 achados, a liña e o ×, 2 de 2. Contra a app co
+  arranxo a medias (a caixa a 0, o movemento aínda suave), os mesmos 2, 2 de 2. Co arranxo, 0
+  en 3 de 3, e tamén cun cadro cada 450 ms e cada 1.000 ms. As dúas formas dunha persoa, co
+  arranxo: o × en 344–368 e 361–385 aos 60 ms, tamén sen ningún cadro.
+- As cinco portas: lint, 162 comprobacións, 26 políticas, `check:deep` e a build.
+  `audit:browser` con `AUDIT_RUNNER=1`, os estados dos catro pases: 0 achados WCAG en 162
+  estados; a barra da casa, 25 e 3, coma sempre.
+
+### Queda
+
+- O globo dun bus mide 383 px nun teléfono de 390, máis do oco que lle deixa `popupClear`
+  (12 e 12): `keepClear` arrímao a un bordo e o outro queda ata 5 px fóra. O × cabe; non se
+  tocou.
