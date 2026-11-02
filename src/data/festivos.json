@@ -20,5 +20,27 @@
       "2026-12-08",
       "2026-12-25"
     ]
+  },
+  "2027": {
+    "source": [
+      "DOG 02/07/2026, Decreto 68/2026, do 15 de xuño (festas da Comunidade Autónoma de Galicia, calendario laboral 2027): https://www.xunta.gal/dog/Publicados/2026/20260702/AnuncioG0767-250626-0001_gl.html",
+      "DOG 26/10/2026, Resolución do 15 de outubro de 2026 (festas laborais de carácter local 2027), entrada 28, Lugo: 9 de febreiro, Martes de Entroido; 5 de outubro, San Froilán: https://www.xunta.gal/dog/Publicados/2026/20261026/AnuncioG0767-161026-0001_gl.html"
+    ],
+    "days": [
+      "2027-01-01",
+      "2027-01-06",
+      "2027-02-09",
+      "2027-03-19",
+      "2027-03-25",
+      "2027-03-26",
+      "2027-05-01",
+      "2027-05-17",
+      "2027-10-05",
+      "2027-10-12",
+      "2027-11-01",
+      "2027-12-06",
+      "2027-12-08",
+      "2027-12-25"
+    ]
   }
 }

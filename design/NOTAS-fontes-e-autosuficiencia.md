@@ -298,6 +298,9 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    o 30 de outubro de 2025). Cando saia, engadir o ano cos seus días e as dúas fontes, como
    o de 2026. Desde o 1 de novembro «Check the sources» falla cada luns mentres falte, e
    `pnpm test` o 1 de xaneiro; un ano sen a resolución local entre as súas fontes non pasa.
+   *Feito o 2 de novembro de 2026 (rolda 58): a resolución saíu no DOG do 26 de outubro,
+   entrada 28 do anexo II, Lugo: 9 de febreiro e 5 de outubro. Catorce días, coma en 2026.
+   O seguinte, 2028: o decreto en xuño ou xullo de 2027, a resolución a finais de outubro.*
 4. **O traballo dos luns e os servidores alleos que non responden.** O 28 de setembro de
    2026 fallou: overpass-api.de non aceptaba conexións —dende o executor de GitHub pola
    mañá e dende outra rede horas despois—, e o `fetch failed` saltaba por riba do

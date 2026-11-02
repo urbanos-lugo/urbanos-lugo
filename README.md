@@ -2075,7 +2075,8 @@ artefacto, para que unha regresión non dependa de que alguén se lembre.
   decreto do calendario laboral galego e a resolución dos festivos locais, os dous no DOG
   (para 2026, os doce autonómicos —co 19 de marzo e o 24 de xuño no lugar do 1 de novembro
   e do 6 de decembro, que caen en domingo— e os dous de Lugo, Martes de Entroido e San
-  Froilán). Non hai regra que os calcule, porque as substitucións cambian cada ano, así
+  Froilán; para 2027, o 19 de marzo e o 17 de maio no lugar do 25 de xullo e do 15 de
+  agosto, e os mesmos dous de Lugo, o 9 de febreiro e o 5 de outubro). Non hai regra que os calcule, porque as substitucións cambian cada ano, así
   que un check de `pnpm test` falla o 1 de xaneiro se o ano novo non está no ficheiro:
   é o recordatorio, e é ruidoso a propósito. Antes, desde novembro, «Check the sources»
   falla cada luns mentres falte o ano seguinte, e un ano sen a resolución dos festivos
