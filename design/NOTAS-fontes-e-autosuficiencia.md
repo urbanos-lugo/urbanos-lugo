@@ -368,6 +368,12 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
    cambiar: ver que Chrome e que GL de software trae cada imaxe e comparalos; na rolda 28
    un Chrome novo xa moveu esta medida. A rama de proba é `ubuntu-26` (o seu único commit
    cambia as seis liñas `runs-on` e o check). 24.04 ten soporte de GitHub para anos.
+   *Medido outra vez o 2 de novembro de 2026, xa cos mapas en MapLibre (rama
+   `ubuntu-26-maplibre`, rolda 59). A CI enteira pasa en 26.04. En `measure:browser`, nunha
+   soa execución, os catro pasos de zoom bloquean 867 ms (orzamento 900), fronte a 612 en 24.04
+   o 1 de novembro, e o resto vai entre un 14 e un 42% máis lento. Cabe, pero con 33 ms de
+   marxe, así que segue en 24.04. Volver medir cando GitHub anuncie a retirada de 24.04, ou se
+   un Chrome novo move esta medida.*
 8. **Os mapas, debuxados con MapLibre, para que xiren.** Decidido o 26 de outubro de 2026
    (DECIDIDO): xirar con dous dedos e unha brúxula para volver ao norte. Con Leaflet non hai
    maneira limpa: `leaflet-rotate` é GPL-3 e a app MIT, e a capa MapLibre de debaixo non

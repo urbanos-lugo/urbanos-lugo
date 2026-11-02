@@ -4947,3 +4947,39 @@ anteriores.
   é nova na rúa, da urbanización da estación intermodal.
 - O que cambiou no ignorado entre o 1 de novembro ás 17:19 e o borrado non volveu (os permisos
   aprobados desde entón, a caché de `compare:walk` dun par).
+
+## Rolda 59: a 1.7.4, un garda para os borrados e Ubuntu 26.04 outra vez — 2 de novembro de 2026
+
+### Feito
+
+- **A 1.7.4**, por orde do dono: o commit da versión (4824036), as cinco portas, a CI de
+  `develop` verde nas súas sete partes, e `main` e a etiqueta nun só push. Pages e o worker
+  despregaron (`/api/version` 4824036), e o paquete publicado leva o 9 de febreiro e o 5 de
+  outubro de 2027.
+- **Un garda local para os borrados**, fóra do repositorio (`.claude/hooks/`, en
+  `settings.local.json`). Antes de cada orde de Bash e PowerShell, bloquea o borrado que escolle
+  os seus obxectivos por patrón: un comodín, `-Filter`, `-like`, un bucle ou unha tubería cara a
+  un borrado, ou `find`. Probouse con 14 casos, entre eles a orde exacta que baleirou o
+  repositorio (bloqueada); os borrados cunha ruta literal pasan. Na sesión bloqueou un borrado de
+  proba.
+
+### Medido
+
+- **Ubuntu 26.04 cos mapas en MapLibre**, nunha rama nova, `ubuntu-26-maplibre`, sobre
+  `develop`; a vella `ubuntu-26` quedara 254 commits atrás e aínda con Leaflet. A CI enteira
+  pasa. `measure:browser`, unha execución en 26.04 (imaxe 20261025.179) fronte á do 1 de
+  novembro en 24.04 (20261025.353):
+
+  | | 24.04 | 26.04 | orzamento |
+  | :--- | ---: | ---: | ---: |
+  | catro pasos de zoom, fío bloqueado | 612 ms | 867 ms | 900 |
+  | abrir o mapa, fío bloqueado | 922 ms | 1.044 ms | 2.500 |
+  | do toque ao mapa debuxado | 1.319 ms | 1.507 ms | 6.000 |
+  | portada, tarefas de máis de 50 ms | 928 ms | 1.266 ms | 1.500 |
+
+  Todo cabe, pero o zoom só con 33 ms de marxe, e iso nunha soa medida. Queda en 24.04 (NOTAS,
+  Pendente 7).
+
+### Queda
+
+- As ramas `ubuntu-26` e `ubuntu-26-maplibre` en GitHub, para borrar cando o diga o dono.
