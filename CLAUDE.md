@@ -229,6 +229,30 @@ reproduce them.
 
 </important>
 
+<important if="you are about to delete files, folders, worktrees or branches">
+
+**Delete only what you have listed, path by path, and read.** On 2 November 2026 a
+cleanup of old worktree folders ran a recursive delete over `urbanos-*` in the folder that
+holds this repository. Windows matches names without regard to case, so the pattern also
+took `Urbanos-Lugo---…`: the working copy, its `.git`, every gitignored file and four
+unpushed commits. GitHub, a Windows shadow copy from the day before and the session's
+own transcript brought it back. Had everything been local, the project would be gone.
+
+- **Never delete by pattern, glob or filter**, in any shell. Build the list first and print
+  the absolute paths. The repository, its parent, any `.git`, and anything with uncommitted
+  or unpushed work must not be on it. Then delete each path by its literal name.
+- On Windows `*`, `-Filter` and `-like` ignore case, and every folder beside this repository
+  starts with `urbanos`.
+- A worktree goes with `git worktree remove <path>`, named one by one, after `git -C <path>
+  status` and a check that its branch is in `develop`. A branch goes with `git branch -d`;
+  `-D` only for one whose content is shown to be elsewhere.
+- Unpushed commits exist on this disk only. Before deleting anything near the working copy,
+  put them somewhere else first (`git bundle create <path on another disk> --all`).
+- A recursive delete that stops on "in use" has already emptied what it could under that
+  folder. Stop and look before running anything else.
+
+</important>
+
 <important if="you are starting work, editing files, committing or pushing: other sessions may be working here too">
 
 This repository is routinely worked on by **more than one assistant session at once**,
