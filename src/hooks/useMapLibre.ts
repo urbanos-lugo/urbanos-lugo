@@ -13,7 +13,7 @@ interface MapOptions {
   scrollZoom?: boolean;
   /** What this map is, for a reader who will never see it. */
   region: string;
-  /** Turns with two fingers, a right drag or Shift and the arrows, and shows the compass. The small maps stay north up. */
+  /** Turns with two fingers, a right drag or Shift and the arrows, and shows the compass. The map near you stays north up. */
   turns?: boolean;
 }
 

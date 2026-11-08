@@ -80,9 +80,9 @@ export const DRAW = {
   /**
    * A stop's dot: by zoom on the network map, the ride's calls, the small map's centre, and the
    * one chosen. `rank` is half a small map's numbered disc, --spacing-stop-rank in index.css,
-   * so a name written beside it clears it.
+   * and `pin` half a trip's pin, --spacing-map-pin, so a name written beside either clears it.
    */
-  stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, rank: 12, centre: 8, selected: 9 },
+  stopRadius: { overview: 4, z14: 5, z15: 6, z16: 7, rank: 12, pin: 14, centre: 8, selected: 9 },
   stopRing: 2,
   selectedRing: 4,
   /**
@@ -122,8 +122,8 @@ export const DRAW = {
    * MapLibre's closer fit, at any zoom and not only whole ones, had put a stop or a pin under them.
    */
   fit: { network: 40, nearby: 28, trip: 28, tripTop: 56, follow: 40, sheetTop: 64, sheetGap: 24, zoomBar: 54, credit: 20 },
-  /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, the screen edge they keep off, how far round one a tap still takes it, and the ms one takes to fade in or out (--transition-duration-swap's). */
-  names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4, reach: 8, fade: 160 },
+  /** The stop names written beside the dots: size, weight, gap from the dot's ring, halo, the screen edge they keep off, how far round one a tap still takes it, the ms one takes to fade in or out (--transition-duration-swap's), and the zoom the network and trip maps start writing them from. */
+  names: { size: 12, weight: 600, gap: 5, halo: 3, edge: 4, reach: 8, fade: 160, zoom: 15 },
   /**
    * The margins a bus's popup is kept inside on the network map: under the line chips and the
    * buses' notice at the top of a phone's map, above the locate and controls buttons at its foot.

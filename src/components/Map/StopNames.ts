@@ -21,6 +21,8 @@ interface StopNamesOptions {
   halo: string;
   /** Radius of the dot the name sits beside, so the gap clears its ring. */
   radius: number;
+  /** A stop drawn bigger than the rest, the radius its name keeps clear of. */
+  radiusOf?: (stop: BusStop) => number | undefined;
   /** A tap on a written name: the stop it names. */
   onTap?: (stop: BusStop) => void;
 }
@@ -33,8 +35,8 @@ const FRAME_CAP_MS = 33;
 const TAP_SLOP_PX = 3;
 
 export interface StopNames {
-  /** The stops whose names may be written, and points ([lat, lng]) no name may cover. */
-  setStops(stops: BusStop[], keepClear?: [number, number][]): void;
+  /** The stops whose names may be written, and points ([lat, lng], and a radius where it is not the dots') no name may cover. */
+  setStops(stops: BusStop[], keepClear?: [lat: number, lng: number, radius?: number][]): void;
   /** Out of sight until the map's next stop, then faded in: call before the move it waits for. */
   holdWhileMoving(): void;
   remove(): void;
@@ -59,7 +61,7 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
   /** A name that moved to another side, fading out on the old one while it fades in on the new: it jumped across its dot in one frame. */
   const leaving = new Map<string, { side: number; alpha: number }>();
   let stops: BusStop[] = [];
-  let clear: [number, number][] = [];
+  let clear: [lat: number, lng: number, radius?: number][] = [];
   let written: { item: BusStop; box: Box }[] = [];
   let frame = 0;
   let drawnAt = 0;
@@ -90,9 +92,12 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
     const dots: NamedDot[] = shown.map(({ stop, at }) => {
       let w = widths.get(stop.name);
       if (w === undefined) widths.set(stop.name, (w = ctx.measureText(stop.name).width));
-      return { x: at.x, y: at.y, width: w };
+      return { x: at.x, y: at.y, width: w, radius: options.radiusOf?.(stop) };
     });
-    const keepClear = clear.map(([lat, lng]) => map.project([lng, lat]));
+    const keepClear = clear.map(([lat, lng, radius]) => {
+      const { x, y } = map.project([lng, lat]);
+      return { x, y, radius };
+    });
     const places = placeNames(
       dots,
       { width, radius: options.radius, gap: GAP_PX, height: HEIGHT_PX, edge: EDGE_PX, keepClear },

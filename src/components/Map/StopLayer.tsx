@@ -28,7 +28,7 @@ interface StopLayerProps {
  * one less than the Leaflet ones that showed the same streets.
  */
 const ZOOM_LADDER: { from: number; radius: number; label: boolean }[] = [
-  { from: 15, radius: DRAW.stopRadius.z16, label: true },
+  { from: DRAW.names.zoom, radius: DRAW.stopRadius.z16, label: true },
   { from: 14, radius: DRAW.stopRadius.z15, label: false },
   { from: 13, radius: DRAW.stopRadius.z14, label: false },
   { from: 0, radius: DRAW.stopRadius.overview, label: false },

@@ -172,6 +172,12 @@ enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres c
 que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras están en
 [`design/DECIDIDO.md`](design/DECIDIDO.md).
 
+Desde o zoom 13 o mapa leva **as iconas dos sitios polos que se busca unha parada** —hospital,
+estación de tren, estación de autobuses, universidade e concello—, as do propio sprite de
+OpenFreeMap e sen nome, que sería un rótulo máis para que os das paradas lle caesen enriba.
+**Os nomes das rúas quedan a calquera zoom**: antes apagábanse do 15 ao 16,5, onde chegan os
+das paradas, e quen achegaba o mapa para atopar unha parada perdía o nome da rúa.
+
 Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á **dereita
 do seu sentido de marcha**, como circulan os buses. Onde varias comparten calzada van **en
 paralelo**, cun carril fixo por liña: 2 px a zoom 14, 3 desde o 15, ata catro carrís por
@@ -233,14 +239,16 @@ segundo toque en «A miña localización» xira o mapa contigo**: o que tes dian
 arriba, como ves a rúa, e o botón leva entón unha frecha; un terceiro toque deixa de
 seguirte. Xirar o mapa coa man ou tocar o compás devólvenlle o norte á man. Os nomes das
 paradas seguen dereitos xire como xire, e o abano do punto sinala cara a onde miras tamén
-no mapa xirado. Os dous mapas pequenos —o de preto de ti e o da ruta— quedan co norte
-arriba.
+no mapa xirado. **O mapa da ruta xira igual** e achégase coa roda do rato; só o pequeno de
+preto de ti queda co norte arriba.
 
 **Os nomes das paradas non se pisan.** Desde o zoom 15 escríbense á dereita do punto, á
 esquerda, enriba ou debaixo, onde non tapen outro nome, outra parada nin a túa posición; o
 que non colle non se escribe. E **tocar un nome é tocar a súa
 parada**, con 8 px de marxe para o dedo: no mapa da rede abre a súa folla, no pequeno o seu
-taboleiro. O nome é o máis grande que di que parada é un punto.
+taboleiro. O nome é o máis grande que di que parada é un punto. **O mapa da ruta tamén os
+escribe**, desde o mesmo zoom: primeiro onde se sube e onde se baixa, despois as paradas
+polas que pasa, e ningún debaixo dun pin.
 
 Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
 preto. Aberto desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o
@@ -307,7 +315,10 @@ paradas se nega a inventar unha posición que o móbil non deu.
 
 Non devolve unha soa resposta: amosa as **opcións distintas** de facer o traxecto,
 agrupadas por combinación de liñas e ordenadas pola hora á que chegas, a que di cada fila:
-co paseo medido en canto está calculado. Ensínanse as catro mellores.
+co paseo medido en canto está calculado. Ensínanse as catro mellores, menos as dun bus que
+o paseo medido xa non alcanza: esas saen da lista, e se é a resposta aberta dío con
+palabras, «A pé non chegas a tempo a este bus». O prezo do resumo leva o reconto de
+billetes —«2 billetes 1,28 €»—, porque cada bus paga o seu co billete ordinario.
 
 **Ir andando é sempre unha das opcións.** Lugo crúzase a pé nunha hora, así que un
 itinerario de 90 minutos con dous transbordos é peor que camiñar, e a aplicación dío en
@@ -581,10 +592,10 @@ responde a outra pregunta, e falla de dous xeitos que se poden medir:
 - **Rodeos que o bus non dá.** As liñas 7, 8, 9 e 12 rematan en Bolaño Rivadeneira, no
   casco histórico. Un coche non entra, así que OSRM daba a volta enteira á muralla: 2127
   metros para un salto de 372. A liña 8 de volta saía de 4,1 km fronte aos 2,3 reais.
-- **Itinerarios listados fóra de orde.** A páxina do operador imprime dúas paradas da
-  5.1 de volta (Fonte dos Ranchos e Doutor Gasalla) en terceiro e quinto lugar, cando a
+- **Itinerarios listados fóra de orde.** A páxina do operador imprime tres paradas da
+  5.1 de volta (Fonte dos Ranchos, Doutor Gasalla e Ramón Ferreiro) ao principio, cando a
   ruta pasa por elas case ao final. Lido ao pé da letra, ese itinerario cruza a cidade
-  catro veces: **28 km** para un percorrido de 10.
+  de ida e volta: **19,0 km** para un percorrido de 8,2.
 
 Por iso o trazado sae das relacións de ruta de OSM cando as hai. Só se acepta unha se
 describe ese sentido: número de liña correcto, remata onde remata o sentido, todas as
@@ -826,7 +837,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── csp.ts                  unha política, para a meta e para a cabeceira
 │   │   ├── rateLimit.ts            teito de peticións por enderezo, no servidor Express
 │   │   └── themeInit.ts            o script do tema antes do primeiro pintado, e o seu hash
-│   ├── project.ts                  onde vive este proxecto, nun sitio: a ligazón das incidencias e o User-Agent
+│   ├── project.ts                  onde vive este proxecto, nun sitio: a ligazón das incidencias, o correo de contacto e o User-Agent
 │   ├── routes.ts                   os slugs das pestanas, nunha soa lista
 │   ├── seo.ts                      título, descrición e canónica por pestana, sitemap, datos estruturados
 │   ├── types.ts
@@ -1487,7 +1498,7 @@ de pantalla de verdade, hai un guión para seguir a man:
 | 3.2.2 Ao recibir entradas | A | Cumpre | Escribir ou cambiar unha hora cambia o contido, nunca a pantalla. |
 | 3.2.3 Navegación coherente | AA | Cumpre | A mesma barra e o mesmo menú en todas as pantallas, dunha soa lista (`navSections.ts`). |
 | 3.2.4 Identificación coherente | AA | Cumpre | Os nomes saen dos dicionarios, unha chave por función. |
-| 3.2.6 Axuda coherente | A | Cumpre | A única vía de contacto, a ligazón ao código, está sempre no mesmo sitio do menú. |
+| 3.2.6 Axuda coherente | A | Cumpre | As vías de contacto —o código, avisar dun erro e o correo— están sempre no mesmo sitio do menú. |
 | 3.3.1 Identificación de erros | A | Arranxado | Un código de poste que non existe dicíase só debaixo do campo: agora o campo é `aria-invalid`, o erro anúnciase e queda ligado a el. `audit:browser`. |
 | 3.3.2 Etiquetas ou instrucións | A | Arranxado | O campo do código do poste non tiña nome. |
 | 3.3.3 Suxestións ante erros | AA | Cumpre | Dun código que non existe non se pode saber cal se quería; o formato está escrito ao lado do campo, con paradas de exemplo. |
@@ -2125,6 +2136,10 @@ Por iso as incidencias do repositorio [remiten a buslugo.com](.github/ISSUE_TEMP
 todo o que sexa do servizo — un bus que non pasou, unha reclamación — e a OpenStreetMap
 o que sexa dun trazado mal levantado. Aquí só se arranxa o que esta aplicación le mal.
 Para un fallo de seguridade, [`SECURITY.md`](SECURITY.md).
+
+**Contacto**: unha [incidencia no repositorio](https://github.com/urbanos-lugo/urbanos-lugo.github.io/issues/new/choose)
+ou un correo a [urbanos-lugo@proton.me](mailto:urbanos-lugo@proton.me), para quen non ten
+conta en GitHub. O menú da app leva os dous.
 
 Cartografía © OpenStreetMap contributors, teselas de OpenFreeMap © OpenMapTiles.
 

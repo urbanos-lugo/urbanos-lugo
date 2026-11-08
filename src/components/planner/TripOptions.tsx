@@ -46,10 +46,15 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
     setShownFor(resetKey);
     setShowAll(false);
   }
+  // A bus the measured walk cannot catch is no option: listed, two such rows under the answer
+  // read as two warnings nobody could act on. The one open stays, to say so.
+  const catchable = options.filter(({ option, idx }) => idx === chosen || withMeasuredWalk(option, correctionFor(option)).reachable);
   // Never fold away the row that is currently open: by where it stands in the list, which is
   // not its number once the rows are ranked on the measured walks.
-  const openAt = options.findIndex((o) => o.idx === chosen);
+  const openAt = catchable.findIndex((o) => o.idx === chosen);
   const expanded = showAll || openAt >= VISIBLE_OPTIONS;
+
+  if (catchable.length < 2) return null;
 
   const row = ({ option, idx }: (typeof options)[number]) => {
     const busLegs = option.segments.filter((seg) => seg.type === 'bus');
@@ -106,16 +111,16 @@ export function TripOptions({ options, chosen, onChoose, correctionFor, resetKey
           of their column and "Co paseo medido xa non chegas a este bus" was printed over the
           minutes; on a 320 px phone at the default size that sentence took four lines. */}
       <div className="@container border-y border-line">
-        {options.slice(0, VISIBLE_OPTIONS).map(row)}
+        {catchable.slice(0, VISIBLE_OPTIONS).map(row)}
         {/* The rest fold open rather than appearing, and the rows underneath slide instead of jumping. */}
-        {options.length > VISIBLE_OPTIONS && (
+        {catchable.length > VISIBLE_OPTIONS && (
           <div className={`fold ${expanded ? '' : 'fold-closed'}`}>
-            <div>{options.slice(VISIBLE_OPTIONS).map(row)}</div>
+            <div>{catchable.slice(VISIBLE_OPTIONS).map(row)}</div>
           </div>
         )}
-        {options.length > VISIBLE_OPTIONS && openAt < VISIBLE_OPTIONS && (
+        {catchable.length > VISIBLE_OPTIONS && openAt < VISIBLE_OPTIONS && (
           <button type="button" onClick={() => setShowAll(!showAll)} aria-expanded={expanded} className="flex min-h-tap w-full items-center justify-center gap-1.5 border-t border-t-line text-label font-semibold text-ink-3">
-            {expanded ? t.planner.fewerOptions : t.planner.moreOptions(options.length - VISIBLE_OPTIONS)}
+            {expanded ? t.planner.fewerOptions : t.planner.moreOptions(catchable.length - VISIBLE_OPTIONS)}
             <ChevronDown className="disclosure-chevron h-3.5 w-3.5 shrink-0 stroke-bold" aria-hidden="true" />
           </button>
         )}

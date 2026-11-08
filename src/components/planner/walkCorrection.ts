@@ -50,7 +50,8 @@ export function withMeasuredWalk(plan: RoutePlanResult, fix: WalkCorrection) {
  * a row prints the measured one, and a longer walk at the far end pushed an arrival past the
  * next row's without moving it: "12, 52 min, ~10:54" headed "1.2, 22 min, ~10:51". So the
  * planner's own rule is applied again to the measured figures, and until a walk is measured
- * nothing moves. A bus the measured walk cannot catch goes last; it stays only to say so.
+ * nothing moves. A bus the measured walk cannot catch goes last, and the list (TripOptions)
+ * leaves it out unless it is the one open.
  */
 export function rankMeasured<T extends { option: RoutePlanResult; idx: number }>(options: T[], fixFor: (plan: RoutePlanResult) => WalkCorrection): T[] {
   const measured = new Map(

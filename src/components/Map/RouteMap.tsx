@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { LngLatBounds, Marker, type ExpressionSpecification, type MapLayerMouseEvent } from 'maplibre-gl';
 import { useT } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
-import { RoutePlanResult, TripSegment } from '../../types';
+import { BusStop, RoutePlanResult, TripSegment } from '../../types';
 import { LUGO_CENTER, stopById } from '../../data/transitData';
 import { useRouteGeometry } from '../../data/routeGeometry';
 import { WalkPaths, walkHopKey } from '../../services/walkingPath';
@@ -12,6 +12,7 @@ import { DRAW, mapColors, stopDotPaint } from './palette';
 import { readerMark, type ReaderMark } from './reader';
 import { dropLayers, hoverLabels, placeLayer, setSource } from './mapLayers';
 import { MapUnavailable } from './MapUnavailable';
+import { stopNamesLayer } from './StopNames';
 
 interface Place {
   lat: number;
@@ -87,7 +88,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
   const t = useT();
   const colors = mapColors(useIsDark());
   const geometryReady = useRouteGeometry();
-  const { map, styled, unavailable } = useMapLibre(containerRef, { center: LUGO_CENTER, zoom: 12, scrollZoom: false, region: t.planner.routeMap });
+  // Turned and zoomed with the wheel like the network map: a trip is read street by street.
+  const { map, styled, unavailable } = useMapLibre(containerRef, { center: LUGO_CENTER, zoom: 12, region: t.planner.routeMap, turns: true });
   /**
    * The bounds this map is meant to show, so a resize can put the view back: the map is
    * built inside a column that is `display: none` on a phone until there is a plan, and a
@@ -121,6 +123,12 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     const guesses: Line[] = [];
     const legs: Line[] = [];
     const calls: GeoJSON.Feature<GeoJSON.Point, { label: string }>[] = [];
+    /** The stops whose names are written: where each leg boards and ends first, so a crowded spot goes to them. */
+    const ends: BusStop[] = [];
+    const called: BusStop[] = [];
+    const boards = new Set<string>();
+    /** No name over a pin: [lat, lng, radius]. */
+    const pins: [number, number, number][] = [];
 
     // Which parts are the reader's now: the focused leg is drawn as always and framed; the
     // rest drops to a quarter opacity. A walk is focused through the bus leg it leads into.
@@ -143,6 +151,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       el.addEventListener('mouseenter', () => hover.show([at[1], at[0]], escapeHtml(tooltip)));
       el.addEventListener('mouseleave', () => hover.leave());
       markers.push(new Marker({ element: el, opacity: String(emphasised ? 1 : FAINT) }).setLngLat([at[1], at[0]]));
+      pins.push([at[0], at[1], DRAW.stopRadius.pin]);
     };
 
     // Walking legs join the previous point to the next known one: origin -> first stop, last stop -> destination.
@@ -186,10 +195,16 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       );
       pin(slice[0], segment.line.color, segment.line.number.slice(0, 3), `${t.planner.board} ${segment.fromStop.name}`, emphasised);
 
-      // Where the ride calls, as the neutral stop dot every map uses: a dot in the line's colour on a line of that colour is a bump, not a stop.
-      for (let i = from + 1; i < to && emphasised; i++) {
+      // Where the ride calls and where it is left, as the neutral stop dot every map uses: a dot in the line's colour on a line of that colour is a bump, not a stop.
+      for (let i = from + 1; i <= to && emphasised; i++) {
         const stop = stopById(direction.stops[i]);
-        if (stop) calls.push({ type: 'Feature', properties: { label: escapeHtml(stop.name) }, geometry: { type: 'Point', coordinates: [stop.lng, stop.lat] } });
+        if (!stop) continue;
+        calls.push({ type: 'Feature', properties: { label: escapeHtml(stop.name) }, geometry: { type: 'Point', coordinates: [stop.lng, stop.lat] } });
+        if (i < to) called.push(stop);
+      }
+      if (emphasised) {
+        ends.push(segment.fromStop, segment.toStop);
+        boards.add(segment.fromStop.id);
       }
 
       if (emphasised) extend(slice);
@@ -239,6 +254,17 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     });
     for (const marker of markers) marker.addTo(map);
 
+    // The stops named from the zoom the network map names them at; a boarding stop's name clears its pin.
+    const names = stopNamesLayer(map, { ink: colors.nameInk, halo: colors.nameHalo, radius: DRAW.stopRadius.overview, radiusOf: (stop) => (boards.has(stop.id) ? DRAW.stopRadius.pin : undefined) });
+    const named = [...new Map([...ends, ...called].map((stop) => [stop.id, stop])).values()];
+    let naming: boolean | null = null;
+    const nameStops = () => {
+      const want = map.getZoom() >= DRAW.names.zoom;
+      if (want !== naming) names.setStops((naming = want) ? named : [], pins);
+    };
+    nameStops();
+    map.on('zoom', nameStops);
+
     // The routed walks, the legs and the calls name themselves under a mouse, as the pins do.
     const label = (e: MapLayerMouseEvent) =>
       hover.fromLayer(e, () => {
@@ -261,6 +287,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
         map.off('mousemove', id, label);
         map.off('mouseleave', id, leave);
       }
+      map.off('zoom', nameStops);
+      names.remove();
       hover.remove();
       for (const marker of markers) marker.remove();
       dropLayers(map, LAYERS, LAYERS);

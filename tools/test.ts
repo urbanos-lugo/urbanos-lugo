@@ -4034,21 +4034,23 @@ ok('no layer asks the sprite for an image it does not have', () => {
   }
 });
 
-ok('the street names fade in both themes, not just the dark one', () => {
-  // The two published styles name their layers differently, so the adjustment that hides
-  // street names under our labels applied to the dark map only, forgiven in silence.
+ok('the street names stay at every zoom, in both themes', () => {
+  // They faded out from 15 to 16.5 to leave room for the stop names, and a reader who zoomed
+  // in to find a stop lost the name of the street it was on. The two published styles name
+  // their layers differently, and the fade once applied to the dark map only, so each
+  // theme's own layers are named here.
   const styles = mapStyles();
-  const fades = (theme: string, ids: string[]) => {
-    const byId = new Map(styles[theme].layers.map((l) => [l.id, l]));
+  const stays = (theme: string, ids: string[]) => {
+    const byId = new Map(styles[theme].layers.map((l) => [l.id, l as typeof l & { maxzoom?: number }]));
     for (const id of ids) {
       const layer = byId.get(id);
-      assert(layer, `${theme}: there is no layer called ${id} to fade`);
-      const opacity = layer!.paint?.['text-opacity'];
-      assert(Array.isArray(opacity) && JSON.stringify(opacity).includes('16.5'), `${theme}: ${id} does not fade out where the stop labels take over`);
+      assert(layer, `${theme}: there is no layer called ${id}; the published style renamed it`);
+      assert(!('text-opacity' in (layer!.paint ?? {})), `${theme}: ${id} has a text-opacity again, which is how the names were faded out`);
+      assert((layer!.maxzoom ?? 24) > 18, `${theme}: ${id} stops before the map's last zoom, 18`);
     }
   };
-  fades('dark', ['highway_name_other', 'highway_name_motorway']);
-  fades('light', ['highway-name-minor', 'highway-name-major', 'highway-name-path']);
+  stays('dark', ['highway_name_other', 'highway_name_motorway']);
+  stays('light', ['highway-name-minor', 'highway-name-major', 'highway-name-path']);
 });
 
 ok('nothing in the dark basemap competes with the line drawn on top of it', () => {
@@ -4393,6 +4395,20 @@ ok('a name on a map never covers another name, another stop or the reader', () =
   assert.equal(placeNames([{ x: 360, y: 100, width: 80 }], view, [0])[0]?.align, 'right', 'a name kept to a side that runs off the screen');
   // A name fading out is drawn on its side by placeOn: anywhere else, it jumped as it faded.
   places.forEach((p, i) => p && assert.deepEqual(placeOn(dots[i], sideOf(p, dots[i]), view), p, `stop ${i}'s name moved as it faded`));
+});
+
+ok('a stop name on the trip map clears the 28 px pin, not only the 8 px dot', () => {
+  // The trip map draws a pin over each boarding stop and at A and B. Measured from the call's
+  // 4 px dot, a boarding stop's name started 9 px out and ran under its own pin, and a call's
+  // name beside a pin was written under it.
+  const view = { width: 375, radius: 4, gap: 5, height: 15, edge: 4 };
+  const pin = 14;
+  assert.deepEqual(placeNames([{ x: 100, y: 100, width: 80, radius: pin }], view)[0], { x: 119, y: 100, align: 'left' }, 'a boarding stop name starts under its pin');
+  // A pin below and to the right of a call: its edge, not its centre, is in the way of the name on the right.
+  const pinAt = { x: 150, y: 118 };
+  assert.equal(placeNames([{ x: 100, y: 100, width: 80 }], { ...view, keepClear: [pinAt] })[0]?.align, 'left', 'the scene does not test the pin edge');
+  assert.equal(placeNames([{ x: 100, y: 100, width: 80 }], { ...view, keepClear: [{ ...pinAt, radius: pin }] })[0]?.align, 'right', 'a call name was written under the pin beside it');
+  assert.deepEqual(placeOn({ x: 100, y: 100, width: 80, radius: pin }, 0, view), { x: 119, y: 100, align: 'left' }, 'a boarding stop name jumped onto its pin as it faded');
 });
 
 ok('a tap on a stop name written on the map is a tap on that stop', () => {

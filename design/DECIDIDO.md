@@ -129,6 +129,9 @@ de afirmar. Cada decisión de abaixo se tomou contra unha cifra, non contra un g
   que a almofada, ese bus foise: 180 de 1.017 opcións (18 %). O planificador acepta o
   paseo medido antes de escoller a parada de embarque —mover o reloxo case non movía a
   agulla— e quedan 82 (8 %), que o din: «Co paseo medido xa non chegas a este bus».
+  Desde novembro de 2026 a lista de alternativas deixa fóra eses buses (menos o aberto) e
+  o aviso di «A pé non chegas a tempo a este bus»: dúas filas iguais coa frase do «paseo
+  medido» debaixo da resposta non se entendían nin se podían usar.
 - `zoomSnap = 0` e o encaixe da ruta en `basemap.ts`, o único sitio polo que pasan os
   tres mapas: o traxecto debuxábase ao 46 % dun mapa nacido en `display:none`.
 
@@ -584,7 +587,8 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   seguridade, do service worker e de PRIVACY.md.
 - **O mapa da rede xira; non se inclina.** Dous dedos, o botón dereito ou Maiúsculas e as
   frechas. O compás aparece só co mapa xirado, debaixo do zoom, co norte na cor de acento, e
-  tocalo volve o norte arriba. Os dous mapas pequenos quedan co norte arriba.
+  tocalo volve o norte arriba. Os dous mapas pequenos quedan co norte arriba (o da ruta
+  xira desde o 8 de novembro: ver máis abaixo).
 - **«A miña localización» ten tres estados**: segue o lector co norte arriba; onde hai
   compás, un segundo toque xira o mapa co teléfono (o que tes diante, arriba) e o botón leva
   unha frecha; o terceiro deixa de seguir. Xirar coa man ou tocar o compás devolve o xiro á
@@ -603,6 +607,31 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   como están escritos os neutros da app, e rexeitaba o anel da parada escollida.
 - **A rexión accesible é o lenzo do mapa**, que MapLibre xa fai rexión co nome do mapa e é
   a súa parada de tabulación; nomeado tamén o contedor, eran dúas rexións aniñadas co mesmo nome.
+
+## O mapa da ruta como o da rede, iconas e nomes de rúa — 8 de novembro de 2026
+
+- **O mapa da ruta xira e achégase coa roda**, como o da rede, e escribe os nomes das
+  paradas desde o zoom 15: primeiro onde se sube e onde se baixa, despois as paradas polas
+  que pasa. Probado no móbil, quedar co norte arriba e sen nomes líase como un mapa que
+  «non funciona igual». A parada onde se baixa leva agora o punto neutro, para ter onde
+  escribir o seu nome. Só o pequeno de preto de ti queda co norte arriba.
+- **Ningún nome debaixo dun pin**: o algoritmo dos nomes (`nameLayout.ts`) aceptaba un só
+  radio por capa; agora cada punto e cada sitio que se deixa libre pode levar o seu, e un
+  pin de 28 px aparta os nomes 14 px, non os 4 dun punto.
+- **Os nomes das rúas quedan a calquera zoom.** Apagábanse do 15 ao 16,5 para deixarlles o
+  sitio aos das paradas; quen achegaba para atopar unha parada perdía o nome da rúa onde
+  estaba. Mirado no centro (o anaco máis denso de paradas) aos zooms 16 e 17 no tema
+  escuro: conviven sen tapar un o outro. Iso fai falsa a razón da tipografía de arriba
+  («un texto que desaparece por riba do zoom 16,5»); a de pesar un ou dous megabytes segue.
+- **Iconas de cinco clases de sitio**, desde o zoom 13: hospital, estación de tren,
+  estación de autobuses, universidade e concello, coas iconas que xa trae o sprite de
+  OpenFreeMap (nada novo que descargar nin orixe nova). Cada clase estréitase pola
+  subclase: a clase soa metía clínicas e residencias, cada parada de bus de OSM e os
+  centros sociais. Sen nome, para non poñer outro rótulo onde caen os das paradas. Van
+  enriba do mapa base e debaixo de todo o da app.
+- **As opcións de Ruta que xa non se collen saen da lista**, e o aviso dío en palabras
+  («A pé non chegas a tempo a este bus»); o prezo do resumo leva o reconto de billetes.
+  Ver «O bus que xa non se colle dise», arriba.
 
 ## Quedou aberto
 

@@ -12,8 +12,11 @@
  * adjustments never once applied to the light map). Here a wrong id refuses to build.
  *
  * Tiles, sprites and glyphs still come from tiles.openfreemap.org, so the CSP gains no
- * origin; the layers stay as published, in their published order. The measurements
- * behind every value are in design/DECIDIDO.md.
+ * origin; the layers stay as published, in their published order, with one of ours on top
+ * (LANDMARKS). The measurements behind every value are in design/DECIDIDO.md.
+ *
+ * Street names stay at every zoom. They faded out from 15 to 16.5, where the stop names
+ * arrive, and a reader zoomed in to find a stop could not read the street it was on.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -46,11 +49,28 @@ const DROP: Record<string, readonly string[]> = {
 };
 
 /**
- * From zoom 16 the map writes a name beside every stop, into the space the basemap's
- * street names take at the same time. They fade out where the stop names arrive rather
- * than being removed: below 15 they are the only thing saying where you are.
+ * The places a reader finds a stop by, as the sprite's own icons, on top of the basemap and
+ * under every layer of the app's (mapLayers.ts adds those last). Neither published style draws
+ * any point of interest. Five kinds, each named in the tiles by class and narrowed by subclass:
+ * the class alone takes in clinics and care homes, every bus stop, and the community centres.
+ * Their class is also the sprite's name for the icon. Icons only: a name here would be one more
+ * label for the stop names, drawn on a canvas of their own, to fall on.
  */
-const FADE_ABOVE_16: unknown = ['interpolate', ['linear'], ['zoom'], 15, 1, 16.5, 0];
+const LANDMARKS: Layer = {
+  id: 'urbanos_landmarks',
+  type: 'symbol',
+  source: 'openmaptiles',
+  'source-layer': 'poi',
+  minzoom: 13,
+  filter: [
+    'match',
+    ['get', 'class'],
+    ['hospital', 'railway', 'bus', 'college', 'town_hall'],
+    ['match', ['get', 'subclass'], ['hospital', 'station', 'bus_station', 'university', 'college', 'townhall'], true, false],
+    false,
+  ],
+  layout: { 'icon-image': ['get', 'class'] },
+};
 
 /**
  * The dark map. Published, everything sits inside seventeen levels of black, and for
@@ -82,8 +102,6 @@ const DARK: readonly Edit[] = [
   ['landuse_park', 'fill-color', '#1e2a1b'],
   ['highway_name_other', 'text-color', '#9098a5'],
   ['highway_name_motorway', 'text-color', '#9098a5'],
-  ['highway_name_other', 'text-opacity', FADE_ABOVE_16],
-  ['highway_name_motorway', 'text-opacity', FADE_ABOVE_16],
   ['place_other', 'text-color', '#a7aeb9'],
   ['place_suburb', 'text-color', '#a7aeb9'],
   ['place_village', 'text-color', '#a7aeb9'],
@@ -105,9 +123,6 @@ const LIGHT: readonly Edit[] = [
   ['building', 'fill-color', '#dedcd4'],
   ['building', 'fill-outline-color', '#dedcd4'],
   ['highway_minor', 'line-color', '#fafaf9'],
-  ['highway-name-minor', 'text-opacity', FADE_ABOVE_16],
-  ['highway-name-major', 'text-opacity', FADE_ABOVE_16],
-  ['highway-name-path', 'text-opacity', FADE_ABOVE_16],
   ['highway-name-path', 'text-color', '#767472'],
 ];
 
@@ -116,6 +131,7 @@ interface Layer {
   type: string;
   paint?: Record<string, unknown>;
   layout?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 interface Style {
   version: number;
@@ -163,6 +179,7 @@ function derive(published: Style, edits: readonly Edit[], theme: keyof typeof PU
     if (value === null) delete paint[property];
     else paint[property] = value;
   }
+  style.layers.push(LANDMARKS);
 
   // The credit travels with the file as well as with the map control.
   for (const source of Object.values(style.sources)) source.attribution = ATTRIBUTION;

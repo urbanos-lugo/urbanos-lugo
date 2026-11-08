@@ -748,8 +748,12 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           <span className="whitespace-nowrap">{formatKm(measuredWalk.meters)} km</span>
                         </span>
                       )}
-                      {/* The ordinary fare, not the card one: a visitor pays 0,64 €. */}
-                      {planResult.fare && planResult.fare.busLegs > 0 && <span className="whitespace-nowrap font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>}
+                      {/* The ordinary fare, not the card one: a visitor pays 0,64 € a bus. Named, or "1,28 €" alone was not read as two tickets. */}
+                      {planResult.fare && planResult.fare.busLegs > 0 && (
+                        <span className="whitespace-nowrap text-ink">
+                          <span className="font-sans text-ink-2">{t.planner.fareTickets(planResult.fare.busLegs)}</span> <span className="font-black">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>
+                        </span>
+                      )}
                     </span>
                   </>
                 }

@@ -39,6 +39,8 @@ export const en: Dict = {
     unofficial: 'Unofficial project: not made or endorsed by AULUSA / Monbus or Lugo city council.',
     privacy: 'Your location stays on this phone. Not even to trace the walking route.',
     sourceCode: 'Code, licences and privacy',
+    reportProblem: 'Report a problem with the app',
+    contact: (email: string) => `Contact: ${email}`,
   },
 
   search: {
@@ -203,6 +205,7 @@ export const en: Dict = {
     fareTitle: 'Cost of the trip',
     fareCard: 'With the Tarxeta Cidadá',
     fareSingle: 'Single ticket',
+    fareTickets: (count: number) => (count === 1 ? 'Ticket' : `${count} tickets`),
     fareTransferFree: 'Transfer included (within 75 min)',
     fareTransferPaid: 'The transfer is over 75 min apart: you pay two fares',
     optionsTitle: 'Best trip options',
@@ -215,7 +218,7 @@ export const en: Dict = {
     measuredWalkTitle: 'On foot, measured',
     walkLeg: (metres: number, minutes: number) => `On foot · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Details',
-    unreachableWalk: 'The measured walk no longer gets you to this bus',
+    unreachableWalk: 'On foot you will not make this bus in time',
     stepByStepTitle: 'Step by step',
     timeProvenanceMeasured:
       'The walking legs are measured along OpenStreetMap’s streets, on this device, not estimated. Bus times still come from the official timetable; those marked ~ are worked out from the driving time measured along the road.',

@@ -28,6 +28,8 @@ export const es: Dict = {
     unofficial: 'Proyecto no oficial: ni AULUSA / Monbus ni el Ayuntamiento de Lugo lo hacen ni lo avalan.',
     privacy: 'Tu ubicación no sale de este móvil. Ni siquiera para trazar el camino a pie.',
     sourceCode: 'Código, licencias y privacidad',
+    reportProblem: 'Avisar de un error en la app',
+    contact: (email: string) => `Contacto: ${email}`,
   },
 
   search: {
@@ -192,6 +194,7 @@ export const es: Dict = {
     fareTitle: 'Coste del trayecto',
     fareCard: 'Con Tarjeta Ciudadana',
     fareSingle: 'Billete ordinario',
+    fareTickets: (count: number) => (count === 1 ? 'Billete' : `${count} billetes`),
     fareTransferFree: 'Transbordo incluido (dentro de los 75 min)',
     fareTransferPaid: 'El transbordo supera los 75 min: pagas dos billetes',
     optionsTitle: 'Mejores opciones de trayecto',
@@ -204,7 +207,7 @@ export const es: Dict = {
     measuredWalkTitle: 'A pie, medido',
     walkLeg: (metres: number, minutes: number) => `A pie · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Información',
-    unreachableWalk: 'Con el paseo medido ya no llegas a este bus',
+    unreachableWalk: 'A pie no llegas a tiempo a este bus',
     stepByStepTitle: 'Paso a paso',
     timeProvenanceMeasured:
       'Los tramos a pie están medidos sobre las calles de OpenStreetMap, en este dispositivo, no estimados. Las horas de bus siguen viniendo del cuadro horario oficial; las marcadas con ~ se deducen del tiempo de recorrido medido por carretera.',

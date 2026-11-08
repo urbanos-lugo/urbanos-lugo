@@ -42,6 +42,8 @@ export const gl = {
     unofficial: 'Proxecto non oficial: nin AULUSA / Monbus nin o Concello de Lugo o fan nin o avalan.',
     privacy: 'A túa localización non sae deste móbil. Nin sequera para trazar o camiño a pé.',
     sourceCode: 'Código, licenzas e privacidade',
+    reportProblem: 'Avisar dun erro na app',
+    contact: (email: string) => `Contacto: ${email}`,
   },
 
   search: {
@@ -227,6 +229,8 @@ export const gl = {
     fareTitle: 'Custo do traxecto',
     fareCard: 'Con Tarxeta Cidadá',
     fareSingle: 'Billete ordinario',
+    /** Beside the price in the trip's folded summary: a bare "1,28 €" was not read as two tickets. */
+    fareTickets: (count: number) => (count === 1 ? 'Billete' : `${count} billetes`),
     fareTransferFree: 'Transbordo incluído (dentro dos 75 min)',
     fareTransferPaid: 'O transbordo supera os 75 min: paga dous billetes',
     /* Sen o reconto.
@@ -245,7 +249,7 @@ export const gl = {
     /** The tooltip on a walked leg drawn on the route map. */
     walkLeg: (metres: number, minutes: number) => `A pé · ${metres} m · ${minutes} min`,
     tripInfoTitle: 'Información',
-    unreachableWalk: 'Co paseo medido xa non chegas a este bus',
+    unreachableWalk: 'A pé non chegas a tempo a este bus',
     stepByStepTitle: 'Paso a paso',
     timeProvenanceMeasured:
       'Os tramos a pé están medidos sobre as rúas de OpenStreetMap, neste dispositivo, non estimados. As horas de bus seguen a vir do cadro horario oficial; as marcadas con ~ dedúcense do tempo de percorrido medido por estrada.',

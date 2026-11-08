@@ -5,6 +5,9 @@
  */
 export const REPO_URL = 'https://github.com/urbanos-lugo/urbanos-lugo.github.io';
 
+/** The project's own mailbox, for whoever has no GitHub account: the menu and the README give it. */
+export const CONTACT_EMAIL = 'urbanos-lugo@proton.me';
+
 /**
  * A prefilled issue: plain `issues/new` rather than an issue form, because the body is
  * already complete and somebody at a bus stop on their phone should not have to fill a

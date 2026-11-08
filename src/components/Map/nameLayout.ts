@@ -3,6 +3,8 @@ export interface NamedDot {
   x: number;
   y: number;
   width: number;
+  /** Its own size where it is not the layer's: a trip's boarding stop sits under a pin. */
+  radius?: number;
 }
 
 /** Where a name is written: its anchor, and how the text sits on it (canvas textAlign). */
@@ -52,7 +54,7 @@ function sidesOf(d: NamedDot, off: number, height: number): (Box & { place: Name
 
 /** Where a name on `side` (sideOf) sits beside its dot now: a name fading out keeps to its dot. */
 export const placeOn = (d: NamedDot, side: number, view: { radius: number; gap: number; height: number }): NamePlace =>
-  sidesOf(d, view.radius + view.gap, view.height)[side].place;
+  sidesOf(d, (d.radius ?? view.radius) + view.gap, view.height)[side].place;
 
 /**
  * Where each stop's name goes beside its dot, taken in the order given, so the first ones
@@ -66,16 +68,15 @@ export const placeOn = (d: NamedDot, side: number, view: { radius: number; gap: 
  */
 export function placeNames(
   dots: NamedDot[],
-  view: { width: number; radius: number; gap: number; height: number; edge: number; keepClear?: { x: number; y: number }[] },
+  view: { width: number; radius: number; gap: number; height: number; edge: number; keepClear?: { x: number; y: number; radius?: number }[] },
   prefer: (number | undefined)[] = [],
 ): (NamePlace | null)[] {
   const { width, radius, gap, height, edge, keepClear = [] } = view;
-  const around = (p: { x: number; y: number }): Box => ({ left: p.x - radius, right: p.x + radius, top: p.y - radius, bottom: p.y + radius });
+  const around = ({ x, y, radius: r = radius }: { x: number; y: number; radius?: number }): Box => ({ left: x - r, right: x + r, top: y - r, bottom: y + r });
   const taken = dots.map(around);
   const clear = keepClear.map(around);
-  const off = radius + gap;
   return dots.map((d, i) => {
-    const sides = sidesOf(d, off, height);
+    const sides = sidesOf(d, (d.radius ?? radius) + gap, height);
     // Each side only while it stays on the screen, except the left of a dot with no room on its right, which has nowhere better.
     const roomRight = sides[0].right <= width - edge;
     const usable = sides.filter((s, k) => (k === 0 ? roomRight : k === 1 ? s.left >= edge || !roomRight : s.left >= edge && s.right <= width - edge));

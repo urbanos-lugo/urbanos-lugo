@@ -5063,3 +5063,58 @@ xesto, dúas cousas.
 - Sen probar nun teléfono de verdade: a auditoría finxe o toque.
 - A tira das fichas non se despraza ata a ficha escollida desde unha folla, e pode quedar
   fóra pola dereita; xa pasaba con «Liñas por aquí».
+
+## Rolda 61: o mapa da ruta coma o da rede, iconas, nomes de rúa e contacto — 8 de novembro de 2026
+
+Pedido: o mapa de Ruta non se comportaba coma o da rede; o prezo do resumo e as filas «Co
+paseo medido xa non chegas a este bus» non se entendían; iconas de hospitais, estacións e
+semellantes no mapa; os nomes das rúas desaparecían ao achegar; revisar o README e poñer un
+contacto na web. Das diferenzas do mapa de Ruta escolléronse tres: xirar, os nomes das
+paradas e a roda do rato (tocar unha parada quedou fóra).
+
+### Feito
+
+- `RouteMap`: `turns: true` e a roda (fóra `scrollZoom: false`); os nomes das paradas desde
+  `DRAW.names.zoom` (15, o mesmo que xa usaba a escada de `StopLayer`), primeiro subida e
+  baixada, despois as paradas do medio. A parada de baixada leva o punto neutro.
+- `nameLayout.placeNames` e `StopNames`: radio por punto (`NamedDot.radius`, `radiusOf`) e por
+  sitio libre (`keepClear` con radio). Os pins (`DRAW.stopRadius.pin`, 14) apartan os nomes.
+  Unha comprobación nova: un nome de subida empeza fóra do pin, e o dunha parada ao lado dun
+  pin non se escribe debaixo da súa beira.
+- `buildMapStyle.ts`: fóra o esvaecemento dos nomes de rúa nos dous temas, e unha capa nova
+  (`urbanos_landmarks`) con cinco clases estreitadas por subclase, iconas do sprite que xa se
+  descargaba. O sprite consultouse unha vez a man (o seu índice, 264 iconas) para saber os
+  nomes; o estilo reconstruíuse sen rede: 55 capas no claro e 46 no escuro, unha máis cada un.
+  A comprobación que esixía o esvaecemento substitúese pola que esixe o contrario, nomeando as
+  capas de cada tema; DATA.md, DECIDIDO e README din o novo.
+- Ruta: «2 billetes 1,28 €» no resumo (`fareTickets`); as opcións que xa non se collen saen
+  da lista (menos a aberta) e o aviso di «A pé non chegas a tempo a este bus», nos tres
+  idiomas.
+- Menú: «Avisar dun erro na app» (o selector de incidencias, que manda o do servizo a
+  buslugo.com) e o correo do proxecto (`CONTACT_EMAIL` en `project.ts`). O contacto tamén
+  nos tres README.
+- README: unha cifra vella corrixida. Dicía «28 km para un percorrido de 10» da 5.1 de volta;
+  `data:build` di hoxe «moved 3 stop(s) … 19.0 km of zig-zag -> 8.2 km», que é o que xa dicía
+  a outra pasaxe do mesmo README. A lectura enteira dos tres README fíxoa agy (46 s): ningunha
+  cifra distinta entre eles.
+
+### Comprobado
+
+- As cinco portas: lint, 167 comprobacións, 26 políticas, `check:deep` (1.050 pares, 38.338
+  viaxes) e a build. `data:build` non cambia nada: 417 paradas, 24 liñas.
+- No panel, a 375 × 812 e no tema escuro, contra `pnpm dev`: no mapa da rede, no centro aos
+  zooms 16 e 17, os nomes das rúas e os das paradas á vez, sen tapar un o outro; ao 14, as
+  iconas da estación de tren, a de autobuses, o concello, un hospital e unha facultade. En
+  Ruta (Fonte dos Ranchos → HULA): «2 billetes 1,28 €», dúas opcións, o compás no mapa do
+  traxecto e, ao 15,3, «Serra de Meira 68» e «Serra de Meira 16» escritas xunto aos nomes das
+  rúas. Na consola, ningún erro; un aviso de imaxe `route-arrow-#1e40af` que non se mirou.
+- `audit:browser` enteiro con `AUDIT_RUNNER=1` contra a build en 3002, coa máquina en calma:
+  saída 0, 0 achados WCAG en 162 estados e catro pases (736 s), os 12 controis do menú ao
+  teclado, a barra da casa 25 e 3 coma na rolda 60.
+
+### Queda
+
+- O tema claro non se mirou no panel (a app gardaba o escuro): as iconas son as de Liberty,
+  un estilo claro, pero non está visto.
+- Un pin de subida co seu nome ao lado non se viu no panel: só o garda a comprobación.
+- Sen probar nun teléfono de verdade o xiro con dous dedos no mapa da ruta.

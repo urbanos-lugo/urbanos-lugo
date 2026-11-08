@@ -72,6 +72,7 @@ Node 22 or newer, and **pnpm always**: CI installs with `--frozen-lockfile` from
 - [DATA.md](DATA.md) — where every file comes from and under what terms.
 - [NOTICE.md](NOTICE.md) — who has to be credited.
 - [SECURITY.md](SECURITY.md) — how to report a security problem.
+- Contact: [an issue in the repository](https://github.com/urbanos-lugo/urbanos-lugo.github.io/issues/new/choose) or an email to [urbanos-lugo@proton.me](mailto:urbanos-lugo@proton.me).
 
 The code is MIT. Geometry derived from OpenStreetMap is ODbL, which is not the same
 thing, and DATA.md says which is which.
