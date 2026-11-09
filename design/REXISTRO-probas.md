@@ -5170,3 +5170,37 @@ sen perderse.
 - O pin A e o primeiro pin de subida pódense pisar cando a orixe está xunto á parada; xa
   pasaba.
 - A páxina da 1.7.6 en Releases, por crear.
+
+## Rolda 63: o que quedaba por mirar, e as frechas dunha liña escollida — 9 de novembro de 2026
+
+Pedido: probar o que as roldas 61 e 62 deixaran sen ver e, se non cambiaba nada, levalo a
+`main`. Cambiou unha cousa: as frechas.
+
+### Comprobado
+
+- A CI de `develop` en e577b4d, verde nas súas sete partes.
+- Nun separador propio do panel (o do dono estaba en uso), a 375 × 812 contra `pnpm dev`:
+  un punto de parada tocado no mapa do traxecto ampliado abre o taboleiro de «Avda. Magoi
+  12», coa capa pechada e «Volver al resultado»; no tema claro, ao zoom 13, as iconas da
+  estación de tren, a de autobuses, un hospital, o concello e unha facultade, e os nomes das
+  rúas (Ronda da Muralla, Rúa Montero Ríos). O tema escolleuse no almacenamento só para
+  miralo e volveu deixarse baleiro: a app non escoita cambios doutro separador.
+- O aviso `Image "route-arrow-…" could not be loaded`, reproducido: escollida a 1.1 no mapa
+  da rede, ao zoom 13 e 14 a liña saía sen frechas e a consola dicía iso; ao 15 xa as tiña.
+  MapLibre 6 di que un escoitador de `styleimagemissing` xa non chega a tempo para a petición
+  que o disparou.
+
+### Feito
+
+- `RouteLayer`: a imaxe da frecha dáse con `map.setMissingStyleImageResolver`, que MapLibre
+  pregunta antes de dar a imaxe por perdida, e quítase ao desmontar. Despois, na mesma proba
+  e nunha carga nova: frechas desde o zoom 13 e ningún aviso na consola despois da marca de
+  carga. As cinco portas: lint, 167 comprobacións, 26 políticas, `check:deep` e a build.
+
+### Queda
+
+- O pin de subida co seu nome ao lado segue sen verse no panel (o mapa fuxía ao achegar); o
+  garda a comprobación de `nameLayout`.
+- Xirar con dous dedos e a pantalla enteira nun teléfono de verdade.
+- Os avisos de `highway-shield-*` na consola veñen das capas do estilo publicado de
+  OpenFreeMap, non desta rolda.

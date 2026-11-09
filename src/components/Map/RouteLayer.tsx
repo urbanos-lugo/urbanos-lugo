@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { ExpressionSpecification, LineLayerSpecification, Map as MapLibre, MapLayerMouseEvent, MapMouseEvent, MapStyleImageMissingEvent } from 'maplibre-gl';
+import type { ExpressionSpecification, LineLayerSpecification, Map as MapLibre, MapLayerMouseEvent, MapMouseEvent } from 'maplibre-gl';
 import { translations, useLang } from '../../i18n';
 import { escapeHtml } from '../../utils/html';
 import { directionLabel } from '../../utils/serviceLabels';
@@ -128,10 +128,12 @@ export function RouteLayer({ map, styled, lines, visibleLineIds, emphasisLineIds
         'icon-offset': ARROW_OFFSET,
       },
     });
-    const missing = (e: MapStyleImageMissingEvent) => {
-      if (e.id.startsWith(ARROW_IMAGE) && !map.hasImage(e.id)) addArrowImage(map, e.id);
-    };
-    map.on('styleimagemissing', missing);
+    // Asked before the image counts as missing. Since MapLibre 6 a `styleimagemissing` listener
+    // comes too late for the request that fired it: a line picked out had no arrows on the tiles
+    // drawn first, and the console said the image could not be loaded.
+    map.setMissingStyleImageResolver((id) => {
+      if (id.startsWith(ARROW_IMAGE) && !map.hasImage(id)) addArrowImage(map, id);
+    });
 
     // A mouse is told the line and the direction under it.
     const hover = hoverLabels(map);
@@ -171,7 +173,7 @@ export function RouteLayer({ map, styled, lines, visibleLineIds, emphasisLineIds
 
     return () => {
       map.off('click', openLinesHere);
-      map.off('styleimagemissing', missing);
+      map.setMissingStyleImageResolver(null);
       for (const id of TRACES) {
         map.off('mousemove', id, label);
         map.off('mouseleave', id, leave);
