@@ -10,6 +10,7 @@ import { getArrivalsForStop, nextServiceAtStop, rowKeys, timingPointStopCount } 
 import { getNearbyLines, getNearbyStops } from '../utils/places';
 import { dayWord } from '../utils/serviceLabels';
 import { LOCALE, useLang, useT } from '../i18n';
+import type { Tab } from '../routes';
 import { newIssueUrl } from '../project';
 import { clockDriftFromTimetable, deviceTimeZone } from '../utils/clock';
 import { useOperatorTimes } from '../hooks/useOperatorTimes';
@@ -32,6 +33,8 @@ interface StopArrivalsViewProps {
   /** Switch to another pole: on the map below, the one across the road is one tap. */
   onSelectStop: (stop: BusStop) => void;
   onBack: () => void;
+  /** Where the board was opened from, when that is where back goes (useTabRoute's `from`). */
+  backTo?: Tab;
   isFavorite: boolean;
   onToggleFavorite: (stopId: string) => void;
   /** True only when this stop was opened by scanning the QR on its own pole: the one place the operator's own minutes are shown. */
@@ -76,7 +79,7 @@ interface LineGroup {
 }
 
 
-export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSelectStop, onBack, isFavorite, onToggleFavorite, viaQr, notices = [], changes = null, onOpenAlerts }: StopArrivalsViewProps) {
+export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSelectStop, onBack, backTo, isFavorite, onToggleFavorite, viaQr, notices = [], changes = null, onOpenAlerts }: StopArrivalsViewProps) {
   const t = useT();
   const lang = useLang();
   // The lines here that a notice names; with a notice and none of them named, the strip still shows, since its
@@ -355,7 +358,7 @@ export function StopArrivalsView({ selectedStop, onSelectLine, onViewOnMap, onSe
 
   return (
     <div className="page-column px-cap-3.5 pb-8 pt-4">
-      <BackButton label={t.arrivals.back} onClick={onBack} className="mb-1" />
+      <BackButton label={backTo === 'plan' ? t.planner.backToAnswer : backTo === 'map' ? t.map.backToMap : t.arrivals.back} onClick={onBack} className="mb-1" />
 
       <header className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">

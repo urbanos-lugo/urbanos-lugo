@@ -633,6 +633,24 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   («A pé non chegas a tempo a este bus»); o prezo do resumo leva o reconto de billetes.
   Ver «O bus que xa non se colle dise», arriba.
 
+## O mapa do traxecto a pantalla enteira, e volver de onde viñeches — 9 de novembro de 2026
+
+- **Pantalla enteira, da app e non do navegador.** A tarxeta mide 240 px nun móbil e para
+  ler un traxecto había que achegar moito. O botón pon o mapa nunha capa fixa sobre todo
+  (`useDialog`: Escape, o foco dentro e o xesto de volver pechan), e o traxecto
+  encádrase de novo no tamaño novo. Non se usou o `FullscreenControl` de MapLibre: no
+  iPhone non hai API de pantalla completa para un elemento, o seu substituto non escoita o
+  xesto de volver, e tería que pintarse outra icona no estilo dos controis.
+- **Unha parada tocada no mapa do traxecto abre o seu taboleiro**, como no paso a paso, e a
+  capa péchase antes: as pestanas quedan montadas, e o mapa quedaría tapando o taboleiro.
+- **«A miña localización» tamén no mapa do traxecto**, co mesmo `useFollowMe` do mapa da
+  rede; no acompañante non, que xa debuxa a posición.
+- **Volver de onde viñeches.** Un taboleiro ou unha liña abertos desde Ruta ou desde o
+  mapa gardan de onde veñen (`from` en `useTabRoute`): o seu botón de volver é o da
+  historia e di «Volver ao resultado» ou «Volver ao mapa». Levaba ás paradas gardadas, e a
+  resposta só se recuperaba co xesto do sistema. Só esas dúas orixes: desde as outras
+  pestanas o botón segue sendo o de sempre.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

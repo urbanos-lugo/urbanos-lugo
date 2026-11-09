@@ -220,6 +220,8 @@ export const gl = {
     placeholderDest: 'Escribe o teu destino en Lugo...',
     lineWithStops: (line: string, stops: number) => `Liña ${line} · ${stops} ${stops === 1 ? 'parada' : 'paradas'}`,
     routeMap: 'Mapa do traxecto',
+    enlargeMap: 'Ampliar o mapa',
+    shrinkMap: 'Reducir o mapa',
     showMap: 'Amosar mapa',
     hideMap: 'Ocultar mapa',
     timeModes: { now: 'Agora', depart: 'Saír ás', arrive: 'Chegar antes' },
@@ -366,6 +368,7 @@ export const gl = {
     controls: 'Filtros e capas',
     closeControls: 'Pechar filtros e capas',
     closeStop: 'Pechar esta parada',
+    backToMap: 'Volver ao mapa',
     /** The close button of a map popup, which the map renderer names in English. */
     closePopup: 'Pechar',
     expandLines: 'Ver todas as liñas dunha vez',

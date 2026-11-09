@@ -140,6 +140,8 @@ const board = `[...document.querySelectorAll('main h2')].find((h) => shown(h) &&
 const firstDeparture = `[...document.querySelectorAll('main ul li .figure')].find(shown)`;
 const lineHeading = `[...document.querySelectorAll('main h2')].find((h) => shown(h) && h.classList.contains('text-emph'))`;
 const answerFigure = `[...document.querySelectorAll('main .figure')].find(shown)`;
+/** In the answer's step by step, the stop the trip boards at: a button under its "board at" label. */
+const boardingStop = `[...document.querySelectorAll('main button[title]')].find((b) => shown(b) && b.previousElementSibling?.firstElementChild?.textContent === T.planner.board)`;
 /** The map opened on the reader 70 m south of HOME, and HOME's sheet opened from its dot. */
 const NEAR_HOME: Start = { geo: 'granted', at: [HOME.lat - 70 / 111_320, HOME.lng] };
 const homeSheet: Step[] = [
@@ -455,6 +457,32 @@ export const JOURNEYS: Journey[] = [
     ],
     answer: answerFigure,
     away: { tab: 'T.nav.stops', still: answerFigure, what: 'the planned trip' },
+  },
+  {
+    task: 'a trip',
+    entry: 'answer, a stop on it, and the board’s own back',
+    start: {},
+    // The board opened from the trip sent its own back to the saved stops, away from the answer.
+    steps: [
+      tab('T.nav.plan'),
+      { tap: `all().filter(shown).find((b) => b.getAttribute('aria-pressed') !== null && b.textContent.trim() === 'Campus USC')`, wait: answerFigure },
+      { tap: boardingStop, wait: board },
+      // Back where it was left, scrolled to the step by step, not to the top of the answer.
+      { tap: `labelled(T.planner.backToAnswer) || saying(T.planner.backToAnswer)`, wait: `!(${board}) && ${boardingStop}`, stack: 'pop' },
+    ],
+    answer: boardingStop,
+  },
+  {
+    task: 'a trip',
+    entry: 'answer, the map enlarged',
+    start: {},
+    // The trip map is a 240 px card on a phone; enlarged it takes the screen, and back gives the card back before it leaves the answer.
+    steps: [
+      tab('T.nav.plan'),
+      { tap: `all().filter(shown).find((b) => b.getAttribute('aria-pressed') !== null && b.textContent.trim() === 'Campus USC')`, wait: answerFigure },
+      { tap: `labelled(T.planner.enlargeMap)`, wait: `css('[role=dialog][aria-modal=true] .maplibregl-map')` },
+    ],
+    answer: `css('[role=dialog][aria-modal=true] .maplibregl-map')`,
   },
 
   /* --- On the bus --- */

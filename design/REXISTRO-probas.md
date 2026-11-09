@@ -5118,3 +5118,55 @@ paradas e a roda do rato (tocar unha parada quedou fóra).
   un estilo claro, pero non está visto.
 - Un pin de subida co seu nome ao lado non se viu no panel: só o garda a comprobación.
 - Sen probar nun teléfono de verdade o xiro con dous dedos no mapa da ruta.
+
+## Rolda 62: a 1.7.6, e o mapa do traxecto a pantalla enteira — 9 de novembro de 2026
+
+Pedido: pasar a 61 a `main`, e que o mapa de Ruta sexa a parte forte da resposta: máis grande
+cando se queira, as paradas abríbeis desde o mapa e desde a lista, saber onde estás, e volver
+sen perderse.
+
+### A 1.7.6
+
+- Por orde do dono: o commit da versión (3e919c0), as cinco portas nel, a CI de `develop` verde
+  nas súas sete partes, `main` e a etiqueta nun só push. Pages e o worker despregaron (o paso
+  «Deploy» do worker, verde) e `/api/version` di 3e919c0. A páxina en GitHub (Releases) non a
+  puido crear esta sesión: o clasificador de permisos negou `gh release create`.
+
+### Feito
+
+- `RouteMap`: un botón amplía o mapa a unha capa fixa sobre toda a pantalla (`useDialog`:
+  Escape, o foco e o xesto de volver), e o traxecto encádrase de novo no tamaño novo. Leva
+  «A miña localización» (`useFollowMe`, coma o mapa da rede) cando non é o acompañante. Un
+  punto, un nome ou o pin de subida tocados abren o taboleiro desa parada, coa capa pechada
+  antes (as pestanas quedan montadas).
+- `Itinerary`: as paradas polas que pasa o bus son botóns que abren o seu taboleiro.
+- `useTabRoute`: `from`, a pestana desde a que se abriu un taboleiro ou unha liña, só se é Ruta
+  ou o mapa. O botón de volver dese taboleiro ou desa liña vai pola historia e di «Volver ao
+  resultado» ou «Volver ao mapa»; levaba ás paradas gardadas.
+- Dous percorridos novos en «a trip»: o taboleiro dunha parada do traxecto e o seu volver,
+  que ten que deixar a resposta onde estaba (rolada ata o paso a paso, non arriba); e o mapa
+  ampliado, que o volver do sistema ten que pechar antes de saír da resposta. A primeira
+  versión do primeiro pedía o titular da resposta á volta e deu dous `flow` («scrolled 750 px
+  past its answer»): o erro era do percorrido, que esquecía que volver devolve o scroll.
+
+### Comprobado
+
+- As cinco portas: lint, 167 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, a 375 × 812 e en castelán contra `pnpm dev`: a capa mide 375 × 812, o foco cae en
+  «Reducir el mapa», Escape devolve a tarxeta (238 px) e o foco a «Ampliar el mapa», e
+  `history.back()` pecha a capa sen saír de `/es/ruta/`. O pin da 4.1 tocado abre o taboleiro
+  de Rda. Muralla (Obras Públicas) coa capa pechada; desde o paso a paso, «Praza Bretaña» abre
+  o seu; e «Volver al resultado» volve á resposta rolada a 878 px, onde se deixara.
+- `audit:browser` enteiro con `AUDIT_RUNNER=1` contra a build en 3002, coa máquina en calma:
+  saída 0, 0 achados WCAG en 242 medidas de 162 estados (725 s), ningún `flow` nin `back`, os
+  12 controis do menú ao teclado, a barra da casa 25 e 3 coma antes; o alcance do polgar, 64
+  entradas (62 na rolda 60), impreso e non porta. O mapa ampliado, fotografado
+  (`JOURNEY_SHOTS`) nos dous teléfonos: o traxecto enteiro na pantalla e, ao volver, a
+  resposta coa tarxeta.
+
+### Queda
+
+- Un punto de parada tocado no mapa do traxecto non se probou no panel (o pin e as listas si).
+- O pin A e o primeiro pin de subida pódense pisar cando a orixe está xunto á parada; xa
+  pasaba.
+- A páxina da 1.7.6 en Releases, por crear.

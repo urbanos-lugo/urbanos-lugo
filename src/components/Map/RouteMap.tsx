@@ -1,6 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { LngLatBounds, Marker, type ExpressionSpecification, type MapLayerMouseEvent } from 'maplibre-gl';
+import { useEffect, useRef, useState } from 'react';
+import { LocateFixed, Maximize2, Minimize2, Navigation2 } from 'lucide-react';
+import { LngLatBounds, Marker, type ExpressionSpecification, type MapLayerMouseEvent, type MapMouseEvent } from 'maplibre-gl';
 import { useT } from '../../i18n';
+import { useDialog } from '../../hooks/useDialog';
+import { CloseButton, Notice } from '../ui/controls';
+import { useFollowMe } from './useFollowMe';
 import { escapeHtml } from '../../utils/html';
 import { BusStop, RoutePlanResult, TripSegment } from '../../types';
 import { LUGO_CENTER, stopById } from '../../data/transitData';
@@ -10,7 +14,7 @@ import { useIsDark } from '../../hooks/useIsDark';
 import { useMapLibre } from '../../hooks/useMapLibre';
 import { DRAW, mapColors, stopDotPaint } from './palette';
 import { readerMark, type ReaderMark } from './reader';
-import { dropLayers, hoverLabels, placeLayer, setSource } from './mapLayers';
+import { claim, dropLayers, fingerReach, hoverLabels, isClaimed, placeLayer, setSource } from './mapLayers';
 import { MapUnavailable } from './MapUnavailable';
 import { stopNamesLayer } from './StopNames';
 
@@ -27,8 +31,10 @@ interface RouteMapProps {
   destination?: Place;
   /** Index of the leg being made right now (trip companion): drawn in full and framed, the rest faint. */
   focusSegment?: number;
-  /** The reader's own position, drawn and kept in view. */
+  /** The reader's own position, drawn and kept in view (trip companion). Left out, the map has a button that finds the reader instead. */
   position?: { lat: number; lng: number } | null;
+  /** A stop tapped on the map, its dot, its name or its boarding pin. */
+  onSelectStop?: (stop: BusStop) => void;
   className?: string;
 }
 
@@ -83,7 +89,7 @@ const collection = <T extends GeoJSON.Feature>(features: T[]): GeoJSON.FeatureCo
  * a straight dashed hint where it did not), each bus leg in its line colour sliced from that
  * direction's real road geometry between the two stops it rides.
  */
-export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegment, position = null, className }: RouteMapProps) {
+export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegment, position, onSelectStop, className }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const t = useT();
   const colors = mapColors(useIsDark());
@@ -98,6 +104,24 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
   const shownRef = useRef<LngLatBounds | null>(null);
   /** The map already framed once: another option, or the next leg on the ride, is travelled to rather than cut to (as on the board's map). */
   const framed = useRef<typeof map>(null);
+  /** The map over the whole screen, for as long as the reader wants it: on a phone the card is 240 px tall. Back or Escape gives the card back. */
+  const [full, setFull] = useState(false);
+  const frameRef = useDialog(full, () => setFull(false));
+  /** A stop tapped leaves the planner for its board, so the map gives the screen back first. */
+  const choose = useRef<(stop: BusStop) => void>(() => {});
+  choose.current = (stop) => {
+    setFull(false);
+    onSelectStop?.(stop);
+  };
+  // Where the reader is, found as the network map finds it; the companion passes its own fix.
+  const follow = useFollowMe(map, styled, colors, () => {});
+
+  // A new size is a new frame for the trip: grown, it stayed the size of the card in the middle of the screen.
+  useEffect(() => {
+    if (!map) return;
+    map.resize();
+    if (shownRef.current) map.fitBounds(shownRef.current, FIT_NOW);
+  }, [map, full]);
 
   useEffect(() => {
     if (!map) return;
@@ -122,7 +146,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     const walks: Line[] = [];
     const guesses: Line[] = [];
     const legs: Line[] = [];
-    const calls: GeoJSON.Feature<GeoJSON.Point, { label: string }>[] = [];
+    const calls: GeoJSON.Feature<GeoJSON.Point, { label: string; id: string }>[] = [];
     /** The stops whose names are written: where each leg boards and ends first, so a crowded spot goes to them. */
     const ends: BusStop[] = [];
     const called: BusStop[] = [];
@@ -146,10 +170,16 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       else guesses.push(line([a, b], { faint: !emphasised }));
       return detailed ? detailed.path : [a, b];
     };
-    const pin = (at: [number, number], color: string, label: string, tooltip: string, emphasised: boolean) => {
+    const pin = (at: [number, number], color: string, label: string, tooltip: string, emphasised: boolean, stop?: BusStop) => {
       const el = pinElement(color, label);
       el.addEventListener('mouseenter', () => hover.show([at[1], at[0]], escapeHtml(tooltip)));
       el.addEventListener('mouseleave', () => hover.leave());
+      // A boarding pin is its stop, as the dots are.
+      if (stop && onSelectStop)
+        el.addEventListener('click', (e) => {
+          claim(e);
+          choose.current(stop);
+        });
       markers.push(new Marker({ element: el, opacity: String(emphasised ? 1 : FAINT) }).setLngLat([at[1], at[0]]));
       pins.push([at[0], at[1], DRAW.stopRadius.pin]);
     };
@@ -193,13 +223,13 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
           label: escapeHtml(t.planner.lineWithStops(segment.line.number, segment.stopsCount ?? 0)),
         }),
       );
-      pin(slice[0], segment.line.color, segment.line.number.slice(0, 3), `${t.planner.board} ${segment.fromStop.name}`, emphasised);
+      pin(slice[0], segment.line.color, segment.line.number.slice(0, 3), `${t.planner.board} ${segment.fromStop.name}`, emphasised, segment.fromStop);
 
       // Where the ride calls and where it is left, as the neutral stop dot every map uses: a dot in the line's colour on a line of that colour is a bump, not a stop.
       for (let i = from + 1; i <= to && emphasised; i++) {
         const stop = stopById(direction.stops[i]);
         if (!stop) continue;
-        calls.push({ type: 'Feature', properties: { label: escapeHtml(stop.name) }, geometry: { type: 'Point', coordinates: [stop.lng, stop.lat] } });
+        calls.push({ type: 'Feature', properties: { label: escapeHtml(stop.name), id: stop.id }, geometry: { type: 'Point', coordinates: [stop.lng, stop.lat] } });
         if (i < to) called.push(stop);
       }
       if (emphasised) {
@@ -255,7 +285,33 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     for (const marker of markers) marker.addTo(map);
 
     // The stops named from the zoom the network map names them at; a boarding stop's name clears its pin.
-    const names = stopNamesLayer(map, { ink: colors.nameInk, halo: colors.nameHalo, radius: DRAW.stopRadius.overview, radiusOf: (stop) => (boards.has(stop.id) ? DRAW.stopRadius.pin : undefined) });
+    const names = stopNamesLayer(map, {
+      ink: colors.nameInk,
+      halo: colors.nameHalo,
+      radius: DRAW.stopRadius.overview,
+      radiusOf: (stop) => (boards.has(stop.id) ? DRAW.stopRadius.pin : undefined),
+      onTap: onSelectStop ? (stop) => choose.current(stop) : undefined,
+    });
+
+    // The dot nearest the finger, within its reach past the dot's edge, as on the network map.
+    const onClick = (e: MapMouseEvent) => {
+      if (!onSelectStop || isClaimed(e)) return;
+      const reach = DRAW.stopRadius.overview + DRAW.stopRing + fingerReach();
+      const { x, y } = e.point;
+      const away = (stop: BusStop) => {
+        const p = map.project([stop.lng, stop.lat]);
+        return Math.hypot(p.x - x, p.y - y);
+      };
+      const near = map
+        .queryRenderedFeatures([[x - reach, y - reach], [x + reach, y + reach]], { layers: ['app-calls'] })
+        .map((f) => stopById(String(f.properties.id)))
+        .filter((stop): stop is BusStop => !!stop && away(stop) <= reach)
+        .sort((a, b) => away(a) - away(b))[0];
+      if (!near) return;
+      claim(e);
+      choose.current(near);
+    };
+    map.on('click', onClick);
     const named = [...new Map([...ends, ...called].map((stop) => [stop.id, stop])).values()];
     let naming: boolean | null = null;
     const nameStops = () => {
@@ -288,6 +344,7 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
         map.off('mouseleave', id, leave);
       }
       map.off('zoom', nameStops);
+      map.off('click', onClick);
       names.remove();
       hover.remove();
       for (const marker of markers) marker.remove();
@@ -322,5 +379,44 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
   }, [map, styled, colors, position?.lat, position?.lng]);
 
   if (unavailable) return <MapUnavailable className={className} />;
-  return <div ref={containerRef} className={className} />;
+  const sizeLabel = full ? t.planner.shrinkMap : t.planner.enlargeMap;
+  const LocateIcon = follow.isTurning ? Navigation2 : LocateFixed;
+  return (
+    <div
+      ref={frameRef}
+      role={full ? 'dialog' : undefined}
+      aria-modal={full || undefined}
+      aria-label={full ? t.planner.routeMap : undefined}
+      className={full ? 'fixed inset-0 z-dialog bg-bg' : `relative ${className ?? ''}`}
+    >
+      {/* First, so the focus lands on it when the map takes the screen. */}
+      <button type="button" onClick={() => setFull(!full)} aria-label={sizeLabel} title={sizeLabel} className="absolute right-3 top-3 z-map-float flex size-12 items-center justify-center map-glass text-ink-2 shadow-float">
+        {full ? <Minimize2 className="h-5 w-5" aria-hidden="true" /> : <Maximize2 className="h-5 w-5" aria-hidden="true" />}
+      </button>
+      <div ref={containerRef} className="size-full" />
+      {position === undefined && (
+        <>
+          {follow.error && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-20 z-map-alert px-3">
+              <Notice role="alert" className="pointer-events-auto flex items-center gap-1 py-1 pr-1 shadow-raised">
+                <span className="min-w-0 flex-1">{follow.error}</span>
+                <CloseButton label={t.map.closePopup} onClick={() => follow.setError(null)} />
+              </Notice>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={follow.toggle}
+            disabled={follow.isLocating}
+            aria-pressed={follow.isFollowing}
+            aria-label={follow.label}
+            title={follow.label}
+            className={`absolute bottom-5 left-3 z-map-float flex size-12 items-center justify-center map-glass shadow-float disabled:opacity-disabled ${follow.isFollowing ? 'border-accent text-accent' : 'text-ink-2'}`}
+          >
+            <LocateIcon className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </>
+      )}
+    </div>
+  );
 }

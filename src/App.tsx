@@ -138,12 +138,13 @@ export default function App() {
    * where the list stays on screen, it replaces what was open rather than add a step.
    */
   const openOnTab = (next: Screen) => {
-    if (activeTab !== next.tab) return go(next);
+    // A board opened from a planned trip sent its own back to the saved stops, away from the answer.
+    if (activeTab !== next.tab) return go(activeTab === 'plan' || activeTab === 'map' ? { ...next, from: activeTab } : next);
     const side = sideBySide();
     go({ ...next, over: !side && !screen.stop && !screen.line }, side);
   };
   /** Back to the list: the history's way if the board or the line was put over it. */
-  const backToList = (tab: Tab) => (screen.over ? window.history.back() : go({ tab }, true));
+  const backToList = (tab: Tab) => (screen.over || screen.from ? window.history.back() : go({ tab }, true));
   const openLine = (line: BusLine) => {
     setSelectedLine(line);
     openOnTab({ tab: 'lines', line: line.id });
@@ -260,6 +261,7 @@ export default function App() {
                       onViewOnMap={viewStopOnMap}
                       onSelectStop={selectStop}
                       onBack={() => backToList('stops')}
+                      backTo={screen.from}
                       isFavorite={favoriteStopIds.includes((boardStop ?? selectedStop).id)}
                       onToggleFavorite={toggleFavoriteStop}
                       viaQr={!!screen.qr && !!boardStop}
@@ -280,6 +282,7 @@ export default function App() {
                   lineOpen={!!screen.line}
                   onOpenLine={openLine}
                   onBack={() => backToList('lines')}
+                  backTo={screen.from}
                   onSelectStop={selectStop}
                   onViewLineOnMap={viewLineOnMap}
                   favoriteLineIds={favoriteLineIds}

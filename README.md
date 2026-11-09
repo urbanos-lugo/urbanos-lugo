@@ -248,7 +248,7 @@ que non colle non se escribe. E **tocar un nome é tocar a súa
 parada**, con 8 px de marxe para o dedo: no mapa da rede abre a súa folla, no pequeno o seu
 taboleiro. O nome é o máis grande que di que parada é un punto. **O mapa da ruta tamén os
 escribe**, desde o mesmo zoom: primeiro onde se sube e onde se baixa, despois as paradas
-polas que pasa, e ningún debaixo dun pin.
+polas que pasa, e ningún debaixo dun pin; tocalo abre o taboleiro desa parada.
 
 Se xa deixaches que a app te localice, **o mapa ábrese sobre ti**, coas liñas que tes
 preto. Aberto desde «Ver no mapa» dunha parada, en cambio, o mapa queda nesa parada: é o
@@ -319,6 +319,16 @@ co paseo medido en canto está calculado. Ensínanse as catro mellores, menos as
 o paseo medido xa non alcanza: esas saen da lista, e se é a resposta aberta dío con
 palabras, «A pé non chegas a tempo a este bus». O prezo do resumo leva o reconto de
 billetes —«2 billetes 1,28 €»—, porque cada bus paga o seu co billete ordinario.
+
+**O mapa do traxecto amplíase á pantalla enteira**: no móbil é unha tarxeta de 240 px, e o
+botón da esquina dálle toda a pantalla, co traxecto encadrado de novo; o xesto de volver
+ou Escape devolven a tarxeta antes de saír da resposta. Leva **«A miña localización»**, o
+mesmo do mapa da rede, para saber onde estás respecto do traxecto. **Tocar unha parada**
+—o seu punto, o seu nome ou o pin onde se sube— abre o seu taboleiro, e no paso a paso
+tamén se abren as paradas polas que pasa o bus, non só a de subida e a de baixada. Desde
+ese taboleiro, ou desde a páxina dunha liña aberta no traxecto, **o botón de volver di
+«Volver ao resultado» e volve á resposta**, no sitio onde a deixaches; antes levaba ás
+paradas gardadas. O mesmo desde o mapa da rede: «Volver ao mapa».
 
 **Ir andando é sempre unha das opcións.** Lugo crúzase a pé nunha hora, así que un
 itinerario de 90 minutos con dous transbordos é peor que camiñar, e a aplicación dío en

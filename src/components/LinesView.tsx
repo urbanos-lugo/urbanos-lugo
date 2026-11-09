@@ -17,6 +17,7 @@ import { Approx } from './ui/Provenance';
 import { LineBadge, lineTint } from './ui/LineBadge';
 import { useClock } from '../hooks/useClock';
 import { useShareLink } from '../hooks/useShareLink';
+import type { Tab } from '../routes';
 
 /** The categories the dataset actually uses, in the order the lines declare them. */
 const CATEGORIES = [...new Set(BUS_LINES.map((l) => l.category))];
@@ -30,6 +31,8 @@ interface LinesViewProps {
   onOpenLine: (line: BusLine) => void;
   /** Back to the list from a line's page. */
   onBack: () => void;
+  /** Where the line's page was opened from, when that is where back goes (useTabRoute's `from`). */
+  backTo?: Tab;
   onSelectStop: (stop: BusStop) => void;
   onViewLineOnMap: (line: BusLine) => void;
   favoriteLineIds?: string[];
@@ -78,7 +81,7 @@ function RunningBuses({ count, compact = false }: { count: number; compact?: boo
   );
 }
 
-export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts, visible = true }: LinesViewProps) {
+export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, backTo, onSelectStop, onViewLineOnMap, favoriteLineIds = [], onToggleFavoriteLine, notices = [], changes = null, onOpenAlerts, visible = true }: LinesViewProps) {
   const t = useT();
   const lang = useLang();
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -234,7 +237,7 @@ export function LinesView({ selectedLine, lineOpen, onOpenLine, onBack, onSelect
         </Pane>
 
         <Pane side="detail" shown={lineOpen} className="space-y-4 lg:pb-4">
-          <BackButton label={t.lines.backToLines} onClick={onBack} />
+          <BackButton label={backTo === 'plan' ? t.planner.backToAnswer : backTo === 'map' ? t.map.backToMap : t.lines.backToLines} onClick={onBack} />
 
           <div className="card space-y-4 py-6 px-cap-6">
             <div className="flex flex-col justify-between gap-4 border-b border-line pb-5 2xl:flex-row 2xl:items-center">

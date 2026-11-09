@@ -1,7 +1,7 @@
 import { Bus, ChevronDown, Clock, Footprints } from 'lucide-react';
 import { useT } from '../../i18n';
 import type { BusLine, BusStop, TripSegment } from '../../types';
-import { stopName } from '../../data/transitData';
+import { stopById, stopName } from '../../data/transitData';
 import { LineBadge } from '../ui/LineBadge';
 import { Approx, Provenance } from '../ui/Provenance';
 import { NameStack } from '../ui/NameStack';
@@ -79,11 +79,17 @@ function BusStep({ seg, onSelectStop, onSelectLine }: { seg: TripSegment & { lin
             {t.planner.ride(count, seg.durationMinutes)}
           </summary>
           <ol className="pb-2 pl-5.5" aria-label={t.planner.viaStops}>
-            {between.map((id) => (
-              <li key={id} className="break-words py-1 text-label text-ink-3">
-                {stopName(id)}
-              </li>
-            ))}
+            {/* Each opens its board, as the stops you get on and off at do. */}
+            {between.map((id) => {
+              const stop = stopById(id);
+              return (
+                <li key={id}>
+                  <button type="button" disabled={!stop} onClick={() => stop && onSelectStop(stop)} className="flex min-h-tap w-full items-center break-words text-left text-label text-ink-2 underline decoration-dotted underline-offset-link">
+                    {stopName(id)}
+                  </button>
+                </li>
+              );
+            })}
           </ol>
         </details>
       )}

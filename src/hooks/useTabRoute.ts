@@ -25,6 +25,8 @@ export interface Screen {
   ride?: boolean;
   /** Put over the list or the form it was opened from, so the app's own back is the history's. */
   over?: boolean;
+  /** Opened from the planner or the map: the page's own back goes back there, not to its tab's list, and says so. */
+  from?: Tab;
 }
 
 /** A project page lives under `/<repo>/`, so the language and tab are the segments after that prefix. */
