@@ -5204,3 +5204,56 @@ Pedido: probar o que as roldas 61 e 62 deixaran sen ver e, se non cambiaba nada,
 - Xirar con dous dedos e a pantalla enteira nun teléfono de verdade.
 - Os avisos de `highway-shield-*` na consola veñen das capas do estilo publicado de
   OpenFreeMap, non desta rolda.
+
+## Rolda 64: a 1.7.7, e o README para quen o le de fóra — 9 de novembro de 2026
+
+Pedido: levar a `main` o mapa do traxecto e as frechas, e despois revisar o README enteiro
+para que o lea un profesional: o que queda por facer e o que se pensa para máis adiante ao
+día, e fóra o que xa non é ou xa está feito.
+
+### A 1.7.7
+
+- Por orde do dono: o arranxo das frechas (3a4cb77), o commit da versión (db59efd), as cinco
+  portas nel, a CI de `develop` verde nas súas sete partes, `main` e a etiqueta nun só push.
+  Pages despregou db59efd. O worker non, nin tiña por que segundo os seus camiños: segue en
+  3e919c0. Mirado ao velo: o worker le os dicionarios (`places.ts` importa `translations.ts`)
+  e `src/i18n/**` non está entre os camiños do seu despregue; os textos novos son de pantalla
+  e o worker non os usa, así que non perde nada hoxe. Vai ao pendente.
+- A páxina en Releases, outra vez sen crear: o clasificador negou `gh release create`.
+
+### O README
+
+- agy leu o README e o pendente enteiros (44 s) e listou o que contaba historia en vez do
+  presente, os feitos repetidos, o futuro e o detalle miúdo; cada punto mirouse no texto
+  antes de tocalo.
+- Novo «Nun minuto»: que é, arquitectura, pila, datos, sen conexión, calidade, idiomas e
+  licenzas, nunha táboa. O índice, na orde do corpo e con todas as seccións.
+- En presente: os nomes das rúas, o volver da resposta, o enrutador comparado, os avisos do
+  Concello no worker, as portas da muralla. Fóra as medidas en píxeles dunha franxa do 8 de
+  outubro e o exemplo da 1.2 dese día.
+- A imaxe do executor citaba as medidas de 26.04 do 14 e 15 de outubro (921–1.140 ms); as de
+  agora son as do 2 de novembro (867 fronte a 612). O README xa non as copia: remite ao
+  pendente, onde viven.
+- A árbore do repositorio omitía oito ficheiros (`noticeChanges.ts`, `operatorNotices.ts`,
+  `structuralNotices.ts`, `translations.ts`, `useShareLink.ts`, `png.ts`,
+  `checkHolidaysAhead.ts`, `checkNoticesReviewed.ts`), atopados comparándoa con
+  `git ls-files`.
+- Limitacións: as coordenadas e os festivos, ao que segue sendo certo (2026 e 2027 no
+  ficheiro); o historial de fiabilidade, unha liña que remite á súa idea.
+- «O que queda e ideas para máis adiante»: o que queda, en cinco puntos que remiten ao
+  pendente; as ideas debaixo. «Que os buscadores atopen o sitio», que estaba feito, pasa a
+  ser a idea que queda: unha páxina por liña e por parada.
+- As cifras da rede, medidas outra vez con `data:audit`: 24 liñas, 48 sentidos, 417
+  paradas, 271 co código, 45 de 48 levantados, 436 km, 777 expedicións en laborable, 2 de
+  1.136 tramos sospeitosos. Coinciden coas do README.
+
+### O pendente
+
+- Só o aberto: o teléfono de verdade, o lector de pantalla, os buscadores, Ubuntu 26.04, os
+  pins que se tapan, as páxinas de Releases e os camiños do worker. Os feitos (festivos de
+  2027, o traballo dos luns, a organización, MapLibre) pasan a «Feito», unha liña cada un. A
+  lista do iPhone leva o mapa do traxecto a pantalla enteira.
+
+### Comprobado
+
+- `check:policy`: «every file, script, command and heading a document names exists».

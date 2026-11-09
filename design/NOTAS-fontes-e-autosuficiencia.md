@@ -216,176 +216,43 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
 
 ## Pendente
 
-1. **Comprobar navegadores e sistemas.** Non se probou máis que nun Chromium. Importa
-   especialmente: **Safari en iOS**, que é o outro medio Lugo, e onde `100dvh`, os
-   `<details>`, `oklch()` e o `ResizeObserver` do mapa son os candidatos a romper. Tamén
-   Firefox e Chrome en Android. Hai que decidir cal é o chan que se soporta e escribilo.
-   *O chan está escrito (15 de setembro de 2026, README, «Navegadores»): o de Vite 8,
-   Chrome/Edge 111, Firefox 114, Safari e iOS 16.4. Do que está por riba do chan xa se
-   protexe o código: `AbortSignal.timeout?.`, `wakeLock` só se existe, `vibrate?.`, mapa
-   ráster sen WebGL2. O que queda é a proba nun iPhone real, coa lista de abaixo.*
-   *Desde o 21 de outubro de 2026 a proba ten guión: `design/PROBA-no-telefono.md`, media
-   hora nun iPhone e noutra nun Android, co que a emulación da rolda 42 non alcanza (o
-   xesto de atrás de cada sistema, un teclado de verdade, o bloqueo, a app instalada, as
-   zonas seguras, a letra do sistema e o mapa co dedo e co GPS).*
-2. **Volver mirar os buscadores** nunhas semanas, cousa do dono: en Search Console, que
-   «Páxinas» amose as seis; en Bing Webmaster, que o escaneo do sitio xa non avise de
-   «H1 tag missing» (arranxado o 16 de setembro cun `<h1>` estático en cada copia).
-   *A configuración está feita desde o 15 de setembro (verificación, sitemap enviado en
-   Google e importado en Bing); o que queda é só mirar. O 21 de setembro, desde fóra:
-   `site:braisbrg.github.io` sen resultados aínda en DuckDuckGo (índice de Bing); Google
-   non se deixa preguntar desde un guión. Se en dúas semanas Bing segue sen nada, «Submit
-   URLs» a man en Bing Webmaster ou IndexNow desde o despregue, que é unha petición máis
-   a un terceiro e decídea o dono.*
-   *O que si dixo Search Console, o 21 de setembro: «Duplicada: Google elixiu unha
-   canónica diferente» para `/paradas/`, coa raíz como a súa. Certo: a raíz é a pestana de
-   paradas e as dúas páxinas debuxan o mesmo. `/paradas/` leva agora a raíz como canónica e
-   o sitemap queda en seis URL. O «non se puido ler» do sitemap, con cinco días e o
-   ficheiro servido con 200, `application/xml` e XML válido (comprobado con `curl`), é o
-   que Search Console amosa nas propiedades novas ata que o procesa; non hai nada que
-   arranxar no ficheiro. Bing: «Discovered but not crawled» na raíz é o estado normal dun
-   sitio novo sen ligazóns de entrada; o que se pode facer é «Request indexing» nas seis
-   URL, unha vez. IndexNow é o protocolo para avisar a Bing en cada cambio de contido
-   desde o despregue; con seis URL fixas, o botón fai o mesmo.*
-   *Mirado o 6 de outubro. Google: a raíz e outras dúas, indexadas; `/paradas/` sae como
-   duplicada da raíz, que é o que se quere (Google amosa aínda a canónica de antes do 21 de
-   setembro; a validación está iniciada). O sitemap segue «non se puido ler» desde o 21 de
-   setembro, con 0 páxinas, e figura como «/sitemap.xml»: na raíz do dominio iso dá 404, e
-   o bo é `https://braisbrg.github.io/urbanos-lugo/sitemap.xml`, que hai que enviar co
-   enderezo completo. Bing ten ese, correcto, 7 URL; a raíz segue «Discovered but not
-   crawled» desde o 17 de setembro, e pediuse outra vez a indexación das seis. Nada o
-   bloquea (200, sen `noindex`, canónicas ben, escaneo limpo), pero sen JavaScript cada
-   páxina ten 55 caracteres de texto, o `<h1>`, e ningunha ligazón, e Bing depende do HTML
-   tal como chega máis ca Google. Se en dúas semanas segue igual, é iso o que hai que
-   cambiar: o bloque estático de `AUDITORIA-seo.md` (punto 5, aparcado o 15 de setembro
-   polo CLS) ou o prerender do punto 7.*
-   *Tamén o 6 de outubro, cada idioma pasou a ter os seus enderezos (`/es/…`, `/en/…`, cos
-   `hreflang`); os galegos non cambian, nin o enderezo do sitemap, que agora lista
-   dezaoito. Cando estea publicado: na inspección de Google e de Bing, pedir unha vez a
-   indexación de `/es/` e `/en/`, e mirar en dúas semanas que o resultado sae no idioma de
-   quen busca.*
-   *Mirado o 13 de outubro, igual que o 6. Google: «/sitemap.xml», lido por última vez o 6,
-   «non se puido ler» e 0 páxinas; ese é o da raíz do dominio, que dá 404. Bing: o bo, 7 URL
-   da lectura do 15 de setembro, sen volver ler. O sitemap publicado dá 200 e
-   `application/xml`, e as súas 18 URL responden 200, cada unha coa súa canónica, catro
-   `hreflang` e sen `noindex`: nada que arranxar no sitio. Non se volve enviar: a mudanza
-   (punto 5) leva o sitio á raíz dun dominio, o único lugar onde os buscadores len
-   `robots.txt`; nun subcartafol ese ficheiro e a súa liña `Sitemap:` non os le ninguén.
-   Despois da mudanza, propiedade nova en Search Console co sitemap da raíz, e Bing
-   impórtaa.*
-   *Feito o 14 de outubro. A propiedade `https://urbanos-lugo.github.io/` verificouse soa
-   coa etiqueta de `index.html`. O sitemap enviado amosou primeiro «Non se puido obter»,
-   como o 21 de setembro, mentres a proba en tempo real dicía «A URL está dispoñible para
-   Google»; pídese a indexación da raíz, `/es/` e `/en/`. Bing importouno de Search
-   Console. O sitemap vello e o sitio vello quitáronse dos dous paneis. O que queda é
-   mirar en dúas semanas que «Páxinas» amose as 18 e que cada idioma saia a quen busca
-   nel.*
-   *Mirado o 29 de outubro. Google: o sitemap «/sitemap.xml» leuse só o 14, «Non se puido
-   ler o sitemap», 0 páxinas, e sen volver ler en quince días; indexadas, as que se pediron a
-   man. O ficheiro, pedido unha vez desde fóra co axente de Googlebot: 200,
-   `application/xml`, 1.248 bytes sen BOM, só o espazo de nomes de sitemaps, 18 URL que
-   responden 200 coa súa canónica e sen `noindex`, e `robots.txt` noméao. Nada que arranxar
-   no sitio: a primeira lectura foi co dominio dun día. O seguinte paso é do dono: quitar o
-   sitemap en Search Console e envialo de novo; en Bing, mirar en Sitemaps se o importado
-   se leu e cantas URL atopou, e na inspección da raíz, `/es/` e `/en/`, se seguen
-   «Discovered but not crawled».* *O mesmo día: Bing, «Success» e 18 URL atopadas, e
-   inspeccionadas as tres; o sitemap volveuse enviar en Search Console, que ao momento
-   seguía igual. Mirar outra vez nunha semana.*
-3. **Os festivos de 2027.** `src/data/festivos.json` ten só 2026. O decreto galego de 2027
-   xa saíu: Decreto 68/2026, DOG do 2 de xullo de 2026, co 19 de marzo e o 17 de maio no
-   lugar do 25 de xullo e do 15 de agosto, que caen en domingo. Faltan os dous festivos
-   locais de Lugo, que saen nunha resolución do DOG cara a finais de outubro (a de 2026 saíu
-   o 30 de outubro de 2025). Cando saia, engadir o ano cos seus días e as dúas fontes, como
-   o de 2026. Desde o 1 de novembro «Check the sources» falla cada luns mentres falte, e
-   `pnpm test` o 1 de xaneiro; un ano sen a resolución local entre as súas fontes non pasa.
-   *Feito o 2 de novembro de 2026 (rolda 58): a resolución saíu no DOG do 26 de outubro,
-   entrada 28 do anexo II, Lugo: 9 de febreiro e 5 de outubro. Catorce días, coma en 2026.
-   O seguinte, 2028: o decreto en xuño ou xullo de 2027, a resolución a finais de outubro.*
-4. **O traballo dos luns e os servidores alleos que non responden.** O 28 de setembro de
-   2026 fallou: overpass-api.de non aceptaba conexións —dende o executor de GitHub pola
-   mañá e dende outra rede horas despois—, e o `fetch failed` saltaba por riba do
-   reintento, que só coñecía estados HTTP. *Arranxado o mesmo día en `develop`* (chega ao
-   traballo dos luns cando chegue a `main`): sen conexión é «non responde», e a
-   comprobación do trazado di «nada comprobado, nada afirmado» e sae con 0, como prometía
-   o seu comentario. Quedan dúas cousas para o rexistro do seguinte luns: se o trazado
-   volveu comprobarse, e por que o feed do Concello non se puido ler dende o executor. Esa
-   mañá foi a primeira vez que `check:parsers` correu en GitHub, e agora di o motivo: un
-   403 repetido sería un bloqueo aos enderezos de nube, e esa metade tería que correr a
-   man; un tempo esgotado, cousa dun día. Un espello de Overpass, só se a caída se repite,
-   e decídeo o dono: sería outro servidor alleo.
-   *O luns 5 de outubro respondeu ás dúas preguntas, e as dúas seguían abertas.
-   Overpass respondeu 504 tres veces, e o trazado leva sen comprobarse desde o 21 de
-   setembro. Desde o executor, o feed do Concello esgotou o tempo ao conectar
-   (`UND_ERR_CONNECT_TIMEOUT`); desde unha conexión doméstica responde en 0,8 s. O
-   despregue de cada hora e o worker len ese mesmo feed. No despregue, nunha mostra de 21,
-   o paso de avisos levou 11–13 s en 16 e 2–3 s nos outros 5. No worker, dúas
-   actualizacións forzadas levaron 15,9 e 16,1 s. As dúas cousas son deducións a partir
-   das duracións, porque ningún rexistro dicía o motivo.*
-   *Feito o 6 de outubro na 1.2.5, por decisión do dono. Cando a instancia de FOSSGIS non
-   responde, `tools/osm.ts` pregúntalle á de private.coffee. Comprobouse a man contra ela
-   soa: 48 de 48 rutas iguais, en 559 s, moito máis que a principal. O feed do Concello ten
-   agora 4 s e deixa unha liña por lectura. O que queda é ler esas liñas no worker e no
-   despregue.*
-   *Lidas o 13 de outubro. No worker de Deno, sete lecturas o 6 e o 13, ningunha conectou:
-   o worker xa non o le (DECIDIDO, rolda 34). No despregue de cada hora, 2 de 12 entre o 10
-   e o 13, e 5 de 10 antes; aí séguese lendo. Overpass respondeu o luns 12 (48 rutas no
-   disco, 48 no mapa, todas coa mesma forma).*
-5. **Unha organización de GitHub para que a app teña nome e icona nos buscadores**, cando
-   todo estea estable. Google toma o nome do sitio e a icona da raíz do dominio, e
-   `braisbrg.github.io/` dá 404: por iso o resultado di «GitHub Pages documentation» cun
-   globo. Os sitios en subcartafol non poden ter nome propio; un subdominio si, e
-   `github.io` está na lista de sufixos públicos, así que `urbanos-lugo.github.io` conta
-   como sitio propio, gratis. O nome `urbanos-lugo` estaba libre o 6 de outubro. O dono:
-   crear a organización (plan gratuíto), transferirlle o repositorio e renomealo a
-   `urbanos-lugo.github.io` (con outro nome quedaría outra vez nun subcartafol); comprobar
-   que seguen o segredo e o ambiente de Deno, `API_ORIGIN` e as regras das ramas; poñer
-   `ALLOWED_ORIGIN` do worker a `https://urbanos-lugo.github.io`; dar de alta o sitio en
-   Search Console e Bing. O código: que o despregue entenda que un repositorio
-   `*.github.io` vive na raíz, os datos estruturados `WebSite` co nome, as tres portadas
-   e os checks que levan o enderezo. E o enderezo vello, cun repositorio pequeno
-   `braisbrg/urbanos-lugo`: páxinas que redirixan a cada pestana e idioma, un *service
-   worker* que se desinstale para liberar a app instalada, e os favoritos e as paradas
-   recentes levados no fragmento da ligazón, porque se gardan por orixe e se perderían.
-   *Preparado o 9 de outubro de 2026, para facelo antes de que haxa quen use a web:
-   [`MUDANZA-organizacion.md`](MUDANZA-organizacion.md) ten os pasos en orde, e o
-   despregue xa constrúe para a raíz un repositorio `<propietario>.github.io`.*
-   *Feito o 13 de outubro: o repositorio é `urbanos-lugo/urbanos-lugo.github.io`, e os dous
-   despregues relanzados serven a web en `https://urbanos-lugo.github.io/`. O enderezo vello
-   non redirixe (DECIDIDO, 13 de outubro; rolda 35). O 14, coa 1.4.0 publicada, Search
-   Console e Bing (punto 8 da guía): a propiedade nova verificouse coa etiqueta que xa
-   levaba `index.html`, que é a da conta.*
-   *Os datos estruturados `WebSite` co nome, que este plan listaba, non se fixeran: a
-   portada levaba só `WebApplication`. Feitos o 31 de outubro de 2026 (rolda 52).*
-6. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
+1. **Probar nun teléfono de verdade.** Só se probou en Chromium e na emulación da auditoría.
+   O chan está escrito (README, «Navegadores»): o de Vite 8, Chrome e Edge 111, Firefox 114,
+   Safari e iOS 16.4, e o código protexe o que está por riba del (`AbortSignal.timeout?.`,
+   `wakeLock` só se existe, `vibrate?.`, o aviso sen WebGL2). Queda media hora nun iPhone e
+   outra nun Android co guión de [`PROBA-no-telefono.md`](PROBA-no-telefono.md) e a lista de
+   abaixo: o xesto de atrás de cada sistema, un teclado de verdade, o bloqueo, a app
+   instalada, as zonas seguras, a letra do sistema e o mapa co dedo e co GPS, co xiro con
+   dous dedos e o mapa do traxecto a pantalla enteira.
+2. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
    [`PROBA-lector-de-pantalla.md`](PROBA-lector-de-pantalla.md), unha vez con VoiceOver e
    outra con TalkBack (rolda 31). `audit:browser` mide nomes, estados, orde e idioma no
    código; como os di cada lector, se le o «~» das horas estimadas e se cambia de voz nos
    avisos en castelán, só se sabe escoitando.
-7. **Ubuntu 26.04 no executor, cando o zoom caiba nel.** Os traballos piden `ubuntu-24.04`
-   polo nome. Probado o 14 e o 15 de outubro de 2026 (rolda 38): en 26.04 a CI enteira e a
-   auditoría pasan, pero os catro pasos de zoom de `measure:browser` bloquean o fío
-   921–1.140 ms en tres execucións, fronte a 305–308 en 24.04 (orzamento 900). Antes de
-   cambiar: ver que Chrome e que GL de software trae cada imaxe e comparalos; na rolda 28
-   un Chrome novo xa moveu esta medida. A rama de proba é `ubuntu-26` (o seu único commit
-   cambia as seis liñas `runs-on` e o check). 24.04 ten soporte de GitHub para anos.
-   *Medido outra vez o 2 de novembro de 2026, xa cos mapas en MapLibre (rama
-   `ubuntu-26-maplibre`, rolda 59). A CI enteira pasa en 26.04. En `measure:browser`, nunha
-   soa execución, os catro pasos de zoom bloquean 867 ms (orzamento 900), fronte a 612 en 24.04
-   o 1 de novembro, e o resto vai entre un 14 e un 42% máis lento. Cabe, pero con 33 ms de
-   marxe, así que segue en 24.04. Volver medir cando GitHub anuncie a retirada de 24.04, ou se
-   un Chrome novo move esta medida.*
-8. **Os mapas, debuxados con MapLibre, para que xiren.** Decidido o 26 de outubro de 2026
-   (DECIDIDO): xirar con dous dedos e unha brúxula para volver ao norte. Con Leaflet non hai
-   maneira limpa: `leaflet-rotate` é GPL-3 e a app MIT, e a capa MapLibre de debaixo non
-   segue o xiro. Son os catro mapas (rede, Ruta, o pequeno e a ficha da parada) e as súas
-   capas: paradas, nomes, liñas coas frechas, buses, o lector. MapLibre debuxa os nomes con
-   colisións, o que fai `nameLayout.ts` a man. O que hai que decidir antes: que fai un
-   teléfono sen WebGL2, que hoxe cae ás teselas ráster de OSM con Leaflet.
-   *Feito na rolda 44 (27 e 28 de outubro de 2026): os tres mapas con MapLibre só, o da rede
-   xira, co compás cando está xirado e o mapa xirando co teléfono ao segundo toque de «A miña
-   localización». Sen WebGL2, un aviso e as listas; o ráster de OSM marchou. Os nomes seguen
-   no lenzo propio, na letra da app. Decisións en DECIDIDO, medidas en REXISTRO. Falta velo
-   nun iPhone (lista de abaixo, punto 4).*
+3. **Os buscadores**, cousa do dono. O sitio está dado de alta desde o 14 de outubro de
+   2026: a propiedade `https://urbanos-lugo.github.io/` en Search Console, verificada coa
+   etiqueta de `index.html`, e Bing importándoa, co sitemap de 18 URL. Mirado o 29 de
+   outubro: Bing atopara as 18; en Google o sitemap seguía «Non se puido ler» desde a
+   primeira lectura, co dominio dun día, e volveuse enviar. Mirar que «Páxinas» amose as 18
+   e que cada idioma saia a quen busca nel. Se Bing non avanza, o seguinte é o texto estático
+   ou o prerender de [`AUDITORIA-seo.md`](AUDITORIA-seo.md) (puntos 5 e 7).
+4. **Ubuntu 26.04 no executor, cando o zoom caiba nel.** Os traballos piden `ubuntu-24.04`
+   polo nome. En 26.04 a CI enteira e a auditoría pasan, pero o 2 de novembro de 2026 (rama
+   `ubuntu-26-maplibre`, rolda 59, unha execución) os catro pasos de zoom de
+   `measure:browser` bloquearon o fío 867 ms nun orzamento de 900, fronte a 612 en 24.04, e o
+   resto foi entre un 14 e un 42 % máis lento: cabe con 33 ms de marxe, así que segue en
+   24.04. Antes de cambiar, ver que Chrome e que GL de software trae cada imaxe; volver medir
+   cando GitHub anuncie a retirada de 24.04, ou se un Chrome novo move esta medida.
+5. **O pin de orixe e o da primeira subida tápanse** no mapa do traxecto cando a orixe está
+   xunto á parada (visto na rolda 62). Un dos dous ten que apartarse, ou o A non debuxarse
+   cando cae dentro do pin da subida.
+6. **As páxinas da 1.7.6 e da 1.7.7 en GitHub (Releases)**, cousa do dono: a sesión que as
+   publicou non as puido crear. O texto de cada unha é o da súa etiqueta.
+7. **O worker non se volve publicar cando cambia un dicionario.** `deploy-worker.yml` sae só
+   cando cambian `worker/`, `src/services`, `src/data`, `src/utils` ou `src/project.ts`, pero
+   o worker le `src/i18n/translations.ts` a través de `src/utils/places.ts`. Hoxe non perde
+   nada: os textos que cambiaron na 1.7.6 e na 1.7.7 son de pantalla e o worker non os usa
+   (rolda 64). Engadir `src/i18n/**` aos camiños, ou deixar escrito por que non.
 
 ### Lista para o iPhone
 
@@ -412,6 +279,9 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
 6. **Ruta**: calcular Praza Maior → HULA; ao calcular, a pantalla vai á resposta. Premer
    **Vou nesta**: pide o GPS, e a pantalla non se apaga durante un minuto (a *wake lock*,
    iOS 16.4+; se non existe, non debe saír erro ningún).
+   Despois **Ampliar o mapa** do traxecto: ocupa a pantalla; xirar con dous dedos; o xesto
+   de atrás de Safari devolve a tarxeta sen saír da resposta; tocar unha parada do
+   traxecto abre o seu taboleiro, e «Volver ao resultado» volve onde estaba.
 7. Cambiar tema e idioma desde o menú: as cores (`oklch()`) e os textos cambian enteiros.
 8. Modo avión, pechar a app, abrila de novo desde a icona: abre, o taboleiro ten horas, e
    Avisos amosa unha resposta con data (a última ou a copia gardada), non unha lista baleira.
@@ -423,6 +293,24 @@ Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e 
 Un fallo en calquera punto é un erro de verdade e vai ao rexistro con modelo e versión.
 
 ## Feito dende que se escribiu isto
+
+- **Os festivos de 2027** (2 de novembro de 2026, rolda 58): a resolución saíu no DOG do 26
+  de outubro, e Lugo pon o 9 de febreiro e o 5 de outubro; catorce días, coma en 2026. O
+  seguinte, 2028: o decreto en xuño ou xullo de 2027 e a resolución a finais de outubro, e
+  «Check the sources» avisa desde novembro.
+- **O traballo dos luns cando un servidor alleo non responde** (1.2.5, 6 de outubro de
+  2026): sen conexión é «non responde», o trazado pregúntalle ao espello de Overpass de
+  private.coffee cando o de FOSSGIS non contesta (48 de 48 rutas iguais, comprobado a man), o
+  feed do Concello ten 4 s e deixa unha liña por lectura, e o worker xa non o le, porque
+  desde Deno non conecta.
+- **A organización de GitHub** (13 de outubro de 2026): o repositorio é
+  `urbanos-lugo/urbanos-lugo.github.io`, servido na raíz de `https://urbanos-lugo.github.io/`,
+  co nome e a icona propios nos buscadores, e os datos estruturados `WebSite` desde o 31 de
+  outubro (rolda 52). O enderezo vello non redirixe (DECIDIDO, 13 de outubro); os pasos,
+  en [`MUDANZA-organizacion.md`](MUDANZA-organizacion.md).
+- **Os mapas con MapLibre** (rolda 44, 27 e 28 de outubro de 2026): os tres mapas, sen o
+  ráster de reserva de antes. O da rede xira, co compás e co teléfono ao segundo toque de «A
+  miña localización», e desde a rolda 61 tamén o da ruta. Sen WebGL2, un aviso e as listas.
 
 - **O latexo de «Vou nesta» e WCAG 2.2.2** (8 de outubro de 2026, rolda 31). Era o único
   criterio A ou AA que a app non cumpría. O dono escolleu a proposta: dúas batidas cada vez

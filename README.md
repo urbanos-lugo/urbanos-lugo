@@ -69,6 +69,19 @@ existe esa segunda etiqueta en vez de finxir que o sabe todo.
 Como está feito, de onde saen os datos, como se verifica e como se despregar. Se só
 querías consultar o bus, o enlace está arriba.
 
+## Nun minuto
+
+| | |
+| :--- | :--- |
+| **Que é** | Unha aplicación web progresiva que le os cadros horarios publicados do bus urbano de Lugo e calcula no navegador chegadas, traxectos e onde debería ir cada bus. Ningunha hora é unha medición, e cada unha di se é a publicada ou unha estimada. |
+| **Arquitectura** | Sitio estático en GitHub Pages: todo o cálculo ocorre no cliente, sobre JSON xerados no build. Só dúas cousas precisan servidor, polo CORS —os avisos do operador e os minutos detrás do QR dun poste—, e sírveas un worker en Deno Deploy ou o `server.ts` de Express. |
+| **Pila** | React 19, Vite 8, Tailwind 4, MapLibre GL e TypeScript estrito; pnpm e Node 22 ou superior. |
+| **Datos** | 24 liñas, 48 sentidos, 417 paradas (271 co código no poste) e 436 km de rede, xerados desde buslugo.com, OpenStreetMap e OSRM por un pipeline reproducible, coas fontes gardadas como instantáneas. |
+| **Sen conexión** | Service Worker. Os horarios, a rede peonil de Lugo (21.093 cruces, con altitude) e o enrutador A\* van dentro: un traxecto calcúlase no teléfono, sen rede e sen terceiros. |
+| **Calidade** | Cinco portas en cada push —tipos, a suite de comprobacións, a política do repositorio, varreduras sobre o dataset enteiro e o build— e unha auditoría WCAG 2.2 A e AA nun navegador real, estado por estado e tarefa por tarefa co dedo. `main` só acepta un commit coa CI verde. |
+| **Idiomas** | Galego, castelán e inglés, cun enderezo por idioma. |
+| **Licenzas** | Código MIT; os trazados derivados de OpenStreetMap, ODbL ([`DATA.md`](DATA.md)). |
+
 ## Índice
 
 1. [Que fai](#que-fai)
@@ -81,15 +94,16 @@ querías consultar o bus, o enlace está arriba.
 8. [Planificador](#planificador)
 9. [Buscador](#buscador)
 10. [API REST](#api-rest)
-11. [Tecnoloxías](#tecnoloxías)
-12. [Despregue](#despregue)
-13. [Instalación](#instalación)
-14. [Rexenerar os datos](#rexenerar-os-datos)
-15. [Verificación](#verificación)
-16. [Tres idiomas](#tres-idiomas)
-17. [Móbil e escritorio](#móbil-e-escritorio)
+11. [Tecnoloxías](#tecnoloxías): sen conexión, tamaño, tipos, vocabulario visual, seguridade e accesibilidade
+12. [Tres idiomas](#tres-idiomas)
+13. [Móbil e escritorio](#móbil-e-escritorio)
+14. [Despregue](#despregue)
+15. [Instalación](#instalación)
+16. [Rexenerar os datos](#rexenerar-os-datos)
+17. [Verificación](#verificación)
 18. [Limitacións coñecidas](#limitacións-coñecidas)
-19. [Ideas para máis adiante](#ideas-para-máis-adiante)
+19. [Contribuír](#contribuír) e [Licenza](#licenza)
+20. [O que queda e ideas para máis adiante](#o-que-queda-e-ideas-para-máis-adiante)
 
 ---
 
@@ -175,8 +189,8 @@ que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras es
 Desde o zoom 13 o mapa leva **as iconas dos sitios polos que se busca unha parada** —hospital,
 estación de tren, estación de autobuses, universidade e concello—, as do propio sprite de
 OpenFreeMap e sen nome, que sería un rótulo máis para que os das paradas lle caesen enriba.
-**Os nomes das rúas quedan a calquera zoom**: antes apagábanse do 15 ao 16,5, onde chegan os
-das paradas, e quen achegaba o mapa para atopar unha parada perdía o nome da rúa.
+**Os nomes das rúas quedan a calquera zoom**, ao lado dos das paradas: quen achega o mapa
+para atopar unha parada busca tamén o nome da rúa onde está.
 
 Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á **dereita
 do seu sentido de marcha**, como circulan os buses. Onde varias comparten calzada van **en
@@ -327,8 +341,8 @@ mesmo do mapa da rede, para saber onde estás respecto do traxecto. **Tocar unha
 —o seu punto, o seu nome ou o pin onde se sube— abre o seu taboleiro, e no paso a paso
 tamén se abren as paradas polas que pasa o bus, non só a de subida e a de baixada. Desde
 ese taboleiro, ou desde a páxina dunha liña aberta no traxecto, **o botón de volver di
-«Volver ao resultado» e volve á resposta**, no sitio onde a deixaches; antes levaba ás
-paradas gardadas. O mesmo desde o mapa da rede: «Volver ao mapa».
+«Volver ao resultado» e volve á resposta**, no sitio onde a deixaches. O mesmo desde o mapa
+da rede: «Volver ao mapa».
 
 **Ir andando é sempre unha das opcións.** Lugo crúzase a pé nunha hora, así que un
 itinerario de 90 minutos con dous transbordos é peor que camiñar, e a aplicación dío en
@@ -368,7 +382,7 @@ quilómetros a campo través, e alí non hai beirarrúa ningunha.
 
 **Substituír algo é afirmar que o teu é igual de bo, así que se comproba.**
 `pnpm run compare:walk` colle 40 traxectos reais e pregúntallos aos dous enrutadores, ao
-noso e ao de FOSSGIS que había antes. Última medición: mediana **−1,2%**, p10 −5,9%, p90
+noso e ao público de FOSSGIS (OSRM). Última medición: mediana **−1,2%**, p10 −5,9%, p90
 +0,5%, e **39 dos 40 dentro do 10%**, os 40 dentro do 25%.
 
 O signo importa e é honesto dicilo: os nosos camiños son sistematicamente un chisco máis
@@ -531,31 +545,23 @@ Bretaña», e «Avda. Ramón Ferreiro (Femenino)» é «Ramón Ferreiro (Feminin
 A noite pertence ao día no que empezou: ás dúas da mañá do 10 rexe o 9. Todo vai marcado
 como do aviso, e ningunha hora sae como saída: o aviso di ata cando, non cando pasa. Unha
 hora final xa pasada non se di, e o lugar vai coa hora con que se escribiu: «ata as 03:00
-(Cementerio)» non di onde remata a 01:00 dos días 5 e 12. O 8 de outubro de 2026 a páxina
-da 1.2 en buslugo.com remataba ás 22:17, sen ningunha saída despois da medianoite, e a
-portada só tiña o aviso.
+(Cementerio)» non di onde remata a 01:00 dos días 5 e 12.
 
 **Un aviso remata cos seus propios días.** Se o do San Froilán segue na páxina do operador
 o 13, a app volve ser a de antes desde as 05:00 dese día, tamén o «1» do menú e Avisos;
 un aviso que non nomea días non remata así. E Ruta le o aviso da noite na que sae a
 viaxe, non o do momento da pregunta: á unha da madrugada do 13 a noite aínda é a do 12,
-pero o primeiro bus da mañá xa para en Praza Bretaña.
-
-Medido o 8 de outubro de 2026 nun navegador co reloxo posto en noites e días de festa, nun
-teléfono de 375 px: a franxa pregada ocupa 46 px, 108 cunha parada pechada nela e 190 de
-noite, coas horas despregadas. En Ruta, 62 px de día. Fóra dos días do aviso, nada se
-pecha nin se risca.
+pero o primeiro bus da mañá xa para en Praza Bretaña. Fóra dos días do aviso, nada se pecha
+nin se risca.
 
 A consulta faise **desde o servidor** (o navegador non pode por CORS), contra buslugo.com e
 o feed de tráfico do Concello. Se non hai servidor —ou non responde— úsase a copia que
 deixou a tarefa programada e amósase **cando se tomou**, en lugar de facela pasar por
 actual. O feed do Concello lese despois da páxina do operador e ten catro segundos. Cada
 lectura deixa unha liña no rexistro do servidor, co que tardou e, se falla, o motivo.
-Desde o worker de Deno o feed non conectou nunca —sete lecturas o 6 e o 13 de outubro de
-2026, as sete sen resposta aos catro segundos—, así que o worker só le buslugo.com, e o
-feed léno a copia de cada hora, que desde GitHub conecta algunhas veces, e un `server.ts`
-propio. Na app publicada,
-logo, os avisos do Concello só aparecen cando se amosa esa copia.
+Desde Deno Deploy o feed non conecta, así que o worker só le buslugo.com; o feed léno a
+copia de cada hora, que desde GitHub conecta algunhas veces, e un `server.ts` propio. Na
+app publicada, logo, os avisos do Concello só aparecen cando se amosa esa copia.
 
 **Tarifas** (`/tarifas`) leva os títulos de transporte tal e como os publica o operador,
 **cada un coa súa fonte enlazada**: billete ordinario, bono ordinario e bono social da
@@ -630,19 +636,10 @@ Todo o demais: cero. Son 0,93 km de 158. O operador publica paradas nesas rúas 
 alí unha parada de bus levantada sobre o terreo, así que algo pasa por elas; pero ningunha
 vía leva `bus=yes` nin `psv=yes`.
 
-**Resolto por observación directa.** O 2 de setembro de 2026 viuse a liña 9 entrar na
-muralla pola porta do Hospital Quirón, e supúxose que sairía pola de San Fernando.
-Comprobado contra os datos antes de escribilo, e as dúas cousas cadran — para as catro
-liñas, non só para a 9:
-
-| sentido | porta que toca o trazado |
-| :--- | :--- |
-| saíndo do casco (7, 8, 9, 12) | **Porta de San Fernando**, a 0 m |
-| entrando no casco (7, 8, 9, 12) | **Porta do Bispo Odoario**, a 0 m |
-
-O Hospital Quirónsalud está a **44 m** da Porta do Bispo Odoario. É dicir, o bus fai
-exactamente o que a relación de OSM di que fai, e faino nun só sentido por cada porta.
-**Era unha etiqueta que falta, non un bus que queda na entrada.**
+**O bus si pasa, e por onde di OSM.** Visto no terreo coa liña 9 e comprobado nos datos
+para as catro: entran no casco pola **Porta do Bispo Odoario** e saen pola **de San
+Fernando**, as dúas a 0 m do trazado, e cada porta nun só sentido. O que falta é unha
+etiqueta nas rúas, non un rodeo do bus.
 
 As vías concretas ás que lles falta a excepción, medidas con `tools/checkOsmGeometry.ts`:
 Rúa Bolaño Rivadeneira (unha delas con `access=no motor_vehicle=private`), Rúa de San
@@ -799,6 +796,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── map-style-light.json    XERADO — o estilo do mapa base, paleta clara
 │   │   ├── map-style-dark.json     XERADO — o mesmo, paleta escura
 │   │   ├── festivos.json           os festivos que corren como domingos, por ano e coa súa fonte
+│   │   ├── structuralNotices.ts    os avisos permanentes, escritos a man, coa data da súa revisión
 │   │   ├── routeGeometry.ts        carga os trazados baixo demanda
 │   │   └── transitData.ts          carga dos datos + tarifas
 │   ├── services/
@@ -821,6 +819,7 @@ queira usar; a app non chama ningunha.
 │   │   ├── useIsDark.ts            se a paleta escura está activa agora mesmo
 │   │   ├── useClock.ts             o reloxo, relido cada N segundos e ao espertar o teléfono: nada se descarga
 │   │   ├── useWalkPaths.ts         o camiño a pé real de cada tramo, calculado no dispositivo
+│   │   ├── useShareLink.ts         compartir unha ligazón: o panel do teléfono, ou copiala
 │   │   └── useMapLibre.ts          un mapa de MapLibre: estilo por tema, zoom e compás, nome accesible, o aviso sen WebGL2
 │   ├── utils/
 │   │   ├── schedule.ts             calendario e cadro horario
@@ -831,6 +830,8 @@ queira usar; a app non chama ningunha.
 │   │   ├── places.ts               camiñada estimada, lugares, resolver o que se escribe, paradas preto
 │   │   ├── links.ts                o que abre unha ligazón: ?parada= e ?linea=
 │   │   ├── serviceLabels.ts        días, frecuencia e sentido no idioma da IU
+│   │   ├── operatorNotices.ts      o aviso do operador repartido por liñas, coa súa lingua
+│   │   ├── noticeChanges.ts        o que cambia un aviso, lido das súas palabras: días, horas finais, paradas
 │   │   ├── geo.ts                  a única Haversine
 │   │   ├── tripProgress.ts         que parada pasei, contra o GPS; e a máquina da viaxe
 │   │   ├── walkRouter.ts           A* sobre a rede peonil, no propio móbil
@@ -842,7 +843,8 @@ queira usar; a app non chama ningunha.
 │   ├── fonts/                      as dúas caras variables + OFL.txt
 │   ├── index.css                   o vocabulario visual enteiro, por papel, e as clases dos patróns que se repiten
 │   ├── fonts.css                   XERADO por tools/importFonts.ts
-│   ├── i18n/                       gl.ts · es.ts · en.ts; index.ts dá o idioma por contexto (useT)
+│   ├── i18n/                       gl.ts · es.ts · en.ts; index.ts dá o idioma por contexto (useT),
+│   │                               translations.ts os mesmos dicionarios sen React, para o motor e o worker
 │   ├── security/
 │   │   ├── csp.ts                  unha política, para a meta e para a cabeceira
 │   │   ├── rateLimit.ts            teito de peticións por enderezo, no servidor Express
@@ -880,6 +882,8 @@ queira usar; a app non chama ningunha.
 │   ├── checkOsmGeometry.ts         SEMANAL — o trazado segue sendo o de OSM?
 │   ├── checkFares.ts               SEMANAL — as tarifas seguen sendo esas?
 │   ├── checkParsersUnchanged.ts    o HTML de fóra segue tendo a forma esperada (semanal, 4 peticións)
+│   ├── checkHolidaysAhead.ts       SEMANAL — desde novembro, falla mentres falten os festivos do ano seguinte
+│   ├── checkNoticesReviewed.ts     SEMANAL — falla se un aviso permanente leva máis de cinco semanas sen revisar
 │   ├── osm.ts                      Overpass, coseduras e metros restrinxidos
 │   ├── hydrateGeometry.ts          pon a xeometría viaria nas liñas, como fai o navegador
 │   ├── buildMapStyle.ts            o estilo do mapa base, derivado do par de OpenFreeMap
@@ -891,6 +895,7 @@ queira usar; a app non chama ningunha.
 │   ├── auditBrowser.ts             WCAG 2.2 A e AA estado por estado: axe-core, sondas propias e Tab
 │   ├── visualDiff.ts               fotografa eses estados en dúas builds e compara píxel a píxel
 │   ├── journeys.ts                 cada tarefa por cada entrada, co dedo: toques, alcance, teclado e volver
+│   ├── png.ts                      le as capturas da auditoría, para atopar un punto no mapa pola súa cor
 │   ├── fullAudit.ts                informe de calidade de datos
 │   ├── lib.ts                      o que cada ferramenta levaba repetido: raíz, JSON, estatísticas
 │   ├── checkPolicy.ts              política do repositorio: fixacións, disparadores, documentos, vocabulario visual
@@ -1446,18 +1451,15 @@ doutro contido sen un xeito de paralo.
 do mapa, filtros de liña, modo de hora, opcións de traxecto, saídas dunha liña, destinos
 rápidos, tema e idioma) e a navegación usa `aria-current="page"`.
 
-**Conformidade con WCAG 2.2, niveis A e AA.** Os 55 criterios, un por un, medidos na rolda
-31 (outubro de 2026) en cada pantalla e estado: claro e escuro, galego, castelán e inglés,
-teléfono e escritorio, só teclado, texto ao 200 %, 320 px, espazado do texto, teléfono
-deitado, movemento reducido, cores forzadas, sen rede, erros e baleiros: 242 medicións de
-162 estados, 0 fallos en Windows e no executor de GitHub, e desde entón `audit:browser` é
-unha porta da CI. Os traballos piden `ubuntu-24.04` polo seu nome e non `ubuntu-latest`,
-que GitHub pasa a 26.04 desde o 19 de outubro de 2026: outra imaxe trae outras letras —ao
-200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e cambiala é unha
-decisión con auditoría, non algo que pase un luns. Probado o 14 e o 15 de outubro de 2026:
-en 26.04 a CI e a auditoría pasan enteiras, pero os catro pasos de zoom de
-`measure:browser` bloquearon o fío 921, 1.140 e 1.003 ms en tres execucións, fronte a 308 e
-305 en 24.04, cun orzamento de 900. Seguen en 24.04 mentres non se saiba por que.
+**Conformidade con WCAG 2.2, niveis A e AA.** Os 55 criterios, un por un, en cada
+pantalla e estado: claro e escuro, galego, castelán e inglés, teléfono e escritorio, só
+teclado, texto ao 200 %, 320 px, espazado do texto, teléfono deitado, movemento reducido,
+cores forzadas, sen rede, erros e baleiros: 242 medicións de 162 estados, 0 fallos en
+Windows e no executor de GitHub, e `audit:browser` é unha porta da CI. Os traballos piden
+`ubuntu-24.04` polo seu nome e non `ubuntu-latest`: outra imaxe trae outras letras e outro
+Chrome —ao 200 % a monoespazada do executor xa é máis ancha ca a de Windows—, e cambiala é
+unha decisión con auditoría, non algo que pase un luns. Por que segue en 24.04, coas
+medidas, está no pendente ([`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md)).
 «Arranxado» quere dicir que fallaba
 e que agora o comproba algo que falla se volve. Do que unha máquina non pode oír, o lector
 de pantalla de verdade, hai un guión para seguir a man:
@@ -1871,9 +1873,9 @@ minutos no servidor do operador, e só se len cando se sospeita que un poste se 
 
 O único sentido que non se publica na orde impresa é a **5.1 de volta**, con tres paradas
 movidas: `Fonte dos Ranchos 42-43`, `Rúa Doutor Gasalla 3` e `Ramón Ferreiro 26`, que a
-páxina lista ao principio cando a ruta pasa por elas ao final. Lida ao pé da letra son 19,0
-km fronte aos 8,2 reais, e ningún cadro horario que imprima 20 minutos para iso pode ser
-certo.
+páxina lista ao principio cando a ruta pasa por elas ao final ([o trazado que se
+debuxa](#o-trazado-que-se-debuxa)): ningún cadro horario que imprima 20 minutos para eses
+19 km pode ser certo.
 
 **As cabeceiras non se tocan nunca**, aínda que o trazado levantado pase antes por outra
 parada: a relación de OSM debuxa o bucle do hospital unha soa vez, á entrada, pero a ida
@@ -2078,31 +2080,19 @@ artefacto, para que unha regresión non dependa de que alguén se lembre.
   opostos da mesma rúa dentro do mesmo sentido (o bus tería que dar a volta), ou que
   hai sentidos únicos no casco histórico. `pnpm data:audit` lístaos un a un.
 - **12 paradas sen coordenadas** na fonte quedan fóra do conxunto de datos.
-- **As coordenadas son as do operador, agás dúas.** O seu pin de «Estda. Nova Santiago
-  (Monte Segade)» estaba a cinco metros de «Avda. Américas 88», a parada anterior da liña
-  11 cara a Calde, e a 1,1 km do poste que OpenStreetMap ten cadastrado con ese mesmo
-  nome, sobre a propia ruta levantada da liña. Dúas paradas consecutivas dun sentido non
-  poden estar a seis metros: é unha coordenada mal metida, non unha posición. O xerador
-  toma o poste de OSM só nese caso —pin que duplica o da parada veciña **e** poste co
-  mesmo nome lonxe— e a parada lévao escrito (`positionSource: "osm"`); os dous outros
-  pares que o operador publica a menos de 30 m (Avda. Américas 36/51, Rúa Industria)
-  quedan como están, e `pnpm data:build` di cales son. A outra é «Rúa Industria (Aula 9)»:
-  vista en Street View, o poste está na beirarrúa norte, onde o pon OSM, a 43 m do pin do
-  operador, onde non hai nada; a parada toma a posición do nodo de OSM, non a da imaxe, e
-  `tools/lib.ts` (`POLE_SEEN_AT_OSM`) di que se viu e cando. Un check garda que sexan esas dúas.
-- **Os festivos son domingos, e caducan cada ano.** Un festivo entre semana —o 12 de
-  outubro, o San Froilán— corre co cadro de domingos e festivos, que é o que o operador
-  imprime. Os días están en `src/data/festivos.json`, por ano e coa súa fonte: o
-  decreto do calendario laboral galego e a resolución dos festivos locais, os dous no DOG
-  (para 2026, os doce autonómicos —co 19 de marzo e o 24 de xuño no lugar do 1 de novembro
-  e do 6 de decembro, que caen en domingo— e os dous de Lugo, Martes de Entroido e San
-  Froilán; para 2027, o 19 de marzo e o 17 de maio no lugar do 25 de xullo e do 15 de
-  agosto, e os mesmos dous de Lugo, o 9 de febreiro e o 5 de outubro). Non hai regra que os calcule, porque as substitucións cambian cada ano, así
-  que un check de `pnpm test` falla o 1 de xaneiro se o ano novo non está no ficheiro:
-  é o recordatorio, e é ruidoso a propósito. Antes, desde novembro, «Check the sources»
-  falla cada luns mentres falte o ano seguinte, e un ano sen a resolución dos festivos
-  locais de Lugo entre as súas fontes non pasa. A varredura de invariantes pasa por un
-  festivo en luns, e a pantalla di «hoxe é festivo» cando unha liña de laborables non
+- **As coordenadas son as do operador, agás dúas**, que caían onde non hai poste:
+  «Estda. Nova Santiago (Monte Segade)», cun pin a cinco metros da parada anterior da súa
+  liña e a 1,1 km do poste do mesmo nome, e «Rúa Industria (Aula 9)», a 43 m do poste que
+  se ve na rúa. As dúas toman a posición de OpenStreetMap e lévano escrito
+  (`positionSource: "osm"`); os outros pares que o operador publica a menos de 30 m quedan
+  como están, e `pnpm data:build` di cales son. Un check garda que sexan esas dúas.
+- **Os festivos corren como domingos, e caducan cada ano.** Un festivo entre semana corre
+  co cadro de domingos e festivos, que é o que imprime o operador. Os días van en
+  `src/data/festivos.json`, por ano e coa súa fonte no DOG —o calendario laboral galego e
+  os dous festivos locais de Lugo—, porque as substitucións cambian cada ano e non hai regra
+  que os calcule. Hoxe están 2026 e 2027. Desde novembro, «Check the sources» falla cada
+  luns mentres falte o ano seguinte, e `pnpm test` falla o 1 de xaneiro: o recordatorio é
+  ruidoso a propósito. A pantalla di «hoxe é festivo» cando unha liña de laborables non
   circula por iso.
 - **Tres sentidos debúxanse coa ruta dun coche**, non co itinerario levantado en OSM:
   a 3.2 nos dous sentidos e a 5.2 cara a Avda. Américas. A liña azul do mapa pode
@@ -2115,9 +2105,8 @@ artefacto, para que unha regresión non dependa de que alguén se lembre.
 - **Zonas de parada**: asígnanse por proximidade e suavízanse por veciñanza. Aínda así,
   arredor do 18% das paradas teñen algunha veciña a menos de 200 m nunha zona distinta,
   o normal nas fronteiras entre barrios.
-- **Non hai historial de fiabilidade** ("este bus non pasou"). Necesita base de datos: en
-  memoria perderíase en cada despregue, e rexistrar algo que se esvae sería outra forma
-  de mentir.
+- **Non hai historial de fiabilidade** («este bus non pasou»): necesita unha base de datos
+  ([máis adiante](#historial-de-fiabilidade)).
 - O cadro horario dá as saídas de cabeceira; as horas nas paradas intermedias son
   estimacións a partir do tempo de condución medido, non horas publicadas.
 
@@ -2155,12 +2144,34 @@ Cartografía © OpenStreetMap contributors, teselas de OpenFreeMap © OpenMapTil
 
 ---
 
-## Ideas para máis adiante
+## O que queda e ideas para máis adiante
+
+### O que queda por facer
+
+A lista de traballo, co detalle e as medidas de cada punto, é unha soa:
+[`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md),
+«Pendente». En resumo:
+
+- **Probala nun iPhone e nun Android de verdade.** Todo o medido é Chromium e emulación:
+  o xesto de atrás de cada sistema, o teclado, a app instalada, as zonas seguras, a letra
+  do sistema e o mapa co dedo e co GPS teñen un guión
+  ([`design/PROBA-no-telefono.md`](design/PROBA-no-telefono.md)) que aínda non se pasou.
+- **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack
+  ([`design/PROBA-lector-de-pantalla.md`](design/PROBA-lector-de-pantalla.md)): a
+  auditoría mide nomes, estados e orde, pero non como soan.
+- **Seguir os buscadores**: o sitio e o sitemap están dados de alta en Google e en Bing, e
+  o que queda é ver que indexen as 18 páxinas en cada idioma.
+- **Ubuntu 26.04 no executor da CI**, cando os pasos de zoom do mapa caiban no seu
+  orzamento nesa imaxe.
+- **No mapa do traxecto, o pin de orixe e o da primeira subida tápanse** cando a orixe
+  está xunto á parada.
+
+### Ideas
 
 Cousas avaliadas e aparcadas a propósito, coa razón, para que quen as retome saiba de
 onde parte.
 
-### Tempo real colaborativo
+#### Tempo real colaborativo
 
 Chegou a estar implementado e retirouse para manter o proxecto estático e sen servidor
 que manter. A idea, tomada da app *Transit*: quen vai no bus comparte a súa posición e
@@ -2185,7 +2196,7 @@ O que se aprendeu montándoo, por se se retoma:
 Implicación: obriga a ter backend. Antes de retomalo, decidir se a función paga ese custo
 operativo.
 
-### Liñas interurbanas no taboleiro
+#### Liñas interurbanas no taboleiro
 
 Quen agarda en Sindicatos tamén pode coller un autocar da Xunta desde a mesma beirarrúa,
 e hoxe iso obriga a abrir a web do operador. **É factible**: comprobado que 129 das 417
@@ -2212,7 +2223,7 @@ que o mapa dixese o lado da rúa —hoxe os pins do operador marcan a calzada, n
 o custo e a orde diso están en
 [`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md).
 
-### Que o móbil vibre coa aplicación pechada
+#### Que o móbil vibre coa aplicación pechada
 
 Hoxe os avisos («avisar 5 min antes», «avisarme ao chegar») só soan con la pantalla
 aberta, e a interface dío en ámbar en canto se activa un. Non é unha limitación nosa:
@@ -2242,34 +2253,30 @@ antemán**. Iso é exactamente o que unha alarma local resolve sen servidor ning
 etiqueta de procedencia que a pantalla: un aviso que vibra é unha promesa máis forte ca
 un número que alguén decidiu mirar.
 
-### Historial de fiabilidade
+#### Historial de fiabilidade
 
 "Este bus non pasou", con estatísticas por liña. Necesita base de datos de verdade
 (persistencia, consultas, agregados). Non ten sentido en memoria: perderíase en cada
 despregue, e rexistrar algo que se esvae sería outra forma de mentir. Se algún día se
 monta backend, faise á vez que o anterior.
 
-### Un GTFS municipal
+#### Un GTFS municipal
 
 O de máis impacto e o menos técnico: o Concello concede o servizo e pode esixir que se
-publique GTFS e GTFS-Realtime. Iso resolvería de golpe os datos e o tempo real, e
-substituír o scraper por un lector de GTFS afectaría só a `tools/importOfficialData.ts`.
+publique GTFS e GTFS-Realtime. Iso resolvería de golpe os datos e o tempo real, e o
+proxecto está preparado para lelo ([Por que non se usa GTFS](#por-que-non-se-usa-gtfs)).
 
-### Que os buscadores atopen o sitio
+#### Unha páxina por liña e por parada
 
-Está feito o que depende de nós: título, descrición e canónica por pestana, pestanas como
-ligazóns, `og:image`, `robots.txt` na raíz do sitio, e o enderezo dado de alta o 14 de
-outubro de 2026 en Search Console —unha propiedade de prefixo de URL, verificada coa
-etiqueta HTML de `index.html` (o seu valor é o da conta, non o do enderezo)— e en Bing, co
-sitemap `https://urbanos-lugo.github.io/sitemap.xml`, que a proba en tempo real de Google
-le. O que segue é esperar a que o indexen.
-Unha páxina por liña e por parada —que hoxe non teñen URL
-propia— queda descrita na auditoría e non se fai por agora: non hai présa por competir
-con ninguén. A auditoría, coas medidas e o plan, está en
-[`design/AUDITORIA-seo.md`](design/AUDITORIA-seo.md). Nada diso cambia as regras:
-ningún título prometerá tempo real, e «non oficial» vai na descrición.
+O que depende de nós para os buscadores está feito: título, descrición e canónica por
+pestana e idioma, pestanas como ligazóns, `og:image`, datos estruturados, `robots.txt` e
+sitemap na raíz do dominio, e o sitio dado de alta en Search Console e en Bing. O seguinte
+paso sería que cada liña e cada parada tivesen o seu enderezo, que hoxe non teñen: está
+descrito, coas medidas e o plan, en [`design/AUDITORIA-seo.md`](design/AUDITORIA-seo.md),
+e non se fai por agora, porque non hai présa por competir con ninguén. Nada diso cambia as
+regras: ningún título prometerá tempo real, e «non oficial» vai na descrición.
 
-### Un panel físico nunha Raspberry Pi
+#### Un panel físico nunha Raspberry Pi
 
 Unha pantalla no recibidor que diga «sae en 6 min, colle o abrigo». **É factible con moi
 pouco**, porque a arquitectura xa o permite sen querelo: os datos son ficheiros JSON
