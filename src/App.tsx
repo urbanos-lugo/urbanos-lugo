@@ -24,6 +24,7 @@ import { useClock } from './hooks/useClock';
 import { Lang, LangContext, translations } from './i18n';
 import { BUS_STOPS, BUS_LINES, stopById } from './data/transitData';
 import { PATHS, isCrawler, pickLang, type Tab } from './routes';
+import { navSections, type NavTab } from './components/navSections';
 import { pageHead } from './seo';
 import { networkAtRest } from './utils/arrivals';
 import { dayWord } from './utils/serviceLabels';
@@ -43,6 +44,18 @@ const LANG_KEY = 'urbanos-lugo-lang';
 const initialLang = (): Lang =>
   pickLang({ address: langFromLocation(), crawler: isCrawler(navigator.userAgent), stored: readString(LANG_KEY), browser: navigator.language });
 
+const START_KEY = 'urbanos-lugo-start';
+
+/**
+ * The tab the bare address opens on: the stops unless the reader chose another in the
+ * settings, for whoever goes straight to the lines every time. A link that names a tab, a stop
+ * or a line still opens what it names. Anything stored that is not a bar tab is ignored.
+ */
+const storedStart = (): NavTab => {
+  const stored = readString(START_KEY);
+  return navSections(translations('gl')).find((s) => s.id === stored)?.id ?? 'stops';
+};
+
 const stopIds = new Set(BUS_STOPS.map((s) => s.id));
 const lineIds = new Set(BUS_LINES.map((l) => l.id));
 
@@ -51,7 +64,12 @@ export default function App() {
   // The open tab lives in the address bar, with the language, and what is open on it in the
   // history's entry, so the back gesture moves between screens and steps out of a board first.
   const mainRef = useRef<HTMLElement>(null);
-  const [screen, go, popped] = useTabRoute('stops', lang, mainRef);
+  const [start, setStartTab] = useState<NavTab>(storedStart);
+  const setStart = (tab: NavTab) => {
+    setStartTab(tab);
+    writeString(START_KEY, tab === 'stops' ? null : tab);
+  };
+  const [screen, go, popped] = useTabRoute(start, lang, mainRef);
   const activeTab = screen.tab;
   /** What was last open on each tab, so the bar goes back to it, as the stops tab always did with its board. */
   const lastOn = useRef<Partial<Record<Tab, Screen>>>({});
@@ -186,7 +204,7 @@ export default function App() {
         <a href="#contido" className="sr-only focus:not-sr-only focus:absolute focus:z-dialog focus:m-2 focus:rounded-tag focus:bg-accent focus:px-3 focus:py-2 focus:text-body focus:font-bold focus:text-on-accent">
           {t.nav.skipToContent}
         </a>
-        <SideNav activeTab={activeTab} setActiveTab={goToTab} alertCount={alerts.announcedIncidents} tripActive={companion.trip !== null} setLang={setLang} theme={theme} setTheme={setTheme} />
+        <SideNav activeTab={activeTab} setActiveTab={goToTab} alertCount={alerts.announcedIncidents} tripActive={companion.trip !== null} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar
             onOpenFavorites={() => setIsFavoritesOpen(true)}
@@ -343,7 +361,7 @@ export default function App() {
           <BottomNav activeTab={activeTab} setActiveTab={goToTab} tripActive={companion.trip !== null} />
         </div>
 
-        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={goToTab} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} />
+        <MenuDrawer open={isMenuOpen} onClose={() => setIsMenuOpen(false)} onOpenTab={goToTab} alertCount={alerts.announcedIncidents} setLang={setLang} theme={theme} setTheme={setTheme} start={start} setStart={setStart} />
         <FavoritesDrawer
           isOpen={isFavoritesOpen}
           onClose={() => setIsFavoritesOpen(false)}

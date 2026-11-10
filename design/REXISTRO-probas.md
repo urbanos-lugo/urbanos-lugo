@@ -5257,3 +5257,58 @@ día, e fóra o que xa non é ou xa está feito.
 ### Comprobado
 
 - `check:policy`: «every file, script, command and heading a document names exists».
+
+## Rolda 65: o pendente ao día, o A que tapaba a subida, o worker e a pestana de entrada — 10 de novembro de 2026
+
+Pedido: quitar do pendente o que xa estaba ou non depende do proxecto (o teléfono de
+verdade, xa probado nun iPhone e nun Android; os buscadores; Ubuntu 26.04), arranxar os
+pins que se tapaban e os camiños do worker, crear as páxinas de Releases, e deixar
+escoller a pestana coa que abre a app.
+
+### Feito
+
+- **Releases**: `v1.7.6` e `v1.7.7` (esta, a última) creadas con
+  `gh release create --verify-tag` e o texto de cada etiqueta. Na rolda 62 non se puido
+  porque publicar algo público precisa que se pida expresamente na mesma conversa.
+- **O worker e os dicionarios**: `src/i18n/**` nos camiños de `deploy-worker.yml`, e
+  `check:policy` constrúe o worker con esbuild (o metafile), colle de que carpetas está
+  feito e falla se unha non o volve publicar. Probado quitando a liña: falla; con ela, 26
+  políticas.
+- **O A e o pin da subida** (`giveWay` en `nameLayout.ts`, `spread` en `RouteMap`):
+  o A e o B apártanse dos pins de subida o xusto para non tocalos e volven ao seu punto
+  cando o zoom os separa. Unha sonda na consola mostrou que o A se apartaba só do último pin
+  que tocaba, con dous pins de subida (7 e 5.1) ao seu carón: agora empúxase ata non tocar
+  ningún, oito pasadas como moito. Escoita `move` e `resize` e non só o zoom: o mapa nace
+  nunha columna oculta e colle o seu tamaño cun resize, que non dispara zoom ningún. No
+  panel, a 375 × 812, Fonte dos Ranchos → HULA (a 4.1): o A quedaba a 27,3 px do pin con
+  28 de tamaño, porque MapLibre pon cada marcador nun píxel enteiro; con 2 px máis, 29,4.
+  Dous pasos de zoom despois, 57 px: de volta no seu punto. Unha comprobación nova na suite.
+- **«Abrir en»** nos axustes do menú e do rail (Paradas, Liñas, Mapa, Ruta): o enderezo de
+  entrada abre na escollida; gárdase en `urbanos-lugo-start` só se non é Paradas
+  (PRIVACY.md), e unha ligazón que nomea unha pestana, unha parada ou unha liña segue
+  abrindo o que nomea. No panel: o botón garda `lines`, `/` abre `/es/lineas/`,
+  `/es/paradas/` segue nas paradas, e ningún erro na consola. Unha viaxe nova, «a line ·
+  the app set to open on the lines», pasa nos dous teléfonos.
+- **O pendente**: queda só o lector de pantalla. A lista curta do iPhone pasa ao final de
+  `PROBA-no-telefono.md`, que é onde se repite a proba; o resto vai a «Feito». No README,
+  «O que queda por facer», os navegadores, «Abrir en» na portada e a árbore.
+- **Bing**: na build, sen JavaScript cada páxina ten 55–60 caracteres de texto, o seu h1
+  (medido en `dist/index.html`, `dist/es/index.html`, `dist/es/lineas/index.html` e
+  `dist/en/index.html`). Con iso, «Descuberta pero non rastrexada» encaixa cunha páxina que
+  ao rastrexador lle parece baleira; o remedio, se non avanza só, segue sendo o texto
+  estático ou o prerender de `AUDITORIA-seo.md`.
+
+### Comprobado
+
+- As cinco portas: lint, 168 comprobacións, 26 políticas, `check:deep` (1.050 pares,
+  38.338 viaxes) e a build.
+- `audit:browser` como o *runner* (`AUDIT_RUNNER=1`), por partes e sen nada pesado ao
+  lado: as viaxes e as secuencias, 0 achados. Os estados atoparon tres: co texto ao 200 %,
+  os catro botóns de «Abrir en» saían do menú (3 px en inglés, 41 en castelán, 28 en
+  galego). A fila pode partirse agora en dúas cando as palabras non caben; despois, os
+  estados do menú e as secuencias, 0 achados.
+
+### Queda
+
+- O lector de pantalla nun teléfono, como antes.
+- Nada desta rolda está en `main` nin en `develop` remoto.

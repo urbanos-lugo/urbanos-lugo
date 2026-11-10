@@ -12,6 +12,7 @@ import { execFileSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'node:module';
+import { buildSync } from 'esbuild';
 import { CSP_HEADER } from '../src/security/csp';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -219,6 +220,14 @@ ok('the gates run on every push and proposal, offline, and only the schedule rea
     const at = (step: string) => steps.findIndex((s) => s.includes(step));
     assert(at('pnpm run lint') >= 0 && at('pnpm test') >= 0 && at('pnpm run lint') < at(build) && at('pnpm test') < at(build), `${name} builds before it type-checks and tests`);
   }
+
+  // The worker is published only when something it is made of changes, so its paths are what
+  // its bundle is made of, asked of the bundler: it read the dictionaries through places.ts,
+  // and a change to them never reached it (round 65).
+  const { metafile } = buildSync({ entryPoints: ['worker/index.ts'], absWorkingDir: root, bundle: true, format: 'esm', platform: 'neutral', target: 'es2022', write: false, metafile: true, logLevel: 'silent' });
+  const madeOf = new Set(Object.keys(metafile.inputs).map((p) => p.split('/').slice(0, p.startsWith('src/') ? 2 : 1).join('/')));
+  const redeploys = [...workflow('deploy-worker.yml').matchAll(/^\s*- '([^']+)'$/gm)].map((m) => m[1].replace(/\/\*\*$/, ''));
+  for (const part of madeOf) assert(redeploys.includes(part), `the worker is made of ${part}, and deploy-worker.yml does not publish it again when that changes`);
 
   // Every install is the locked one, and pnpm comes from packageManager, not from a workflow.
   // The same list as CLAUDE.md's network block. The walking network, the heights, the landmarks,

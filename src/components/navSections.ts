@@ -10,6 +10,9 @@ export const navSections = (t: Dict) => [
   { id: 'plan' as const, Icon: Route, label: t.nav.plan },
 ];
 
+/** One of the bar's four tabs, which are what a reader may choose to open on. */
+export type NavTab = ReturnType<typeof navSections>[number]['id'];
+
 /**
  * The two screens below the rule: read now and then, not on every trip. `name` is the row's
  * when it shows a count: the count is part of the name, with a pause (read from the markup it

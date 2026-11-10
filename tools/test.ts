@@ -45,7 +45,7 @@ import { fetchWalkingPath, walkHopKey, walkHopsOf, type WalkPaths } from '../src
 import { correctionFor, rankMeasured, withMeasuredWalk } from '../src/components/planner/walkCorrection';
 import { projectOnto, routeOnFoot } from '../src/utils/walkRouter';
 import { accuracyCircle, headingFromOrientation, metresBetween, turnToward } from '../src/utils/geo';
-import { nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
+import { giveWay, nameAt, nameBox, placeNames, placeOn, sideOf } from '../src/components/Map/nameLayout';
 import { syncOfficialAlerts } from '../src/services/alertSyncService';
 import { HOLIDAY_YEARS, buildRuns, dayKind, daysUntilKind, expandHeadway, handoverMinutes, isHoliday, isWithinServiceWindow, lineRunsOn, parseTimeToMinutes, formatMinutes, anchorIndex, scheduledDuration } from '../src/utils/schedule';
 import { MAX_BODY_BYTES, readCapped } from '../src/services/readCapped';
@@ -4409,6 +4409,23 @@ ok('a stop name on the trip map clears the 28 px pin, not only the 8 px dot', ()
   assert.equal(placeNames([{ x: 100, y: 100, width: 80 }], { ...view, keepClear: [pinAt] })[0]?.align, 'left', 'the scene does not test the pin edge');
   assert.equal(placeNames([{ x: 100, y: 100, width: 80 }], { ...view, keepClear: [{ ...pinAt, radius: pin }] })[0]?.align, 'right', 'a call name was written under the pin beside it');
   assert.deepEqual(placeOn({ x: 100, y: 100, width: 80, radius: pin }, 0, view), { x: 119, y: 100, align: 'left' }, 'a boarding stop name jumped onto its pin as it faded');
+});
+
+ok('the trip map’s A steps aside from the boarding pin it would cover, and only while it would', () => {
+  // Starting a street from the stop, A and the line's pin were drawn in one place at the zoom
+  // the trip opens at. A moves just enough away from it; zoomed in, it is back on its point.
+  const size = 28;
+  const near = giveWay({ x: 110, y: 100 }, [{ x: 100, y: 100 }], size);
+  assert.deepEqual(near, [18, 0], 'A ten px right of the pin is not moved to 28 px right of it');
+  const same = giveWay({ x: 100, y: 100 }, [{ x: 100, y: 100 }], size);
+  assert(Math.hypot(same[0], same[1]) > size - 0.01 && same[0] < 0 && same[1] < 0, 'A on top of the pin does not step up and left by a pin');
+  assert.deepEqual(giveWay({ x: 140, y: 100 }, [{ x: 100, y: 100 }], size), [0, 0], 'A that no longer touches the pin still moves');
+  // Two boarding pins in a row by A, as from Fonte dos Ranchos (the 7, then the 5.1): stepping
+  // away from the second alone left A five px from the first.
+  const a = { x: 100, y: 100 };
+  const pins = [{ x: 105, y: 101 }, { x: 119, y: 104 }];
+  const [dx, dy] = giveWay(a, pins, size);
+  for (const p of pins) assert(Math.hypot(a.x + dx - p.x, a.y + dy - p.y) >= size - 0.5, `A still covers the pin at ${p.x}, ${p.y}`);
 });
 
 ok('a tap on a stop name written on the map is a tap on that stop', () => {

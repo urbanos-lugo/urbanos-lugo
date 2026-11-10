@@ -27,6 +27,7 @@ export const en: Dict = {
     fares: 'Fares and information',
     language: 'Language',
     theme: 'Appearance',
+    start: 'Open on',
     themeAutoShort: 'Auto',
     themeLight: 'Light',
     themeDark: 'Dark',

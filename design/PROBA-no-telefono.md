@@ -102,3 +102,41 @@ Nunha parada de verdade, coa localización permitida para o sitio.
 | :--- | :--- | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :--- |
 | | Safari | | | | | | | | |
 | | Chrome | | | | | | | | |
+
+## Lista curta para o iPhone
+
+Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e a versión.
+
+1. Abrir `urbanos-lugo.github.io`. O taboleiro con horas en menos de 3 s, sen
+   marco branco antes do tema escuro.
+2. Compartir → **Engadir á pantalla de inicio**. Abrir desde a icona: pantalla completa,
+   sen barra de Safari, a icona correcta.
+3. Buscar «catedral» tecleando: as filas aparecen letra a letra sen que o teclado tape o
+   campo. Abrir unha parada; premer **Compartir**: sae o panel de compartir do iPhone;
+   copiar desde el e pegar en Notas: ten `?parada=`. O mesmo na ficha dunha liña: `?linea=`.
+4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
+   lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
+   (é onde `100dvh` e as zonas seguras rompen). Xirado con dous dedos aparece o compás
+   debaixo do zoom, e tocalo volve o norte arriba. «A miña localización» unha vez segue co
+   norte arriba; outra vez, xira o mapa co teléfono (o que tes diante, arriba, e o botón
+   cunha frecha); a terceira deixa de seguir. En Paradas, **«Buscar preto de min»**:
+   Safari pregunta pola localización e polo movemento e a orientación; aceptando as dúas, o
+   punto leva un abano que xira ao virar o teléfono e apunta cara a onde miras de verdade
+   (comparar coa rúa), e cada número do mapa é o da súa fila. Negando a orientación, o
+   punto vai só e nada máis cambia. Só un iPhone pode probar esa pregunta.
+5. Xirar o teléfono a horizontal e volver: nada queda cortado.
+6. **Ruta**: calcular Praza Maior → HULA; ao calcular, a pantalla vai á resposta. Premer
+   **Vou nesta**: pide o GPS, e a pantalla non se apaga durante un minuto (a *wake lock*,
+   iOS 16.4+; se non existe, non debe saír erro ningún).
+   Despois **Ampliar o mapa** do traxecto: ocupa a pantalla; xirar con dous dedos; o xesto
+   de atrás de Safari devolve a tarxeta sen saír da resposta; tocar unha parada do
+   traxecto abre o seu taboleiro, e «Volver ao resultado» volve onde estaba.
+7. Cambiar tema e idioma desde o menú: as cores (`oklch()`) e os textos cambian enteiros.
+8. Modo avión, pechar a app, abrila de novo desde a icona: abre, o taboleiro ten horas, e
+   Avisos amosa unha resposta con data (a última ou a copia gardada), non unha lista baleira.
+9. **Axustes → Accesibilidade → Texto máis grande**, ao máximo: nada se solapa nin se
+   corta; a barra de abaixo segue con catro destinos.
+10. **VoiceOver** un minuto: as pestanas anúncianse como ligazóns co seu nome; dentro do
+    menú, pasar co dedo non sae del; ao calcular unha ruta, le a resposta.
+
+Un fallo en calquera punto é un erro de verdade e vai ao rexistro con modelo e versión.

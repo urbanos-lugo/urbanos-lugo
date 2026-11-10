@@ -30,6 +30,7 @@ export const gl = {
     fares: 'Tarifas e info',
     language: 'Idioma',
     theme: 'Aparencia',
+    start: 'Abrir en',
     themeAutoShort: 'Auto',
     themeLight: 'Clara',
     themeDark: 'Escura',

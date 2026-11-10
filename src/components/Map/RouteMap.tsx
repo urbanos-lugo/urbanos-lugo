@@ -17,6 +17,7 @@ import { readerMark, type ReaderMark } from './reader';
 import { claim, dropLayers, fingerReach, hoverLabels, isClaimed, placeLayer, setSource } from './mapLayers';
 import { MapUnavailable } from './MapUnavailable';
 import { stopNamesLayer } from './StopNames';
+import { giveWay } from './nameLayout';
 
 interface Place {
   lat: number;
@@ -180,9 +181,14 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
           claim(e);
           choose.current(stop);
         });
-      markers.push(new Marker({ element: el, opacity: String(emphasised ? 1 : FAINT) }).setLngLat([at[1], at[0]]));
+      const marker = new Marker({ element: el, opacity: String(emphasised ? 1 : FAINT) }).setLngLat([at[1], at[0]]);
+      markers.push(marker);
+      (stop ? linePins : endPins).push(marker);
       pins.push([at[0], at[1], DRAW.stopRadius.pin]);
     };
+    /** A and B, which give way to the pins of the lines boarded (giveWay). */
+    const endPins: Marker[] = [];
+    const linePins: Marker[] = [];
 
     // Walking legs join the previous point to the next known one: origin -> first stop, last stop -> destination.
     let previous: [number, number] | null = origin ? [origin.lat, origin.lng] : null;
@@ -284,6 +290,19 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
     });
     for (const marker of markers) marker.addTo(map);
 
+    // Starting a street from the stop drew A and the line's pin in one place at the zoom the
+    // trip opens at, one covering the other; A and B step aside, the line's pin stays on its stop.
+    const spread = () => {
+      const others = linePins.map((m) => map.project(m.getLngLat()));
+      // Two pixels over touching: MapLibre puts each marker on a whole pixel, and at 28 apart A still met the pin (27.3, measured).
+      for (const end of endPins) end.setOffset(giveWay(map.project(end.getLngLat()), others, DRAW.stopRadius.pin * 2 + 2));
+    };
+    // On every move and resize, not on zoom alone: the map is born in a hidden column and takes
+    // its size and its frame through a resize, which fired no zoom, and A stayed on the pin.
+    spread();
+    map.on('move', spread);
+    map.on('resize', spread);
+
     // The stops named from the zoom the network map names them at; a boarding stop's name clears its pin.
     const names = stopNamesLayer(map, {
       ink: colors.nameInk,
@@ -345,6 +364,8 @@ export function RouteMap({ plan, origin, destination, walkPaths = {}, focusSegme
       }
       map.off('zoom', nameStops);
       map.off('click', onClick);
+      map.off('move', spread);
+      map.off('resize', spread);
       names.remove();
       hover.remove();
       for (const marker of markers) marker.remove();

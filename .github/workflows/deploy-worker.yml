@@ -17,6 +17,7 @@ on:
       - 'src/services/**'
       - 'src/data/**'
       - 'src/utils/**'
+      - 'src/i18n/**'
       - 'src/project.ts'
       - '.github/workflows/deploy-worker.yml'
   workflow_dispatch:

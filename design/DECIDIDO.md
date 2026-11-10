@@ -651,6 +651,20 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   resposta só se recuperaba co xesto do sistema. Só esas dúas orixes: desde as outras
   pestanas o botón segue sendo o de sempre.
 
+## A pestana de entrada, e o A que se aparta — 10 de novembro de 2026
+
+- **«Abrir en», nos axustes do menú e do rail**: Paradas, Liñas, Mapa ou Ruta. Só cambia
+  o enderezo de entrada (a raíz, con ou sen idioma), que é tamén o da app instalada; unha
+  ligazón que nomea unha pestana, unha parada ou unha liña segue abrindo o que nomea, así
+  que os resultados dos buscadores, as ligazóns compartidas e os QR non cambian. Gárdase
+  só se non é Paradas (`urbanos-lugo-start`, en PRIVACY.md). Só as catro da barra: Avisos
+  e Tarifas lense de cando en vez.
+- **No mapa do traxecto apártanse o A e o B, non o pin da subida.** O pin dunha subida está
+  sobre a súa parada e leva a liña; o A é onde se empeza a andar, e un pouco ao lado segue
+  dicindo o mesmo. Apártase o xusto para non tocar (28 px de centro a centro, máis 2 polo
+  redondeo de MapLibre a píxeles enteiros) e volve ao seu punto cando o zoom os separa. Non
+  debuxar o A cando cae no pin deixaba o traxecto sen orixe á vista.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

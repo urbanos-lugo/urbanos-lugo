@@ -216,83 +216,35 @@ datos estean mal, e facer fallar a semana por iso ensina a todo o mundo a ignora
 
 ## Pendente
 
-1. **Probar nun teléfono de verdade.** Só se probou en Chromium e na emulación da auditoría.
-   O chan está escrito (README, «Navegadores»): o de Vite 8, Chrome e Edge 111, Firefox 114,
-   Safari e iOS 16.4, e o código protexe o que está por riba del (`AbortSignal.timeout?.`,
-   `wakeLock` só se existe, `vibrate?.`, o aviso sen WebGL2). Queda media hora nun iPhone e
-   outra nun Android co guión de [`PROBA-no-telefono.md`](PROBA-no-telefono.md) e a lista de
-   abaixo: o xesto de atrás de cada sistema, un teclado de verdade, o bloqueo, a app
-   instalada, as zonas seguras, a letra do sistema e o mapa co dedo e co GPS, co xiro con
-   dous dedos e o mapa do traxecto a pantalla enteira.
-2. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
+1. **Un lector de pantalla de verdade, nun teléfono**, cousa do dono: o guión de
    [`PROBA-lector-de-pantalla.md`](PROBA-lector-de-pantalla.md), unha vez con VoiceOver e
    outra con TalkBack (rolda 31). `audit:browser` mide nomes, estados, orde e idioma no
    código; como os di cada lector, se le o «~» das horas estimadas e se cambia de voz nos
    avisos en castelán, só se sabe escoitando.
-3. **Os buscadores**, cousa do dono. O sitio está dado de alta desde o 14 de outubro de
-   2026: a propiedade `https://urbanos-lugo.github.io/` en Search Console, verificada coa
-   etiqueta de `index.html`, e Bing importándoa, co sitemap de 18 URL. Mirado o 29 de
-   outubro: Bing atopara as 18; en Google o sitemap seguía «Non se puido ler» desde a
-   primeira lectura, co dominio dun día, e volveuse enviar. Mirar que «Páxinas» amose as 18
-   e que cada idioma saia a quen busca nel. Se Bing non avanza, o seguinte é o texto estático
-   ou o prerender de [`AUDITORIA-seo.md`](AUDITORIA-seo.md) (puntos 5 e 7).
-4. **Ubuntu 26.04 no executor, cando o zoom caiba nel.** Os traballos piden `ubuntu-24.04`
-   polo nome. En 26.04 a CI enteira e a auditoría pasan, pero o 2 de novembro de 2026 (rama
-   `ubuntu-26-maplibre`, rolda 59, unha execución) os catro pasos de zoom de
-   `measure:browser` bloquearon o fío 867 ms nun orzamento de 900, fronte a 612 en 24.04, e o
-   resto foi entre un 14 e un 42 % máis lento: cabe con 33 ms de marxe, así que segue en
-   24.04. Antes de cambiar, ver que Chrome e que GL de software trae cada imaxe; volver medir
-   cando GitHub anuncie a retirada de 24.04, ou se un Chrome novo move esta medida.
-5. **O pin de orixe e o da primeira subida tápanse** no mapa do traxecto cando a orixe está
-   xunto á parada (visto na rolda 62). Un dos dous ten que apartarse, ou o A non debuxarse
-   cando cae dentro do pin da subida.
-6. **As páxinas da 1.7.6 e da 1.7.7 en GitHub (Releases)**, cousa do dono: a sesión que as
-   publicou non as puido crear. O texto de cada unha é o da súa etiqueta.
-7. **O worker non se volve publicar cando cambia un dicionario.** `deploy-worker.yml` sae só
-   cando cambian `worker/`, `src/services`, `src/data`, `src/utils` ou `src/project.ts`, pero
-   o worker le `src/i18n/translations.ts` a través de `src/utils/places.ts`. Hoxe non perde
-   nada: os textos que cambiaron na 1.7.6 e na 1.7.7 son de pantalla e o worker non os usa
-   (rolda 64). Engadir `src/i18n/**` aos camiños, ou deixar escrito por que non.
-
-### Lista para o iPhone
-
-Media hora cun iPhone real, en Safari, con iOS 16.4 ou máis. Anotar o modelo e a versión.
-
-1. Abrir `urbanos-lugo.github.io`. O taboleiro con horas en menos de 3 s, sen
-   marco branco antes do tema escuro.
-2. Compartir → **Engadir á pantalla de inicio**. Abrir desde a icona: pantalla completa,
-   sen barra de Safari, a icona correcta.
-3. Buscar «catedral» tecleando: as filas aparecen letra a letra sen que o teclado tape o
-   campo. Abrir unha parada; premer **Compartir**: sae o panel de compartir do iPhone;
-   copiar desde el e pegar en Notas: ten `?parada=`. O mesmo na ficha dunha liña: `?linea=`.
-4. **Mapa**: debuxa (é MapLibre, WebGL2); pinza e xiro van fluídos; os nomes das paradas
-   lense; a folla de controis sobe desde abaixo e non queda tapada pola barra de inicio
-   (é onde `100dvh` e as zonas seguras rompen). Xirado con dous dedos aparece o compás
-   debaixo do zoom, e tocalo volve o norte arriba. «A miña localización» unha vez segue co
-   norte arriba; outra vez, xira o mapa co teléfono (o que tes diante, arriba, e o botón
-   cunha frecha); a terceira deixa de seguir. En Paradas, **«Buscar preto de min»**:
-   Safari pregunta pola localización e polo movemento e a orientación; aceptando as dúas, o
-   punto leva un abano que xira ao virar o teléfono e apunta cara a onde miras de verdade
-   (comparar coa rúa), e cada número do mapa é o da súa fila. Negando a orientación, o
-   punto vai só e nada máis cambia. Só un iPhone pode probar esa pregunta.
-5. Xirar o teléfono a horizontal e volver: nada queda cortado.
-6. **Ruta**: calcular Praza Maior → HULA; ao calcular, a pantalla vai á resposta. Premer
-   **Vou nesta**: pide o GPS, e a pantalla non se apaga durante un minuto (a *wake lock*,
-   iOS 16.4+; se non existe, non debe saír erro ningún).
-   Despois **Ampliar o mapa** do traxecto: ocupa a pantalla; xirar con dous dedos; o xesto
-   de atrás de Safari devolve a tarxeta sen saír da resposta; tocar unha parada do
-   traxecto abre o seu taboleiro, e «Volver ao resultado» volve onde estaba.
-7. Cambiar tema e idioma desde o menú: as cores (`oklch()`) e os textos cambian enteiros.
-8. Modo avión, pechar a app, abrila de novo desde a icona: abre, o taboleiro ten horas, e
-   Avisos amosa unha resposta con data (a última ou a copia gardada), non unha lista baleira.
-9. **Axustes → Accesibilidade → Texto máis grande**, ao máximo: nada se solapa nin se
-   corta; a barra de abaixo segue con catro destinos.
-10. **VoiceOver** un minuto: as pestanas anúncianse como ligazóns co seu nome; dentro do
-    menú, pasar co dedo non sae del; ao calcular unha ruta, le a resposta.
-
-Un fallo en calquera punto é un erro de verdade e vai ao rexistro con modelo e versión.
 
 ## Feito dende que se escribiu isto
+
+- **Probada nun iPhone e nun Android de verdade** (novembro de 2026), a man. O guión para
+  repetila, coa lista curta do iPhone que estaba aquí, é
+  [`PROBA-no-telefono.md`](PROBA-no-telefono.md).
+- **Os buscadores saen da lista** (10 de novembro de 2026): seguen ao seu ritmo e son cousa
+  do dono. Google indexa todas as páxinas agás algunhas en inglés; o sitemap segue «Non se
+  puido ler» desde o 29 de outubro; Bing le o sitemap enteiro e ten `/es/` como
+  «Descuberta pero non rastrexada». Se iso non avanza, o seguinte segue sendo o texto
+  estático ou o prerender de [`AUDITORIA-seo.md`](AUDITORIA-seo.md) (puntos 5 e 7): sen
+  JavaScript, cada páxina é case só o seu título.
+- **Ubuntu 26.04 no executor sae da lista** (10 de novembro de 2026) mentres 24.04 se poida
+  usar sen data de retirada. A medida que o deixou fóra (rolda 59: os pasos de zoom de
+  `measure:browser` en 867 ms dun orzamento de 900) está no rexistro; volver a ela cando
+  GitHub anuncie a retirada de 24.04.
+- **O A e o pin da primeira subida xa non se tapan** no mapa do traxecto (rolda 65): o A e
+  o B apártanse dos pins das paradas de subida o xusto para non tocalos, e volven ao seu
+  punto en canto o zoom os separa.
+- **As páxinas da 1.7.6 e da 1.7.7 en GitHub (Releases)** (10 de novembro de 2026), co
+  texto de cada etiqueta.
+- **O worker vólvese publicar cando cambia un dicionario** (rolda 65): `src/i18n/**` está
+  nos camiños de `deploy-worker.yml`, e `check:policy` mide de que ficheiros está feito o
+  worker (o metafile de esbuild) e falla se un deles non o volve publicar.
 
 - **Os festivos de 2027** (2 de novembro de 2026, rolda 58): a resolución saíu no DOG do 26
   de outubro, e Lugo pon o 9 de febreiro e o 5 de outubro; catorce días, coma en 2026. O

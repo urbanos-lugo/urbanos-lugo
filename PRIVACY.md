@@ -22,6 +22,7 @@ this project reads them and sends them anywhere.
 | `urbanos-lugo-recent-routes` | the last four trips you planned, as you typed them |
 | `urbanos-lugo-lang` | Galician, Spanish or English |
 | `urbanos-lugo-theme` | light, dark or automatic |
+| `urbanos-lugo-start` | the screen the app opens on, if you chose one other than the stops |
 
 One of those is not like the others. A stop id means nothing without the dataset it
 indexes into, but `urbanos-lugo-recent-routes` holds the words you typed — and if you

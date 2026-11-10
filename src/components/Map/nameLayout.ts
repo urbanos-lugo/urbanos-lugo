@@ -37,6 +37,30 @@ export function nameAt<T>(names: { item: T; box: Box }[], x: number, y: number, 
   return hit ? hit.item : null;
 }
 
+/**
+ * How far a pin has to move, in px, to stop covering the pins it gives way to, `size` apart
+ * centre to centre: straight away from each one it sits on, up and to the left when two
+ * coincide, and not at all once they no longer touch, so zoomed in it is back on its point.
+ * Pushed again while it still touches one: away from the second boarding pin alone, A was
+ * left on the first.
+ */
+export function giveWay(at: { x: number; y: number }, others: { x: number; y: number }[], size: number): [number, number] {
+  let { x, y } = at;
+  for (let pass = 0; pass < 8; pass++) {
+    let moved = false;
+    for (const o of others) {
+      const d = Math.hypot(x - o.x, y - o.y);
+      if (d >= size - 0.01) continue;
+      const [ux, uy] = d > 0.5 ? [(x - o.x) / d, (y - o.y) / d] : [-Math.SQRT1_2, -Math.SQRT1_2];
+      x += ux * (size - d);
+      y += uy * (size - d);
+      moved = true;
+    }
+    if (!moved) break;
+  }
+  return [x - at.x, y - at.y];
+}
+
 /** Which of placeNames' four sides a name was written on: 0 right of its dot, 1 left, 2 above, 3 below. */
 export const sideOf = (place: NamePlace, dot: { y: number }): number => (place.align === 'left' ? 0 : place.align === 'right' ? 1 : place.y < dot.y ? 2 : 3);
 

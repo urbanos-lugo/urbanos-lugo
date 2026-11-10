@@ -169,6 +169,11 @@ e gardala case ninguén, e a segunda visita non debería custar escribir outra v
 debaixo, **preto de min**, que precisa permiso de localización e non inventa distancias
 se llo negas.
 
+Quen vai sempre directo a outra pestana pode escollela no menú, en **Abrir en**
+(Paradas, Liñas, Mapa ou Ruta): o enderezo de entrada, e a app instalada, abren nela. Só
+se garda a escolla, neste dispositivo, e unha ligazón que nomea unha pestana, unha parada
+ou unha liña segue abrindo o que nomea.
+
 O mapa pequeno de **preto de min**, e o dos postes arredor dunha parada no seu taboleiro,
 **numera cada parada pola súa distancia**, co mesmo número na súa fila da lista, e escribe
 o nome ao carón. O teu punto leva o círculo da
@@ -772,11 +777,11 @@ queira usar; a app non chama ningunha.
 │   │   │   ├── EmptyState.tsx      o que se amosa onde iría unha lista ou unha resposta
 │   │   │   ├── OnTripMark.tsx      o punto da viaxe en curso, na barra e no rail
 │   │   │   ├── Wordmark.tsx        o nome da app á cabeza da navegación
-│   │   │   └── Settings.tsx        tema e idioma, os mesmos no menú e no rail
+│   │   │   └── Settings.tsx        tema, idioma e a pestana de entrada, os mesmos no menú e no rail
 │   │   ├── TopBar.tsx              buscador único + escáner QR
 │   │   ├── BottomNav.tsx           navegación en móbil
 │   │   ├── SideNav.tsx             rail de navegación en escritorio
-│   │   ├── MenuDrawer.tsx          idioma, tema, avisos e tarifas (móbil)
+│   │   ├── MenuDrawer.tsx          idioma, tema, pestana de entrada, avisos e tarifas (móbil)
 │   │   ├── StopHome.tsx            gardadas, vistas hai pouco e preto de min
 │   │   ├── StopArrivalsView.tsx    taboleiro de chegadas
 │   │   ├── LinesView.tsx           liñas e horarios
@@ -1449,7 +1454,7 @@ doutro contido sen un xeito de paralo.
 
 **Estado anunciado.** Os conmutadores levan `aria-pressed` (vistas do taboleiro, capas
 do mapa, filtros de liña, modo de hora, opcións de traxecto, saídas dunha liña, destinos
-rápidos, tema e idioma) e a navegación usa `aria-current="page"`.
+rápidos, tema, idioma e pestana de entrada) e a navegación usa `aria-current="page"`.
 
 **Conformidade con WCAG 2.2, niveis A e AA.** Os 55 criterios, un por un, en cada
 pantalla e estado: claro e escuro, galego, castelán e inglés, teléfono e escritorio, só
@@ -1740,8 +1745,8 @@ app non promete nada. As pezas que ese chan non cobre degrádanse en vez de romp
 pantalla acesa e `AbortSignal.timeout` pídense só se existen, a vibración é opcional, e sen
 WebGL2 o mapa é un aviso e as listas din o mesmo. Está probado a fondo só en Chromium (as ferramentas de
 `tools/` diríxeno por CDP); Safari en iOS, que é a outra metade dos teléfonos de Lugo,
-próbase a man cunha lista que está en
-[`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md).
+e Android próbanse a man, e probáronse nun iPhone e nun Android en novembro de 2026, co
+guión de [`design/PROBA-no-telefono.md`](design/PROBA-no-telefono.md).
 
 ```bash
 corepack enable && corepack prepare --activate
@@ -2152,19 +2157,9 @@ A lista de traballo, co detalle e as medidas de cada punto, é unha soa:
 [`design/NOTAS-fontes-e-autosuficiencia.md`](design/NOTAS-fontes-e-autosuficiencia.md),
 «Pendente». En resumo:
 
-- **Probala nun iPhone e nun Android de verdade.** Todo o medido é Chromium e emulación:
-  o xesto de atrás de cada sistema, o teclado, a app instalada, as zonas seguras, a letra
-  do sistema e o mapa co dedo e co GPS teñen un guión
-  ([`design/PROBA-no-telefono.md`](design/PROBA-no-telefono.md)) que aínda non se pasou.
 - **Un lector de pantalla de verdade nun teléfono**, VoiceOver e TalkBack
   ([`design/PROBA-lector-de-pantalla.md`](design/PROBA-lector-de-pantalla.md)): a
   auditoría mide nomes, estados e orde, pero non como soan.
-- **Seguir os buscadores**: o sitio e o sitemap están dados de alta en Google e en Bing, e
-  o que queda é ver que indexen as 18 páxinas en cada idioma.
-- **Ubuntu 26.04 no executor da CI**, cando os pasos de zoom do mapa caiban no seu
-  orzamento nesa imaxe.
-- **No mapa do traxecto, o pin de orixe e o da primeira subida tápanse** cando a orixe
-  está xunto á parada.
 
 ### Ideas
 

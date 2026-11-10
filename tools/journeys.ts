@@ -321,6 +321,15 @@ export const JOURNEYS: Journey[] = [
     reload: true,
   },
   {
+    // The settings' "open on": the bare address opens on the lines, with no tab to tap first.
+    task: 'a line',
+    entry: 'the app set to open on the lines',
+    start: { stored: { 'urbanos-lugo-start': 'lines' } },
+    steps: [{ tap: `document.getElementById('line-card-${FAR_LINE.id}')`, options: `[...document.querySelectorAll('main button[id^="line-card-"]')].filter(shown)`, wait: lineHeading }],
+    answer: lineHeading,
+    reload: true,
+  },
+  {
     task: 'a line',
     entry: 'search',
     start: {},

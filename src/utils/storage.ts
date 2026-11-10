@@ -25,6 +25,7 @@ export const STORAGE_KEYS = {
   'urbanos-lugo-recent-routes': 'local',
   'urbanos-lugo-lang': 'local',
   'urbanos-lugo-theme': 'local',
+  'urbanos-lugo-start': 'local',
   'urbanos-lugo-trip': 'session',
   'urbanos-lugo-reloaded-for': 'session',
 } as const satisfies Record<string, Store>;
