@@ -665,6 +665,45 @@ no proxecto e o que mellor lle senta á app. As fotos de antes e despois están 
   redondeo de MapLibre a píxeles enteiros) e volve ao seu punto cando o zoom os separa. Non
   debuxar o A cando cae no pin deixaba o traxecto sen orixe á vista.
 
+## Os sitios do mapa, co seu nome e por chanzos — 12 de novembro de 2026
+
+- **Co nome ao lado da icona.** Só a icona dicía «unha estación» e non cal, «un hospital» e
+  non cal. A razón de non poñelo era que os nomes das paradas, nun lenzo que MapLibre non
+  ve, lle caerían enriba. Queda resolta así: o nome dunha parada busca primeiro un lado que
+  non tape ningún sitio, e se non o hai escríbese igual e o sitio apágase (icona e nome,
+  por `feature-state`) mentres o tape. O nome dunha parada é o que se le no mapa; o dun
+  sitio axuda a atopala. Escritos un enriba do outro, non se lía ningún.
+- **Unha icona e o seu nome, xuntos ou nada.** Con `text-optional` a icona quedaba sen
+  nome onde non cabía, que era o que non servía; agora o sitio aparece enteiro un chanzo
+  de zoom despois.
+- **Tres chanzos**, cada un escollido e non todo o que hai nas teselas: desde o 13, o que se
+  busca para atopar unha parada (hospitais, estacións, campus e escolas, concello) e a
+  Catedral; desde o 15, a 11 px, os parques grandes e os museos; desde o 16, as portas da
+  Muralla. O chanzo de arriba colócase primeiro, e onde dous se tocan cede o de abaixo.
+- **Os parques grandes, medidos**: os seis con máis de uns 25.000 m² de verde nas teselas de
+  OpenFreeMap (de 98.046 Paulo Fabio a 26.897 Rosalía de Castro; o seguinte é un xardín con
+  24.188). Unha lista de nomes no xerador, porque as teselas non dan o tamaño dun parque.
+- **Só «Museo …»** (Provincial, Interactivo da Historia e Domus do Mitreo): os outros tres
+  son unha sala, unha casa e un centro arqueolóxico, e un deles chámase coma a porta do lado.
+- **O campus e as súas escolas, non cada edificio** (fóra «Aula Produtos Lácteos» e «Edificio
+  Cactus»), e **sen a subclase `college`**: en Lugo son o Colegio de Agentes Comerciales e
+  unha escola de oficios, que co nome escrito lían á altura dun hospital.
+- **«Estación de tren» no canto de «Lugo»**, que é o nome que lle pon OSM: o mesmo en galego
+  e en castelán, e en inglés le como un nome de sitio máis.
+- **Os parques e os xardíns, en verde.** Ningún dos dous estilos publicados os pintaba: o
+  claro le na súa capa «park» os espazos protexidos e os castros, en gris, e o escuro un uso
+  do chan que as teselas nunca dan a un parque. O verde que se retirou na rolda 31 era o do
+  bosque, que é o 27 % das teselas arredor de Lugo; parques e xardíns son o 0,8 e o 0,1 %. No
+  escuro, o verde do bosque, xa medido debaixo da ruta máis feble; no claro, #d2e8c3, a 1,17
+  sobre o chan (un primeiro #e2ecdb, a 1,09, case non se distinguía dunha mazá). O nome dun
+  camiño pasa polo medio dos parques, así que se mediu tamén sobre o verde: #767472 daba 4,18
+  sobre o chan e 3,82 sobre o parque, e pasa a #626060, 5,61 e 4,78. Os nomes dos sitios
+  (#555), 5,71 sobre o parque.
+- **Os sitios por riba das liñas e debaixo dos puntos.** Unha liña por riba deixaba
+  «Estación de Autobuses» sen ler; un punto de parada segue indo enriba de todo.
+- Mirado nas teselas de OpenFreeMap que debuxa o mapa, a man: doce de zoom 14 sobre Lugo,
+  unha por segundo, gardadas para as seguintes lecturas.
+
 ## Quedou aberto
 
 - O filete dos bordos a 1,37:1 (arriba).

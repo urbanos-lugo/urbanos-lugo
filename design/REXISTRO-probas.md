@@ -5349,3 +5349,69 @@ ordinario cada bus paga o seu. O que faltaba era dicir a que prezo se refire cad
 - O caso de máis de 75 minutos só se viu na comprobación, non nunha resposta real: con
   horarios de día, ningún par de Ruta probado o dá.
 - Nada desta rolda está en `develop` remoto nin en `main`.
+
+## Rolda 67: os sitios do mapa, co seu nome e por chanzos — 12 de novembro de 2026
+
+Pedido: as iconas dos sitios (rolda 61) dicían «unha estación» ou «un hospital» e non cal;
+poñerlles o nome. Visto co nome, o Colegio de Agentes Comerciales non estaba á altura dun
+hospital. Despois: a Catedral, as portas da Muralla, os museos e os parques grandes, con
+coidado de non encher o mapa nin estorbar.
+
+### Lido nas teselas
+
+Doce teselas de zoom 14 de OpenFreeMap sobre Lugo, unha por segundo, a man, gardadas no
+directorio de traballo da sesión; o resto das lecturas fixéronse sobre esa copia.
+
+- `college`: subclase `college`, o Colegio de Agentes Comerciales e a Escola de oficios
+  técnicos; subclase `university`, Campus Terra, Escola Politécnica Superior, Facultade de
+  Formación do Profesorado, Aula Produtos Lácteos e Edificio Cactus.
+- Portas da Muralla como `attraction`: só tres, Miñá, San Pedro e Bispo Aguirre.
+- `museum`: seis, tres deles «Museo …». `park`: 25 entre parques, xardíns e prazas. A
+  capa `park` son espazos protexidos e castros, non parques da cidade, así que o tamaño
+  saíu da área do verde (`landcover`, subclase `park`) onde cae o punto de cada un, por
+  tesela: seis por riba dos 25.000 m², de 98.046 (Paulo Fabio) a 26.897 (Rosalía de Castro).
+- Cada sitio leva un id propio nas teselas (44 de 44, ningún repetido), o que deixa apagar
+  un só.
+- Os filtros do estilo avaliados co código de MapLibre sobre esas teselas: 10 no chanzo de
+  arriba, 9 no do medio e 3 no de abaixo. Os dous estilos validan.
+
+- O verde das teselas (`landcover`) sobre 96 km² arredor de Lugo: bosque 27 %, prados,
+  matogueira e herba 5 %, parques 0,8 % (67 polígonos), xardíns 0,1 % (138). Os estilos
+  publicados non pintaban os parques en ningún tema.
+
+### Feito
+
+- Os parques e os xardíns en verde (`urbanos_parks`, xusto por riba do bosque e debaixo de
+  rúas e edificios): o do bosque no escuro, #d2e8c3 no claro, a 1,17 sobre o chan (o
+  primeiro, #e2ecdb, a 1,09, víase pouco no claro). O nome dos camiños no claro, de #767472 a
+  #626060: 5,61 sobre o chan e 4,78 sobre o parque (antes 4,18 e 3,82).
+- `buildMapStyle.ts`: tres capas, `DRAW.landmarks.layers` en palette.ts; o nome á dereita
+  da icona en Noto Sans, coas cores dos nomes de lugar de cada tema; icona e nome xuntos ou
+  nada; a estación de tren, «Estación de tren».
+- `StopNames`: le onde debuxou MapLibre os sitios (`queryRenderedFeatures`); o nome dunha
+  parada busca un lado que non os tape (`avoid` en `placeNames`), e se ten que ir por riba
+  dun, ese sitio apágase (`feature-state`) ata que deixa de tapalo. Unha comprobación nova.
+- `LAYER_ORDER`: os sitios entre as liñas e os puntos.
+
+### Comprobado
+
+- As cinco portas: lint, 170 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, a 375 × 812 contra a build, tema escuro e claro. Ao zoom 13: os hospitais, as
+  estacións, o concello e a facultade co seu nome, sen o Colegio. Arredor do 15, no casco
+  vello: os nomes das paradas e os dos sitios sen taparse; onde unha parada no bordo da
+  pantalla só tiña o lado da Catedral e o do Museo Provincial, eses dous apagáronse e
+  volveron ao centrar a parada. Ao 16, «Porta Miñá» xunto á súa parada. O Parque de
+  Rosalía de Castro, verde nos dous temas; o seu nome, tapado arredor do 15,3 polos das
+  paradas de Ramón Ferreiro, sae ao 15,8. Ningún erro na consola.
+- `audit:browser` como o *runner*, sen outra sesión activa, cos chanzos e o lenzo dos
+  nomes xa cambiado: os estados enteiros, 0 achados en 242 medidas de 162 estados; as
+  secuencias e as viaxes, 0. O verde dos parques veu despois e só toca o mapa base, que a
+  auditoría non carga. Antes dos chanzos, as viaxes do mapa e de Ruta, 38 percorridos, 0. Unha pasada só cos estados `mapa` dera catro achados de
+  título: a comprobación compara un título por pantalla, e o único estado de `paradas` que
+  quedaba nesa pasada estaba no mapa.
+
+### Queda
+
+- A auditoría non ve os sitios: vai sen rede e o mapa base non carga.
+- Das dez portas da Muralla, OSM só marca tres como atracción; as outras non saen.
+- Nada desta rolda está en `develop` remoto nin en `main`.

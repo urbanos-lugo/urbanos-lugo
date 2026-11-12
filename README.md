@@ -191,10 +191,20 @@ enriba — as 24 cores de liña quedan a 1,45 ou máis sobre calquera das tres c
 que cruzan, e ningún rótulo do mapa baixa de 4,5. As decisións e as cifras están en
 [`design/DECIDIDO.md`](design/DECIDIDO.md).
 
-Desde o zoom 13 o mapa leva **as iconas dos sitios polos que se busca unha parada** —hospital,
-estación de tren, estación de autobuses, universidade e concello—, as do propio sprite de
-OpenFreeMap e sen nome, que sería un rótulo máis para que os das paradas lle caesen enriba.
-**Os nomes das rúas quedan a calquera zoom**, ao lado dos das paradas: quen achega o mapa
+O mapa leva **os sitios polos que se busca unha parada, co seu nome**, por chanzos para
+non enchelo: desde o zoom 13, os hospitais, a estación de tren, a de autobuses, o campus e
+as súas escolas, o concello e a Catedral; desde o 15, un pouco máis pequenos, os seis
+parques grandes e os tres museos; desde o 16, as portas da Muralla que trae OSM (Miñá, San
+Pedro e Bispo Aguirre). Son 22 en toda a cidade, escollidos e non todos os que hai: 25
+parques e prazas, 6 museos e salas e cada igrexa están nas teselas. As iconas son as do
+sprite de OpenFreeMap; a estación de tren, que en OSM se chama só «Lugo», di «Estación de
+tren». Unha icona e o seu nome van xuntos ou non van, e onde se tocan gaña o chanzo de
+arriba. As liñas pasan por debaixo deles e os puntos das paradas por riba. Desde o zoom 15
+os nomes das paradas buscan un lado que non tape ningún sitio; se non o hai, escríbense
+igual e o sitio que taparían apágase ata que hai sitio, como fai un mapa de transporte: o
+nome dunha parada vale máis. **Os parques e os xardíns van en verde**, só eles: o bosque
+arredor da cidade é o 27 % das teselas e volvía verde o mapa enteiro, e os parques son o
+0,8 %. **Os nomes das rúas quedan a calquera zoom**, ao lado dos das paradas: quen achega o mapa
 para atopar unha parada busca tamén o nome da rúa onde está.
 
 Debúxanse sempre os dous sentidos de cada liña —a volta, descontinua—, cada un á **dereita

@@ -89,13 +89,17 @@ export const placeOn = (d: NamedDot, side: number, view: { radius: number; gap: 
  * name over a dot hid the stop it lay on, and over the reader, where you are. Chosen afresh
  * each frame of a pan, a name crossing the screen's edge went left there and right again a
  * few pixels on. Pure screen geometry, so it can be checked without a map.
+ *
+ * `avoid` is what a name would rather not cover, a landmark's icon and name: a side clear of
+ * it is taken first, and one over it only when there is no other. A stop's name is what the
+ * map is read for, so it is never left out for a landmark's: the landmark is hidden instead (StopNames).
  */
 export function placeNames(
   dots: NamedDot[],
-  view: { width: number; radius: number; gap: number; height: number; edge: number; keepClear?: { x: number; y: number; radius?: number }[] },
+  view: { width: number; radius: number; gap: number; height: number; edge: number; keepClear?: { x: number; y: number; radius?: number }[]; avoid?: Box[] },
   prefer: (number | undefined)[] = [],
 ): (NamePlace | null)[] {
-  const { width, radius, gap, height, edge, keepClear = [] } = view;
+  const { width, radius, gap, height, edge, keepClear = [], avoid = [] } = view;
   const around = ({ x, y, radius: r = radius }: { x: number; y: number; radius?: number }): Box => ({ left: x - r, right: x + r, top: y - r, bottom: y + r });
   const taken = dots.map(around);
   const clear = keepClear.map(around);
@@ -105,12 +109,15 @@ export function placeNames(
     const roomRight = sides[0].right <= width - edge;
     const usable = sides.filter((s, k) => (k === 0 ? roomRight : k === 1 ? s.left >= edge || !roomRight : s.left >= edge && s.right <= width - edge));
     const kept = prefer[i] === undefined ? -1 : usable.indexOf(sides[prefer[i]!]);
-    for (const side of kept > 0 ? [usable[kept], ...usable.filter((_, k) => k !== kept)] : usable) {
-      const hits = (b: Box) => side.left < b.right && side.right > b.left && side.top < b.bottom && side.bottom > b.top;
-      // Its own dot is not in the way.
-      if (taken.some((b, j) => j !== i && hits(b)) || clear.some(hits)) continue;
-      taken.push(side);
-      return side.place;
+    const order = kept > 0 ? [usable[kept], ...usable.filter((_, k) => k !== kept)] : usable;
+    for (const shy of [true, false]) {
+      for (const side of order) {
+        const hits = (b: Box) => side.left < b.right && side.right > b.left && side.top < b.bottom && side.bottom > b.top;
+        // Its own dot is not in the way.
+        if (taken.some((b, j) => j !== i && hits(b)) || clear.some(hits) || (shy && avoid.some(hits))) continue;
+        taken.push(side);
+        return side.place;
+      }
     }
     return null;
   });

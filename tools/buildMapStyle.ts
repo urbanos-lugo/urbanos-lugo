@@ -21,6 +21,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sleep } from './lib';
+import { DRAW } from '../src/components/Map/palette';
 
 const CACHE = '.cache/style';
 const OUT = 'src/data';
@@ -49,27 +50,96 @@ const DROP: Record<string, readonly string[]> = {
 };
 
 /**
- * The places a reader finds a stop by, as the sprite's own icons, on top of the basemap and
- * under every layer of the app's (mapLayers.ts adds those last). Neither published style draws
+ * The places a reader finds a stop by, as the sprite's own icons, on top of the basemap, over
+ * the app's lines and under its dots (mapLayers.ts, LAYER_ORDER). Neither published style draws
  * any point of interest. Five kinds, each named in the tiles by class and narrowed by subclass:
- * the class alone takes in clinics and care homes, every bus stop, and the community centres.
- * Their class is also the sprite's name for the icon. Icons only: a name here would be one more
- * label for the stop names, drawn on a canvas of their own, to fall on.
+ * the class alone takes in clinics and care homes, every bus stop, the community centres and
+ * the courts, and a professional association that OSM calls a college.
+ * Their class is also the sprite's name for the icon.
+ *
+ * With their names, as OSM writes them, on the icon's right: an icon alone said "a station"
+ * and not which, "a hospital" and not which one. An icon and its name go together or
+ * not at all: where a name has no room, an icon alone was the thing that said nothing, and the place
+ * shows whole a zoom step later. The stop names, on a canvas of their own that
+ * MapLibre knows nothing of, step round these from zoom 15 where they can (StopNames.ts), and
+ * are written anyway where they cannot: a stop's name matters more than a landmark's.
+ *
+ * In three tiers, so the map is not filled with them: what a reader finds a stop by from zoom
+ * 13, and the Cathedral with it; the big parks and the museums from 15, a size smaller; the
+ * wall's gates from 16, where the old town fills the screen. A higher tier is placed first,
+ * so where two meet the lower one gives way. Each one chosen, not each one in the tiles: there
+ * are 25 parks and squares, 6 museums and halls, and every church.
  */
-const LANDMARKS: Layer = {
-  id: 'urbanos_landmarks',
+const nameOf = ['coalesce', ['get', 'name'], ''];
+const startsWith = (prefix: string) => ['==', ['slice', nameOf, 0, prefix.length], prefix];
+
+/**
+ * The parks that read as places from across the city: the six whose green measured over about
+ * 25,000 m² in OpenFreeMap's tiles on 12 November 2026 (from 98,046 for Paulo Fabio to 26,897
+ * for Rosalía de Castro, measured one tile at a time, so a park on a tile edge counts short).
+ * The next is a garden at 24,188, then nothing over 22,000 that is called a park.
+ */
+const BIG_PARKS = ['Parque Paulo Fabio', 'Paseo do Miño', 'Parque da Chanca', 'Parque dos Paxariños', 'Parque de Paradai', 'Parque de Rosalía de Castro'];
+
+const landmarkLayer = (id: string, minzoom: number, size: number, filter: unknown[]): Layer => ({
+  id,
   type: 'symbol',
   source: 'openmaptiles',
   'source-layer': 'poi',
-  minzoom: 13,
-  filter: [
-    'match',
-    ['get', 'class'],
-    ['hospital', 'railway', 'bus', 'college', 'town_hall'],
-    ['match', ['get', 'subclass'], ['hospital', 'station', 'bus_station', 'university', 'college', 'townhall'], true, false],
-    false,
-  ],
-  layout: { 'icon-image': ['get', 'class'] },
+  minzoom,
+  filter,
+  layout: {
+    'icon-image': ['get', 'class'],
+    // The railway station's name in OSM is the city's, "Lugo", which said no more than the icon.
+    'text-field': ['match', ['get', 'class'], 'railway', DRAW.landmarks.railway, ['get', 'name']],
+    'text-font': ['Noto Sans Regular'],
+    'text-size': size,
+    'text-anchor': 'left',
+    'text-justify': 'left',
+    'text-offset': [DRAW.landmarks.offset, 0],
+    'text-max-width': DRAW.landmarks.wrap,
+  },
+});
+
+const [GATES, MORE, MAIN] = DRAW.landmarks.layers;
+/** Bottom to top, as they go into the style: the top one is placed first. */
+const LANDMARKS: Layer[] = [
+  landmarkLayer(GATES, 16, DRAW.landmarks.minor, ['all', ['==', ['get', 'class'], 'attraction'], startsWith('Porta ')]),
+  // "Museo …" only: the others are an exhibition hall, a mosaic house and a site centre, one of
+  // them called after the gate beside it.
+  landmarkLayer(MORE, 15, DRAW.landmarks.minor, [
+    'any',
+    ['all', ['==', ['get', 'class'], 'museum'], startsWith('Museo ')],
+    ['all', ['==', ['get', 'class'], 'park'], ['in', nameOf, ['literal', BIG_PARKS]]],
+  ]),
+  landmarkLayer(MAIN, 13, DRAW.landmarks.size, [
+    'any',
+    [
+      'match',
+      ['get', 'class'],
+      ['hospital', 'railway', 'bus', 'town_hall'],
+      ['match', ['get', 'subclass'], ['hospital', 'station', 'bus_station', 'townhall'], true, false],
+      false,
+    ],
+    // The campus and its schools, not every building on it ("Aula Produtos Lácteos", "Edificio
+    // Cactus"), and not `college`: in Lugo's tiles that is a professional association and a trade
+    // school, which with their names written read as landmarks beside the hospitals.
+    ['all', ['==', ['get', 'subclass'], 'university'], ['any', startsWith('Campus '), startsWith('Escola '), startsWith('Facultade ')]],
+    ['all', ['==', ['get', 'class'], 'place_of_worship'], startsWith('Catedral ')],
+  ]),
+];
+
+/**
+ * Gone, icon and name, while a stop's name is written over it: the stop names set this state
+ * (StopNames.ts) where a name had no side clear of a landmark, as a transit map lets the stop
+ * win. Written one over the other, neither could be read.
+ */
+const SHOWN_UNLESS_COVERED = ['case', ['boolean', ['feature-state', DRAW.landmarks.covered], false], 0, 1];
+
+/** The names in each theme's colours for a place's name, so they read as the map's and not the app's. */
+const LANDMARK_PAINT: Record<keyof typeof PUBLISHED, Record<string, unknown>> = {
+  light: { 'text-color': '#555', 'text-halo-color': '#fff', 'text-halo-width': 1.5, 'text-opacity': SHOWN_UNLESS_COVERED, 'icon-opacity': SHOWN_UNLESS_COVERED },
+  dark: { 'text-color': '#a7aeb9', 'text-halo-color': '#171a1f', 'text-halo-width': 1.5, 'text-opacity': SHOWN_UNLESS_COVERED, 'icon-opacity': SHOWN_UNLESS_COVERED },
 };
 
 /**
@@ -116,15 +186,38 @@ const DARK: readonly Edit[] = [
  * was a building outline separating twice as well as its fill (a block as a wireframe)
  * and a fill that did not separate the city from the fields at all. So the outline takes
  * the fill's colour and the mass comes forward, the minor street joins the majors on the
- * light side, and the ground sits between. Park and woodland keep their published
- * colours: the dark map's green painted 57% of the screen here.
+ * light side, and the ground sits between. Woodland keeps its published colour: the dark
+ * map's green painted 57% of the screen here. The city's parks are green (PARKS).
+ *
+ * A footpath's name runs through the parks, so it is measured on their green too: #767472
+ * read 4.18 on the ground and 3.82 on the park; #626060 reads 5.61 and 4.78.
  */
 const LIGHT: readonly Edit[] = [
   ['building', 'fill-color', '#dedcd4'],
   ['building', 'fill-outline-color', '#dedcd4'],
   ['highway_minor', 'line-color', '#fafaf9'],
-  ['highway-name-path', 'text-color', '#767472'],
+  ['highway-name-path', 'text-color', '#626060'],
 ];
+
+/**
+ * The city's parks and gardens, green. Neither published style painted them: the light one's
+ * "park" layer reads the protected areas and hill forts, and the dark one's a land use the
+ * tiles never give a park. Only these two, measured over the 96 km² of tiles round Lugo on 12
+ * November 2026: 0.8 % parks and 0.1 % gardens, against 27 % woodland, which is what turned the
+ * light map green before. Just over the woodland, so under every street and building. The
+ * dark one is the woodland's, already held under the faintest route.
+ */
+const PARKS_AFTER = 'landcover_wood';
+const parks = (color: string): Layer => ({
+  id: 'urbanos_parks',
+  type: 'fill',
+  source: 'openmaptiles',
+  'source-layer': 'landcover',
+  filter: ['all', ['==', ['get', 'class'], 'grass'], ['match', ['get', 'subclass'], ['park', 'garden'], true, false]],
+  paint: { 'fill-color': color },
+});
+/** The light one at 1.17:1 on the ground: #e2ecdb, at 1.09, hardly told a park from a block. */
+const PARK_GREEN: Record<keyof typeof PUBLISHED, string> = { light: '#d2e8c3', dark: '#1e2a1b' };
 
 interface Layer {
   id: string;
@@ -179,7 +272,10 @@ function derive(published: Style, edits: readonly Edit[], theme: keyof typeof PU
     if (value === null) delete paint[property];
     else paint[property] = value;
   }
-  style.layers.push(LANDMARKS);
+  const wood = style.layers.findIndex((l) => l.id === PARKS_AFTER);
+  if (wood < 0) throw new Error(`${theme}: the published style has no layer ${PARKS_AFTER} to put the parks over. Upstream renamed or dropped it -- fix PARKS_AFTER.`);
+  style.layers.splice(wood + 1, 0, parks(PARK_GREEN[theme]));
+  style.layers.push(...LANDMARKS.map((layer) => ({ ...layer, paint: LANDMARK_PAINT[theme] })));
 
   // The credit travels with the file as well as with the map control.
   for (const source of Object.values(style.sources)) source.attribution = ATTRIBUTION;

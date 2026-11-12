@@ -5,6 +5,10 @@ import { DRAW } from './palette';
  * The app's own layers, bottom to top, over the basemap. A layer is put under the first one
  * above it that is already there, so one drawn again (new data, a new palette) keeps its place
  * instead of landing on top of everything.
+ *
+ * The basemap's landmarks (buildMapStyle.ts) sit between the lines and the dots: a route drawn
+ * over them ran through "Estación de Autobuses" and left it unreadable, and a stop's dot still
+ * goes over everything.
  */
 export const LAYER_ORDER = [
   'app-walks',
@@ -13,6 +17,7 @@ export const LAYER_ORDER = [
   'app-routes-volta',
   'app-route-arrows',
   'app-legs',
+  ...DRAW.landmarks.layers,
   'app-calls',
   'app-stops',
   'app-stop-selected',

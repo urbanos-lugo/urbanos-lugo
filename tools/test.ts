@@ -4411,6 +4411,20 @@ ok('a stop name on the trip map clears the 28 px pin, not only the 8 px dot', ()
   assert.deepEqual(placeOn({ x: 100, y: 100, width: 80, radius: pin }, 0, view), { x: 119, y: 100, align: 'left' }, 'a boarding stop name jumped onto its pin as it faded');
 });
 
+ok('a stop name steps round a landmark’s name, and is written anyway where it cannot', () => {
+  // The hospital, the stations, the university and the town hall now carry their names, drawn
+  // by MapLibre, which knows nothing of the stop names on their own canvas. A stop name takes a
+  // side clear of them first; with every side over one, it is still written: the stop matters more.
+  const view = { width: 375, radius: 4, gap: 5, height: 15, edge: 4 };
+  const stop = { x: 100, y: 100, width: 80 };
+  const onTheRight = { left: 120, right: 220, top: 92, bottom: 108 };
+  assert.equal(placeNames([stop], { ...view, avoid: [onTheRight] })[0]?.align, 'right', 'the stop name covered the landmark’s name on its right');
+  const everywhere = { left: 0, right: 375, top: 0, bottom: 300 };
+  assert.deepEqual(placeNames([stop], { ...view, avoid: [everywhere] })[0], placeNames([stop], view)[0], 'a stop name was left out for a landmark’s');
+  // A side kept from before gives way to a landmark too, rather than staying on it.
+  assert.equal(placeNames([stop], { ...view, avoid: [onTheRight] }, [0])[0]?.align, 'right');
+});
+
 ok('the trip map’s A steps aside from the boarding pin it would cover, and only while it would', () => {
   // Starting a street from the stop, A and the line's pin were drawn in one place at the zoom
   // the trip opens at. A moves just enough away from it; zoomed in, it is back on its point.

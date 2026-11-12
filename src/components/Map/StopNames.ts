@@ -33,6 +33,11 @@ const HEIGHT_PX = FONT_PX + HALO_PX;
 const FRAME_CAP_MS = 33;
 /** Further than this between a press and its release is a drag, not a tap: the renderer's own click tolerance. */
 const TAP_SLOP_PX = 3;
+const { layers: LANDMARKS, size: LANDMARK_PX, offset: LANDMARK_OFFSET, wrap: LANDMARK_WRAP, icon: LANDMARK_ICON_PX, railway: LANDMARK_RAILWAY, source: LANDMARK_SOURCE, covered: LANDMARK_COVERED } = DRAW.landmarks;
+/** The basemap draws a landmark's name in Noto Sans, which the page does not have: measured in the app's face, with room over. */
+const LANDMARK_SLACK = 1.15;
+/** MapLibre's text-line-height, the default the landmarks keep. */
+const LANDMARK_LINE = 1.2;
 
 export interface StopNames {
   /** The stops whose names may be written, and points ([lat, lng], and a radius where it is not the dots') no name may cover. */
@@ -48,8 +53,53 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
   canvas.setAttribute('aria-hidden', 'true');
   // Right after the map's own canvas: under the markers, which go in after it.
   map.getCanvas().after(canvas);
-  const font = `${FONT_WEIGHT} ${FONT_PX}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'system-ui, sans-serif'}`;
+  const family = getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'system-ui, sans-serif';
+  const font = `${FONT_WEIGHT} ${FONT_PX}px ${family}`;
   const widths = new Map<string, number>();
+  const landmarkWidths = new Map<string, number>();
+
+  /**
+   * Where the basemap's landmarks are on the screen, each icon with its name on its right as
+   * buildMapStyle.ts lays it out: the boxes a stop name would rather not cover (placeNames'
+   * `avoid`). Only those MapLibre drew this frame. A name it wrapped is taken as lines of the
+   * wrap width. An icon and its name are drawn together or not at all, so what comes back is
+   * drawn whole. All three tiers measured at the top one's size: the two
+   * below it are a pixel smaller, so their boxes come out a little roomy, never short.
+   */
+  const landmarkBoxes = (ctx: CanvasRenderingContext2D): (Box & { id: string | number })[] => {
+    const layers = LANDMARKS.filter((id) => map.getLayer(id));
+    if (!layers.length) return [];
+    ctx.font = `400 ${LANDMARK_PX}px ${family}`;
+    const wrap = LANDMARK_WRAP * LANDMARK_PX;
+    const boxes = map.queryRenderedFeatures({ layers }).flatMap((feature): (Box & { id: string | number })[] => {
+      if (feature.geometry.type !== 'Point' || feature.id === undefined) return [];
+      const { x, y } = map.project(feature.geometry.coordinates as [number, number]);
+      // What the style writes there (buildMapStyle.ts): the station's word in place of its name.
+      const name = feature.properties?.class === 'railway' ? LANDMARK_RAILWAY : String(feature.properties?.name ?? '');
+      let w = landmarkWidths.get(name);
+      if (w === undefined) landmarkWidths.set(name, (w = name ? ctx.measureText(name).width * LANDMARK_SLACK : 0));
+      const lines = Math.ceil(w / wrap);
+      const half = Math.max(LANDMARK_ICON_PX, lines * LANDMARK_PX * LANDMARK_LINE) / 2;
+      const right = w ? x + LANDMARK_OFFSET * LANDMARK_PX + Math.min(w, wrap) : x + LANDMARK_ICON_PX / 2;
+      return [{ id: feature.id, left: x - LANDMARK_ICON_PX / 2, right, top: y - half, bottom: y + half }];
+    });
+    ctx.font = font;
+    return boxes;
+  };
+  /** The landmarks hidden now because a stop's name is written over them, so each is shown again once it is not. */
+  let covered = new Set<string | number>();
+  const cover = (next: Set<string | number>) => {
+    const set = (id: string | number, on: boolean) => {
+      try {
+        map.setFeatureState({ ...LANDMARK_SOURCE, id }, { [LANDMARK_COVERED]: on });
+      } catch {
+        // The style is being swapped (a change of theme): its new tiles start with nothing hidden.
+      }
+    };
+    for (const id of covered) if (!next.has(id)) set(id, false);
+    for (const id of next) if (!covered.has(id)) set(id, true);
+    covered = next;
+  };
   /** The side each stop's name was last written on, kept while it fits (placeNames). */
   const sides = new Map<string, number>();
   /**
@@ -98,9 +148,10 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       const { x, y } = map.project([lng, lat]);
       return { x, y, radius };
     });
+    const landmarks = shown.length ? landmarkBoxes(ctx) : [];
     const places = placeNames(
       dots,
-      { width, radius: options.radius, gap: GAP_PX, height: HEIGHT_PX, edge: EDGE_PX, keepClear },
+      { width, radius: options.radius, gap: GAP_PX, height: HEIGHT_PX, edge: EDGE_PX, keepClear, avoid: landmarks },
       shown.map(({ stop }) => sides.get(stop.id)),
     );
     written = [];
@@ -138,6 +189,9 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       write(stop.name, place ?? placeOn(dots[i], side ?? 0, view), a);
       if (place) written.push({ item: stop, box: nameBox(place, dots[i].width, HEIGHT_PX) });
     });
+    // A stop name with no side clear of a landmark was written over it (placeNames): that one goes.
+    const over = (a: Box, b: Box) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    cover(new Set(landmarks.filter((l) => written.some(({ box }) => over(box, l))).map((l) => l.id)));
     if (fading) frame = requestAnimationFrame(draw);
   };
   const later = () => {
@@ -189,6 +243,7 @@ export function stopNamesLayer(map: MapLibre, options: StopNamesOptions): StopNa
       container.removeEventListener('pointerdown', onDown, true);
       container.removeEventListener('click', onClick, true);
       canvas.remove();
+      if (map.style) cover(new Set());
     },
   };
 }
