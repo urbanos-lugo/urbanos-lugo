@@ -6,7 +6,7 @@ import { planTrips, plannedFrom } from '../utils/planner';
 import type { PlanJob } from '../utils/plannerJob';
 import { askPlanner, Superseded } from './planner/askPlanner';
 import { changesNow, pastTimetable, runsUntil, setsOff, underNotice, type NoticeChanges } from '../utils/noticeChanges';
-import { stopById } from '../data/transitData';
+import { FARES, formatEuros, stopById } from '../data/transitData';
 import { resolveLocationQuery, QUICK_DESTINATIONS } from '../utils/places';
 import { dayWord } from '../utils/serviceLabels';
 import { fetchWalkingPath, walkHopKey, walkHopsOf, type Hop, type WalkPaths } from '../services/walkingPath';
@@ -748,10 +748,13 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                           <span className="whitespace-nowrap">{formatKm(measuredWalk.meters)} km</span>
                         </span>
                       )}
-                      {/* The ordinary fare, not the card one: a visitor pays 0,64 € a bus. Named, or "1,28 €" alone was not read as two tickets. */}
+                      {/* Both prices. The tickets counted, or "1,28 €" alone was not read as two; the card's beside it, or a card holder read that the transfer cost double. */}
                       {planResult.fare && planResult.fare.busLegs > 0 && (
-                        <span className="whitespace-nowrap text-ink">
-                          <span className="font-sans text-ink-2">{t.planner.fareTickets(planResult.fare.busLegs)}</span> <span className="font-black">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>
+                        <span className="inline-flex flex-wrap items-baseline gap-x-1.5 text-ink">
+                          <span className="whitespace-nowrap">
+                            <span className="font-sans text-ink-2">{t.planner.fareTickets(planResult.fare.busLegs)}</span> <span className="font-black">{formatEuros(planResult.fare.singleTicketEuros)}</span>
+                          </span>
+                          <span className="whitespace-nowrap font-sans text-ink-2">· {t.planner.fareWithCard(formatEuros(planResult.fare.citizenCardEuros))}</span>
                         </span>
                       )}
                     </span>
@@ -770,25 +773,37 @@ export function RoutePlannerView({ onSelectStop, onSelectLine, destinationReques
                   <p className="mt-2 text-note text-ink-2">
                     <span className="caps-label text-ink-2">{t.planner.timeProvenanceTitle}</span> {measuredWalk ? t.planner.timeProvenanceMeasured : t.planner.timeProvenance}
                   </p>
-                  {planResult.fare && planResult.fare.busLegs > 0 && (
-                    <div className="mt-3 border-t border-line pt-2 text-label text-ink">
-                      {/* Both fares, neither struck through: the ordinary one applies to everyone without a card. */}
-                      <SectionLabel className="mb-1">{t.planner.fareTitle}</SectionLabel>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-label text-ink">{t.planner.fareSingle}</span>
-                        <span className="tnum text-body font-black text-ink">{planResult.fare.singleTicketEuros.toFixed(2).replace('.', ',')} €</span>
-                      </div>
-                      <div className="mt-1 flex items-baseline justify-between gap-3">
-                        <span className="text-label text-ink-2">{t.planner.fareCard}</span>
-                        <span className="tnum text-label font-semibold text-ink-2">{planResult.fare.citizenCardEuros.toFixed(2).replace('.', ',')} €</span>
-                      </div>
-                      {planResult.fare.busLegs > 1 && <span className="mt-1.5 block text-label text-estimated">{planResult.fare.transfersFree ? t.planner.fareTransferFree : t.planner.fareTransferPaid}</span>}
-                    </div>
-                  )}
+                  {/* About the time, so beside where the times come from: under the cost it read as part of the price. */}
                   {planResult.totalWaitMinutes > 0 && (
                     <div className="mt-2 flex items-center gap-2 text-label text-ink-2">
                       <Clock className="h-3.5 w-3.5 shrink-0 text-estimated" />
-                      <span>{t.planner.includesWait(planResult.totalWaitMinutes)}</span>
+                      <span>{t.planner.includesWait(planResult.totalWaitMinutes, (planResult.fare?.busLegs ?? 0) > 1)}</span>
+                    </div>
+                  )}
+                  {planResult.fare && planResult.fare.busLegs > 0 && (
+                    <div className="mt-3 border-t border-line pt-2 text-label text-ink">
+                      {/*
+                        Both fares, neither struck through: the ordinary one applies to everyone without a card. Each says
+                        why it is what it is under it: "transfer included" sat under both, and the ordinary 1,28 € above
+                        it read as a mistake, when only the card carries the transfer.
+                      */}
+                      <SectionLabel className="mb-1">{t.planner.fareTitle}</SectionLabel>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="text-label text-ink">{t.planner.fareSingle}</span>
+                        <span className="tnum text-body font-black text-ink">{formatEuros(planResult.fare.singleTicketEuros)}</span>
+                      </div>
+                      {planResult.fare.busLegs > 1 && <span className="block text-note text-ink-2">{t.planner.fareSingleWhy(planResult.fare.busLegs)}</span>}
+                      <div className="mt-1.5 flex items-baseline justify-between gap-3">
+                        <span className="text-label text-ink">{t.planner.fareCard}</span>
+                        <span className="tnum text-body font-black text-ink">{formatEuros(planResult.fare.citizenCardEuros)}</span>
+                      </div>
+                      {planResult.fare.busLegs > 1 && (
+                        <span className="block text-note text-ink-2">
+                          {planResult.fare.transfersFree
+                            ? t.planner.fareCardFree(FARES.freeTransferWindowMinutes)
+                            : t.planner.fareCardPaid(planResult.fare.busLegs, FARES.freeTransferWindowMinutes)}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>

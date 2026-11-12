@@ -209,8 +209,10 @@ export const en: Dict = {
     fareCard: 'With the Tarxeta Cidadá',
     fareSingle: 'Single ticket',
     fareTickets: (count: number) => (count === 1 ? 'Ticket' : `${count} tickets`),
-    fareTransferFree: 'Transfer included (within 75 min)',
-    fareTransferPaid: 'The transfer is over 75 min apart: you pay two fares',
+    fareSingleWhy: (count: number) => `${count} tickets, one per bus`,
+    fareCardFree: (minutes: number) => `The transfer is included (up to ${minutes} min)`,
+    fareCardPaid: (count: number, minutes: number) => `${count} fares: the last bus leaves more than ${minutes} min after the first`,
+    fareWithCard: (price: string) => `${price} with the card`,
     optionsTitle: 'Best trip options',
     moreOptions: (count: number) => (count === 1 ? '1 more option' : `${count} more options`),
     fewerOptions: 'Show fewer',
@@ -228,8 +230,8 @@ export const en: Dict = {
     noWaitNoFare: 'no waiting, no fare',
     waitShort: (minutes: number) => `${minutes} min wait`,
     serviceNoticeTitle: 'Service hours notice',
-    includesWait: (minutes: number) =>
-      `Includes ${minutes} min waiting at stops and transfers, from the published times.`,
+    includesWait: (minutes: number, transfers: boolean) =>
+      `Includes ${minutes} min waiting ${transfers ? 'at stops and transfers' : 'at the stop'}, from the published times.`,
     transfersShort: (count: number) => (count === 1 ? '1 change' : `${count} changes`),
     timeProvenanceTitle: 'Where these times come from',
     timeProvenance:

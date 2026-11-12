@@ -55,7 +55,7 @@ import { noticesReviewDue } from './checkNoticesReviewed';
 import { NOTICE_META } from '../src/data/structuralNotices';
 import { poleToRecord } from './importStopAmenities';
 import { POLE_SEEN_AT_OSM } from './lib';
-import { planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
+import { fareFor, planTrips, MAX_HEADLINE_WALK_MIN, TRANSFER_BUFFER_MIN, TRANSFER_BUFFER_ESTIMATED_MIN, WALK_MUST_BEAT_BUS_BY_MIN } from '../src/utils/planner';
 import { answerJob, rejoin } from '../src/utils/plannerJob';
 import { estimateWalk, getNearbyStops, NEARBY_STOP_LIMIT_METRES, getNearestStopToCoords, findStop, resolveLocationQuery, QUICK_DESTINATIONS, LUGO_LANDMARKS, lineZones, mainZones } from '../src/utils/places';
 import { getArrivalsForStop, getNextLineDeparture, networkAtRest, nextServiceAtStop, rowKeys, timingPointStopCount } from '../src/utils/arrivals';
@@ -4444,6 +4444,22 @@ ok('a tap on a stop name written on the map is a tap on that stop', () => {
   }
   // Well away from every name, no name.
   assert.equal(nameAt(written, -50, -50, reach), null);
+});
+
+ok('a transfer is free with the card inside the 75 minutes and never with the ordinary ticket', () => {
+  // The answer printed 1,28 € under "transfer included" and read as a mistake: only the card
+  // carries the transfer. Each price now says why it is what it is, so the rule under it has to
+  // hold on both sides of the window. The window runs from the first boarding to the last.
+  const buses = (...times: string[]) => times.map((departureTime) => ({ type: 'bus', departureTime }) as TripSegment);
+  const euros = (n: number, fare: number) => Number((n * fare).toFixed(2));
+  const one = fareFor(buses('07:02'));
+  assert.deepEqual([one.busLegs, one.singleTicketEuros, one.citizenCardEuros, one.transfersFree], [1, FARES.singleTicket, FARES.citizenCard, true]);
+  const inside = fareFor(buses('07:02', '07:12'));
+  assert.deepEqual([inside.singleTicketEuros, inside.citizenCardEuros, inside.transfersFree], [euros(2, FARES.singleTicket), FARES.citizenCard, true]);
+  const atEdge = fareFor(buses('07:00', `08:${String(FARES.freeTransferWindowMinutes - 60).padStart(2, '0')}`));
+  assert.equal(atEdge.transfersFree, true, 'the 75th minute is still inside');
+  const past = fareFor(buses('07:00', '08:20'));
+  assert.deepEqual([past.singleTicketEuros, past.citizenCardEuros, past.transfersFree], [euros(2, FARES.singleTicket), euros(2, FARES.citizenCard), false]);
 });
 
 ok('a line says what it runs through, not only where it ends', () => {

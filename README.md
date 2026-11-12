@@ -336,8 +336,9 @@ Non devolve unha soa resposta: amosa as **opcións distintas** de facer o traxec
 agrupadas por combinación de liñas e ordenadas pola hora á que chegas, a que di cada fila:
 co paseo medido en canto está calculado. Ensínanse as catro mellores, menos as dun bus que
 o paseo medido xa non alcanza: esas saen da lista, e se é a resposta aberta dío con
-palabras, «A pé non chegas a tempo a este bus». O prezo do resumo leva o reconto de
-billetes —«2 billetes 1,28 €»—, porque cada bus paga o seu co billete ordinario.
+palabras, «A pé non chegas a tempo a este bus». O resumo leva os dous prezos, co reconto
+de billetes —«2 billetes 1,28 € · 0,45 € con tarxeta»—: co billete ordinario cada bus
+paga o seu, e coa Tarxeta Cidadá o transbordo vai incluído.
 
 **O mapa do traxecto amplíase á pantalla enteira**: no móbil é unha tarxeta de 240 px, e o
 botón da esquina dálle toda a pantalla, co traxecto encadrado de novo; o xesto de volver
@@ -438,7 +439,11 @@ Todo iso vai no mesmo ficheiro que o grafo, codificado en diferenzas: 21.093 alt
 29.489 pares de ascensos por 36 KB, e 17.053 arestas son chás de verdade nos dous sentidos.
 
 Amosa tamén **canto custa o traxecto** cos dous títulos, aplicando a regra dos 75 minutos:
-un transbordo dentro da ventá vai incluído coa Tarxeta Cidadá.
+un transbordo dentro da ventá vai incluído coa Tarxeta Cidadá, e co billete ordinario
+nunca. Cada prezo di por que é o que é: baixo o ordinario, «2 billetes, un en cada bus»;
+baixo o da tarxeta, que o transbordo vai incluído ou, se o último bus sae máis de 75
+minutos despois do primeiro, cantas viaxes se pagan. A espera nas paradas, que é tempo e
+non diñeiro, vai fóra do custo, onde se di de onde saen as horas.
 
 ### «Vou nesta»: a pantalla para a viaxe
 Debaixo do resultado hai un botón que converte o plan nunha pantalla para mirar de

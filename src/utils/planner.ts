@@ -130,7 +130,7 @@ function pickBestBoarding(lang: Lang, candidateLineIds: string[], fromStopId: st
 }
 
 /** A single ticket pays per boarding; the Tarxeta Cidadá pays once while every transfer is inside the window. */
-function fareFor(segments: TripSegment[]): TripFare {
+export function fareFor(segments: TripSegment[]): TripFare {
   const boardings = segments.filter((s) => s.type === 'bus' && s.departureTime).map((s) => parseTimeToMinutes(s.departureTime!));
   const busLegs = boardings.length;
   const transferSpanMinutes = busLegs > 1 ? Math.round(boardings[busLegs - 1] - boardings[0]) : 0;

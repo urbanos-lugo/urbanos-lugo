@@ -5312,3 +5312,40 @@ escoller a pestana coa que abre a app.
 
 - O lector de pantalla nun teléfono, como antes.
 - Nada desta rolda está en `main` nin en `develop` remoto.
+
+## Rolda 66: o custo do traxecto, explicado — 12 de novembro de 2026
+
+Pedido: na resposta de Ruta, con 9 → 4.1, o bloque do custo dicía «Billete ordinario 1,28 €»
+e debaixo «Transbordo incluído (dentro dos 75 min)», e lía como un erro. As cifras estaban
+ben: o transbordo de balde só existe coa Tarxeta Cidadá (buslugo.com/tarifas), e co billete
+ordinario cada bus paga o seu. O que faltaba era dicir a que prezo se refire cada cousa.
+
+### Feito
+
+- Cada prezo leva debaixo o seu porqué cando hai máis dun bus: «2 billetes, un en cada bus»
+  baixo o ordinario; baixo o da tarxeta, «O transbordo vai incluído (ata 75 min)» ou, se o
+  último bus sae máis de 75 min despois do primeiro, «2 viaxes: …». Os dous prezos co mesmo
+  peso: o ordinario é o de quen non ten tarxeta, non un prezo tachado.
+- O resumo pregado amosa os dous: «2 billetes 1,28 € · 0,45 € con tarxeta». Só co
+  ordinario, quen ten tarxeta lía que o transbordo lle custaba o dobre.
+- «Inclúe N min de espera…» sae do custo, que é diñeiro, e vai xunto a «De onde saen estas
+  horas»; cun só bus di «na parada» e non «en paradas e transbordos».
+- `fareFor` (planner.ts) exportada, e unha comprobación nova: un bus, un transbordo dentro
+  da ventá, o minuto 75 xusto e un transbordo pasado (0,90 € coa tarxeta, 1,28 € sen ela).
+- Os tres dicionarios; o README, nos dous sitios que describen o prezo.
+
+### Comprobado
+
+- As cinco portas: lint, 169 comprobacións, 26 políticas, `check:deep` e a build.
+- No panel, a 375 × 812 contra a build, Fonte dos Ranchos → HULA, as mesmas opcións da
+  captura do pedido: 9 → 4.1 di «2 billetes 1,28 € · 0,45 € con tarxeta» pregado e cada
+  porqué despregado; 5ES (un bus), 0,64 e 0,45 sen porqués e a espera «na parada». Ningún
+  erro na consola.
+- `audit:browser` como o *runner*, sen outra sesión activa: os estados de Ruta, 0 achados en
+  60 medidas de 40 estados; as viaxes de Ruta e de «Vou nesta», 20 percorridos, 0 que fallen.
+
+### Queda
+
+- O caso de máis de 75 minutos só se viu na comprobación, non nunha resposta real: con
+  horarios de día, ningún par de Ruta probado o dá.
+- Nada desta rolda está en `develop` remoto nin en `main`.

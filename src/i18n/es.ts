@@ -198,8 +198,10 @@ export const es: Dict = {
     fareCard: 'Con Tarjeta Ciudadana',
     fareSingle: 'Billete ordinario',
     fareTickets: (count: number) => (count === 1 ? 'Billete' : `${count} billetes`),
-    fareTransferFree: 'Transbordo incluido (dentro de los 75 min)',
-    fareTransferPaid: 'El transbordo supera los 75 min: pagas dos billetes',
+    fareSingleWhy: (count: number) => `${count} billetes, uno en cada bus`,
+    fareCardFree: (minutes: number) => `El transbordo va incluido (hasta ${minutes} min)`,
+    fareCardPaid: (count: number, minutes: number) => `${count} viajes: el último bus sale más de ${minutes} min después del primero`,
+    fareWithCard: (price: string) => `${price} con tarjeta`,
     optionsTitle: 'Mejores opciones de trayecto',
     moreOptions: (count: number) => (count === 1 ? '1 opción más' : `${count} opciones más`),
     fewerOptions: 'Mostrar menos',
@@ -217,8 +219,8 @@ export const es: Dict = {
     noWaitNoFare: 'sin esperas ni billete',
     waitShort: (minutes: number) => `${minutes} min de espera`,
     serviceNoticeTitle: 'Aviso de horario de servicio',
-    includesWait: (minutes: number) =>
-      `Incluye ${minutes} min de espera en paradas y transbordos, según los horarios de paso.`,
+    includesWait: (minutes: number, transfers: boolean) =>
+      `Incluye ${minutes} min de espera ${transfers ? 'en paradas y transbordos' : 'en la parada'}, según los horarios de paso.`,
     transfersShort: (count: number) => (count === 1 ? '1 transbordo' : `${count} transbordos`),
     timeProvenanceTitle: 'De dónde salen estas horas',
     timeProvenance:

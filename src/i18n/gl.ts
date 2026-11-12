@@ -234,8 +234,13 @@ export const gl = {
     fareSingle: 'Billete ordinario',
     /** Beside the price in the trip's folded summary: a bare "1,28 €" was not read as two tickets. */
     fareTickets: (count: number) => (count === 1 ? 'Billete' : `${count} billetes`),
-    fareTransferFree: 'Transbordo incluído (dentro dos 75 min)',
-    fareTransferPaid: 'O transbordo supera os 75 min: paga dous billetes',
+    /** Under the ordinary fare's price, when there is more than one bus: it has no transfer. */
+    fareSingleWhy: (count: number) => `${count} billetes, un en cada bus`,
+    /** Under the card's price: the transfer is only free with it, and only inside the window. */
+    fareCardFree: (minutes: number) => `O transbordo vai incluído (ata ${minutes} min)`,
+    fareCardPaid: (count: number, minutes: number) => `${count} viaxes: o último bus sae máis de ${minutes} min despois do primeiro`,
+    /** Beside the ordinary price in the folded summary. */
+    fareWithCard: (price: string) => `${price} con tarxeta`,
     /* Sen o reconto.
        Dicía «4 de 55», que soa a que gardamos corenta e nove respostas nun caixón. O que
        queda fóra son as mesmas liñas saíndo máis tarde: o planificador ordena por
@@ -259,8 +264,9 @@ export const gl = {
     noWaitNoFare: 'sen esperas nin billete',
     waitShort: (minutes: number) => `${minutes} min de espera`,
     serviceNoticeTitle: 'Aviso de horario de servizo',
-    includesWait: (minutes: number) =>
-      `Inclúe ${minutes} min de espera en paradas e transbordos, segundo os horarios de paso.`,
+    /** With one bus there is no transfer to wait at: only the stop. */
+    includesWait: (minutes: number, transfers: boolean) =>
+      `Inclúe ${minutes} min de espera ${transfers ? 'en paradas e transbordos' : 'na parada'}, segundo os horarios de paso.`,
     transfersShort: (count: number) => (count === 1 ? '1 transbordo' : `${count} transbordos`),
     timeProvenanceTitle: 'De onde saen estas horas',
     timeProvenance:
